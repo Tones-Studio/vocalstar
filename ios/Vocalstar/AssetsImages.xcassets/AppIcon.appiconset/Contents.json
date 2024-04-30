@@ -1,0 +1,14 @@
+{
+  "images" : [
+    {
+      "filename" : "Vocalstar_Icon_Large.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
