@@ -6,10 +6,12 @@
       "scale" : "1x"
     },
     {
+      "filename" : "Vocalstar_Icon_860.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "Vocalstar_Icon_1290.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
