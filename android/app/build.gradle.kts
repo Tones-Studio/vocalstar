@@ -13,10 +13,14 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags += "-std=c++17"
+            }
         }
     }
 
@@ -35,6 +39,12 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.2"
+        }
     }
     buildFeatures {
         compose = true

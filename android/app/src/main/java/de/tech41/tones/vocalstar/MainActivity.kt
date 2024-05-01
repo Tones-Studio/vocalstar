@@ -13,21 +13,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             VocalstarTheme {
+                /*
+                https://medium.com/@alessandro.lombardi.089/android-adding-native-code-to-an-empty-compose-activity-project-f6f23bffd6e3
+                Surface(color = MaterialTheme.colors.background) {
+                    MessageFromNativeLibrary(stringFromJNI())
+                }
+
+                 */
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Android",
+                        name = "Android " + stringFromJNI(),
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
     }
+
+   external fun stringFromJNI(): String
+
+    companion object {
+        init {
+            System.loadLibrary("vocalstar")
+        }
+    }
+}
+
+@Composable
+fun MessageFromNativeLibrary(name: String) {
+    Text(text = name)
 }
 
 @Composable
