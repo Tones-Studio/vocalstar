@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "40A2AECB2B07BD0F00AC2A0E"
-               BuildableName = "Vocalstar.app"
-               BlueprintName = "Vocalstar"
+               BuildableName = "VocalstarOrg.app"
+               BlueprintName = "VocalstarOrg"
                ReferencedContainer = "container:Vocalstar.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,8 +44,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "40A2AECB2B07BD0F00AC2A0E"
-            BuildableName = "Vocalstar.app"
-            BlueprintName = "Vocalstar"
+            BuildableName = "VocalstarOrg.app"
+            BlueprintName = "VocalstarOrg"
             ReferencedContainer = "container:Vocalstar.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,8 +61,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "40A2AECB2B07BD0F00AC2A0E"
-            BuildableName = "Vocalstar.app"
-            BlueprintName = "Vocalstar"
+            BuildableName = "VocalstarOrg.app"
+            BlueprintName = "VocalstarOrg"
             ReferencedContainer = "container:Vocalstar.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

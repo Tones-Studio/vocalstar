@@ -15,7 +15,6 @@ import StoreKit
 import CoreMedia
 import CoreAudio
 import AudioToolbox
-import SwiftUIIntrospect
 
 struct ImageButtonStyle: ButtonStyle {
     var image: String
@@ -47,8 +46,6 @@ struct VolumeView: UIViewRepresentable {
 }
 
 struct PlayView: View {
-    
-    let appDelegate = UIApplication.shared.delegate as! VocalstarApp
     enum DisplayMode: Int {
             case system = 0
             case dark = 1

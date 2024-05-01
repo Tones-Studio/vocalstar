@@ -27,8 +27,7 @@ enum PLAYER{
 class Engine  : ObservableObject{
     
     static let shared = Engine()
-    let appDelegate = UIApplication.shared.delegate as! VocalstarApp
-    
+ 
     let iosPlayer =  IosPlayer()
     var newSongPosSeconds = 0.0
     

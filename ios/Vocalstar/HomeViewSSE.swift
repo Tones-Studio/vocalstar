@@ -9,10 +9,8 @@ import SwiftUI
 
 struct HomeViewSSE: View {
     @Environment(\.scenePhase) var scenePhase
-    let appDelegate = UIApplication.shared.delegate as! VocalstarApp
     @StateObject var engine = Engine.shared
     @State var isShowingSetting = false
-    //@State private var showingPopoverSpotify = false
     @State var controller = AudioController.shared
     @State var desiredHeight = 0.0
 
@@ -29,7 +27,7 @@ struct HomeViewSSE: View {
                         PlayView()
                             .frame(maxWidth:.infinity, maxHeight: .infinity)
                             .tabItem {
-                                Label("Sing SSE",systemImage:"beats.headphones")
+                                Label("Sing",systemImage:"beats.headphones")
                             }
                         
                         DeviceView().padding()
