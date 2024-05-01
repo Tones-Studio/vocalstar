@@ -23,12 +23,9 @@
 		409DA5A62B1240CD0098184C /* VideoBgView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 409DA5A52B1240CD0098184C /* VideoBgView.swift */; };
 		409DA5AA2B12486C0098184C /* future.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 409DA5A92B12486C0098184C /* future.mp4 */; };
 		40A284CE2B0E2AD100049F6C /* Colours.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40A284CD2B0E2AD100049F6C /* Colours.xcassets */; };
-		40A284D02B0E2E4B00049F6C /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40A284CF2B0E2E4B00049F6C /* Storyboard.storyboard */; };
 		40A284D72B0E3EAC00049F6C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A284D62B0E3EAC00049F6C /* Extensions.swift */; };
 		40A2AED02B07BD0F00AC2A0E /* VocalstarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A2AECF2B07BD0F00AC2A0E /* VocalstarApp.swift */; };
-		40A2AED22B07BD0F00AC2A0E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A2AED12B07BD0F00AC2A0E /* ContentView.swift */; };
 		40A2AED72B07BD1100AC2A0E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40A2AED62B07BD1100AC2A0E /* Preview Assets.xcassets */; };
-		40A2AEE52B07BED600AC2A0E /* MicrophonePermission in Frameworks */ = {isa = PBXBuildFile; productRef = 40A2AEE42B07BED600AC2A0E /* MicrophonePermission */; };
 		40A2AEE92B07C5AD00AC2A0E /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A2AEE82B07C5AD00AC2A0E /* Protocols.swift */; };
 		40A2AEEB2B07C69C00AC2A0E /* IosPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A2AEEA2B07C69C00AC2A0E /* IosPlayer.swift */; };
 		40A2AEEF2B07C7BB00AC2A0E /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A2AEEE2B07C7BB00AC2A0E /* AudioController.swift */; };
@@ -57,7 +54,6 @@
 		40D49EF22BE246B100BBB885 /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 40458FD92B0DFE3700F4CEA8 /* Montserrat-Italic.ttf */; };
 		40D49EF32BE246B600BBB885 /* VocalstarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A2AECF2B07BD0F00AC2A0E /* VocalstarApp.swift */; };
 		40D49EF42BE246BA00BBB885 /* future.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 409DA5A92B12486C0098184C /* future.mp4 */; };
-		40D49EF52BE246C000BBB885 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40A284CF2B0E2E4B00049F6C /* Storyboard.storyboard */; };
 		40D49EF62BE246C400BBB885 /* dsp_lib in Resources */ = {isa = PBXBuildFile; fileRef = 40E54AE12B0CED2700C77DBD /* dsp_lib */; };
 		40D49EF72BE246D500BBB885 /* DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E54AE32B0CED9100C77DBD /* DSP.cpp */; };
 		40D49EF82BE246DF00BBB885 /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E54ADD2B0CBDF900C77DBD /* RingBuffer.swift */; };
@@ -67,9 +63,9 @@
 		40D49EFC2BE2470E00BBB885 /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A2AEEE2B07C7BB00AC2A0E /* AudioController.swift */; };
 		40D49EFD2BE2470E00BBB885 /* AudioFx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4026183C2B08B44700355190 /* AudioFx.swift */; };
 		40D49EFE2BE2470E00BBB885 /* IosPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A2AEEA2B07C69C00AC2A0E /* IosPlayer.swift */; };
-		40D49F002BE2487C00BBB885 /* MicrophonePermission in Frameworks */ = {isa = PBXBuildFile; productRef = 40D49EFF2BE2487C00BBB885 /* MicrophonePermission */; };
 		40D49F022BE249AF00BBB885 /* Colours.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40A284CD2B0E2AD100049F6C /* Colours.xcassets */; };
 		40D49F032BE249B400BBB885 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40458FE22B0E033F00F4CEA8 /* Assets.xcassets */; };
+		40D49F082BE261CB00BBB885 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40D49F072BE261CB00BBB885 /* Storyboard.storyboard */; };
 		40E54ADE2B0CBDF900C77DBD /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E54ADD2B0CBDF900C77DBD /* RingBuffer.swift */; };
 		40E54AE22B0CED2700C77DBD /* dsp_lib in Resources */ = {isa = PBXBuildFile; fileRef = 40E54AE12B0CED2700C77DBD /* dsp_lib */; };
 		40E54AE42B0CED9100C77DBD /* DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E54AE32B0CED9100C77DBD /* DSP.cpp */; };
@@ -92,11 +88,9 @@
 		409DA5A52B1240CD0098184C /* VideoBgView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoBgView.swift; sourceTree = "<group>"; };
 		409DA5A92B12486C0098184C /* future.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = future.mp4; sourceTree = "<group>"; };
 		40A284CD2B0E2AD100049F6C /* Colours.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colours.xcassets; sourceTree = "<group>"; };
-		40A284CF2B0E2E4B00049F6C /* Storyboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
 		40A284D62B0E3EAC00049F6C /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		40A2AECC2B07BD0F00AC2A0E /* VocalstarOrg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VocalstarOrg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40A2AECF2B07BD0F00AC2A0E /* VocalstarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocalstarApp.swift; sourceTree = "<group>"; };
-		40A2AED12B07BD0F00AC2A0E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		40A2AED62B07BD1100AC2A0E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		40A2AEDF2B07BDB600AC2A0E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		40A2AEE82B07C5AD00AC2A0E /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
@@ -113,6 +107,7 @@
 		40A2AEFD2B07C88600AC2A0E /* CAStreamBasicDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAStreamBasicDescription.swift; sourceTree = "<group>"; };
 		40D49ED22BE242E700BBB885 /* Vocalstar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vocalstar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40D49EDA2BE242E900BBB885 /* Vocalstar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Vocalstar.entitlements; sourceTree = "<group>"; };
+		40D49F072BE261CB00BBB885 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
 		40E54ADD2B0CBDF900C77DBD /* RingBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingBuffer.swift; sourceTree = "<group>"; };
 		40E54ADF2B0CEBD700C77DBD /* EnvelopeFollower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvelopeFollower.h; sourceTree = "<group>"; };
 		40E54AE02B0CEBD700C77DBD /* Limiter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Limiter.h; sourceTree = "<group>"; };
@@ -125,7 +120,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40A2AEE52B07BED600AC2A0E /* MicrophonePermission in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,7 +127,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40D49F002BE2487C00BBB885 /* MicrophonePermission in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,14 +143,13 @@
 		40458FC02B0DFC1100F4CEA8 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				40458FCF2B0DFC3D00F4CEA8 /* CustomSlider.swift */,
-				40458FC72B0DFC2C00F4CEA8 /* DeviceView.swift */,
+				4073BFA82B148B9C0085C886 /* HomeViewSSE.swift */,
 				40458FC32B0DFC2C00F4CEA8 /* PlayView.swift */,
+				40458FC72B0DFC2C00F4CEA8 /* DeviceView.swift */,
 				40458FD32B0DFD9900F4CEA8 /* AboutView.swift */,
 				4007DB372B10DAE400671ABE /* MusicProgressSlider.swift */,
+				40458FCF2B0DFC3D00F4CEA8 /* CustomSlider.swift */,
 				409DA5A52B1240CD0098184C /* VideoBgView.swift */,
-				40A2AED12B07BD0F00AC2A0E /* ContentView.swift */,
-				4073BFA82B148B9C0085C886 /* HomeViewSSE.swift */,
 			);
 			name = Screens;
 			sourceTree = "<group>";
@@ -176,7 +168,6 @@
 		40A2AEC32B07BD0F00AC2A0E = {
 			isa = PBXGroup;
 			children = (
-				40A284CF2B0E2E4B00049F6C /* Storyboard.storyboard */,
 				40A2AECE2B07BD0F00AC2A0E /* Vocalstar */,
 				40A2AECD2B07BD0F00AC2A0E /* Products */,
 				402618422B08C91D00355190 /* Frameworks */,
@@ -195,20 +186,23 @@
 		40A2AECE2B07BD0F00AC2A0E /* Vocalstar */ = {
 			isa = PBXGroup;
 			children = (
-				40A2AECF2B07BD0F00AC2A0E /* VocalstarApp.swift */,
-				409DA5A92B12486C0098184C /* future.mp4 */,
+				40D49F072BE261CB00BBB885 /* Storyboard.storyboard */,
 				40458FD72B0DFE2600F4CEA8 /* fonts */,
 				40458FC02B0DFC1100F4CEA8 /* Screens */,
 				40A2AEF72B07C86E00AC2A0E /* PublicUtility */,
 				40A2AEDF2B07BDB600AC2A0E /* Info.plist */,
+				409DA5A92B12486C0098184C /* future.mp4 */,
 				40A284CD2B0E2AD100049F6C /* Colours.xcassets */,
 				40458FE22B0E033F00F4CEA8 /* Assets.xcassets */,
 				40A2AED52B07BD1100AC2A0E /* Preview Content */,
-				40A2AEE82B07C5AD00AC2A0E /* Protocols.swift */,
+				40A2AECF2B07BD0F00AC2A0E /* VocalstarApp.swift */,
 				40458FD12B0DFC8A00F4CEA8 /* Engine.swift */,
 				40A2AEEA2B07C69C00AC2A0E /* IosPlayer.swift */,
 				40A2AEEE2B07C7BB00AC2A0E /* AudioController.swift */,
 				4026183C2B08B44700355190 /* AudioFx.swift */,
+				40E54ADD2B0CBDF900C77DBD /* RingBuffer.swift */,
+				40A2AEE82B07C5AD00AC2A0E /* Protocols.swift */,
+				40A284D62B0E3EAC00049F6C /* Extensions.swift */,
 				40E54AE12B0CED2700C77DBD /* dsp_lib */,
 				40A2AEF02B07C7DF00AC2A0E /* DSP.hpp */,
 				40E54AE32B0CED9100C77DBD /* DSP.cpp */,
@@ -216,8 +210,6 @@
 				40E54AE02B0CEBD700C77DBD /* Limiter.h */,
 				40A2AEF12B07C7F200AC2A0E /* module.modulemap */,
 				40A2AEF22B07C81800AC2A0E /* Vocalstar-Bridging-Header.h */,
-				40E54ADD2B0CBDF900C77DBD /* RingBuffer.swift */,
-				40A284D62B0E3EAC00049F6C /* Extensions.swift */,
 				40D49EDA2BE242E900BBB885 /* Vocalstar.entitlements */,
 			);
 			path = Vocalstar;
@@ -261,7 +253,6 @@
 			);
 			name = VocalstarOrg;
 			packageProductDependencies = (
-				40A2AEE42B07BED600AC2A0E /* MicrophonePermission */,
 			);
 			productName = Vocalstar;
 			productReference = 40A2AECC2B07BD0F00AC2A0E /* VocalstarOrg.app */;
@@ -281,7 +272,6 @@
 			);
 			name = Vocalstar;
 			packageProductDependencies = (
-				40D49EFF2BE2487C00BBB885 /* MicrophonePermission */,
 			);
 			productName = Vocalstar;
 			productReference = 40D49ED22BE242E700BBB885 /* Vocalstar.app */;
@@ -316,7 +306,6 @@
 			);
 			mainGroup = 40A2AEC32B07BD0F00AC2A0E;
 			packageReferences = (
-				40A2AEE32B07BED600AC2A0E /* XCRemoteSwiftPackageReference "PermissionsKit" */,
 			);
 			productRefGroup = 40A2AECD2B07BD0F00AC2A0E /* Products */;
 			projectDirPath = "";
@@ -335,7 +324,6 @@
 			files = (
 				40458FDF2B0DFE3800F4CEA8 /* Montserrat-Regular.ttf in Resources */,
 				40458FDE2B0DFE3800F4CEA8 /* Montserrat-Italic.ttf in Resources */,
-				40A284D02B0E2E4B00049F6C /* Storyboard.storyboard in Resources */,
 				40458FDD2B0DFE3800F4CEA8 /* Montserrat-Bold.ttf in Resources */,
 				40A284CE2B0E2AD100049F6C /* Colours.xcassets in Resources */,
 				40E54AE22B0CED2700C77DBD /* dsp_lib in Resources */,
@@ -354,9 +342,9 @@
 				40D49EF22BE246B100BBB885 /* Montserrat-Italic.ttf in Resources */,
 				40D49F022BE249AF00BBB885 /* Colours.xcassets in Resources */,
 				40D49EF12BE246B100BBB885 /* Montserrat-Bold.ttf in Resources */,
+				40D49F082BE261CB00BBB885 /* Storyboard.storyboard in Resources */,
 				40D49EEF2BE246B100BBB885 /* Montserrat-Regular.ttf in Resources */,
 				40D49F032BE249B400BBB885 /* Assets.xcassets in Resources */,
-				40D49EF52BE246C000BBB885 /* Storyboard.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -371,7 +359,6 @@
 				4073BFA92B148B9C0085C886 /* HomeViewSSE.swift in Sources */,
 				40A2AEE92B07C5AD00AC2A0E /* Protocols.swift in Sources */,
 				40458FD42B0DFD9900F4CEA8 /* AboutView.swift in Sources */,
-				40A2AED22B07BD0F00AC2A0E /* ContentView.swift in Sources */,
 				40A2AF012B07C88600AC2A0E /* CADebugMacros.swift in Sources */,
 				40A2AEFF2B07C88600AC2A0E /* NumTypes+Conversion.swift in Sources */,
 				40458FCE2B0DFC2C00F4CEA8 /* DeviceView.swift in Sources */,
@@ -479,6 +466,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Media library access to select a song";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone used for singing along";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -536,6 +525,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Media library access to select a song";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone used for singing along";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -750,30 +741,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		40A2AEE32B07BED600AC2A0E /* XCRemoteSwiftPackageReference "PermissionsKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparrowcode/PermissionsKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.0.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		40A2AEE42B07BED600AC2A0E /* MicrophonePermission */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 40A2AEE32B07BED600AC2A0E /* XCRemoteSwiftPackageReference "PermissionsKit" */;
-			productName = MicrophonePermission;
-		};
-		40D49EFF2BE2487C00BBB885 /* MicrophonePermission */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 40A2AEE32B07BED600AC2A0E /* XCRemoteSwiftPackageReference "PermissionsKit" */;
-			productName = MicrophonePermission;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 40A2AEC42B07BD0F00AC2A0E /* Project object */;
 }

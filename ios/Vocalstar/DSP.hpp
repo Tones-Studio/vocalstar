@@ -54,7 +54,7 @@ public:
 private:
     double sr = 0.0;
     int blocksize = 0;
-    double micLevel = 0.5;
+    double micLevel = 0.0;
     bool isMuted = false;
     bool isActive = false;
     int activeMicType;

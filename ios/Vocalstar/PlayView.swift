@@ -8,7 +8,6 @@
 import Foundation
 import AVFoundation
 import CoreData
-import UIKit
 import SwiftUI
 import MediaPlayer
 import StoreKit
@@ -134,7 +133,7 @@ struct PlayView: View {
                 VStack{
                     
                     // Song artist, title and Image
-                    Spacer().frame(height:20)
+
                     if height < 668{
                         Text(artist).foregroundColor(Color("SongTitle")).font(.custom(FONT_B, size: 25))
                     }else{
@@ -152,11 +151,14 @@ struct PlayView: View {
                     if isRadio{
                         Text("Radio")
                     }else{
+                        
+                        // timeline
                         HStack{
                             GeometryReader{ proxy in
                                 ZStack{
                                     Text("\(startTime)").foregroundColor(Color(red:0.3,green:0.3,blue:0.3))
                                         .frame(width: proxy.size.width,alignment:.leading)
+                                        .offset(y:-20)
                                     MusicProgressSlider(value: $songPosPercent,
                                                         inRange: 0...100,
                                                         activeFillColor:.orange,
@@ -172,48 +174,43 @@ struct PlayView: View {
                                     )
                                     .tint(Color.green)
                                     .accentColor(Color.yellow)
-                                    .offset(x:0,y:25).frame(width:proxy.size.width - 50, height:7)
+                                    //.offset(x:0,y:25).frame(width:proxy.size.width - 50, height:7)
                                     
                                     Text("\(endTime)").foregroundColor(Color(red:0.3,green:0.3,blue:0.3)).padding(.trailing, 2)
                                         .frame(width: proxy.size.width,alignment:.trailing)
-                                    
-                                }.frame(width:proxy.size.width, height:15)
+                                        .offset(y:-20)
+                                }
                             }
                         }
                     }
+                    Spacer()
                     
                     // Transport
-                    if height < 668{
-                        Spacer().frame(height:35)
-                    }else{
-                        Spacer().frame(height:45)
-                    }
                     HStack{
+                        Spacer()
                         ImageButton(
                             image: "backwards",
                             pressedImage: "backwards_down",
                             action: { back() }
                         ).frame(width:35, height:35)
                         
-                        Spacer().frame(width:50, height:0)
+                        Spacer()
                         ImageButton(
                             image: engine.isPlaying ? "pause" : "play",
                             pressedImage: engine.isPlaying ? "pause_down" : "play_down",
                             action: {playtoggle() }
                         ).frame(width:35, height:35)
                         
-                        Spacer().frame(width:50, height:0)
+                        Spacer()
                         ImageButton(
                             image: "forward",
                             pressedImage: "forward_down",
                             action: {forward() }
                         ).frame(width:35, height:35).padding()
+                        Spacer()
                     }
-                    
-                    if height > 668{ // NOT SSE
-                        Spacer().frame(height:40)
-                    }
-                    
+                    Spacer()
+
 #if targetEnvironment(simulator)
                     Slider(
                         value: $engine.micVolume,
@@ -222,10 +219,8 @@ struct PlayView: View {
                         }
                     )
 #else
-                    VolumeView().frame( height:20).padding(.horizontal)
+                    VolumeView()
 #endif
-                    // MIC Slider
-                    Spacer().frame(height:20)
                     HStack{
                         Slider(
                             value: $engine.micVolume,
@@ -234,8 +229,12 @@ struct PlayView: View {
                             }
                         )
                         Image(systemName: "music.mic")
-                    }.frame(width:geo.size.width - 25, height:20)
-                }.frame(maxWidth: .infinity, maxHeight: geo.size.height - 85, alignment:.center).environmentObject(engine).onAppear(){
+                    }
+                    Spacer()
+                }.background(.black)
+                    .frame(maxWidth: .infinity, maxHeight: geo.size.height, alignment:.center)
+                    .environmentObject(engine)
+                    .onAppear(){
                     AVAudioSession.sharedInstance().requestRecordPermission { granted in
                         // The user grants access. Present recording interface.
                         if granted {
@@ -246,7 +245,6 @@ struct PlayView: View {
                         }
                     }
                     engine.updateView()
-                }.onAppear(){
                     engine.updatePlayer()
                 }.onReceive(timer) { input in
                     engine.updatePlayer()
@@ -264,7 +262,6 @@ struct PlayView: View {
                         songImage = engine.musicPlayer.songImage
                         isRadio = engine.musicPlayer.isRadio
                     }
-                
                 }// geometry
             } //if
         } // Body

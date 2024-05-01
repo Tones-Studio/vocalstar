@@ -12,7 +12,6 @@ struct HomeViewSSE: View {
     @StateObject var engine = Engine.shared
     @State var isShowingSetting = false
     @State var controller = AudioController.shared
-    @State var desiredHeight = 0.0
 
     func selectIos(){
         engine.stopPlaying()
@@ -21,19 +20,18 @@ struct HomeViewSSE: View {
     
     var body: some View {
         GeometryReader{ geometry in
-            
                 NavigationStack{
                     TabView {
                         PlayView()
                             .frame(maxWidth:.infinity, maxHeight: .infinity)
                             .tabItem {
-                                Label("Sing",systemImage:"beats.headphones")
+                                Label("Sing",systemImage:"music.mic")
                             }
                         
                         DeviceView().padding()
                             .frame(maxWidth:.infinity, maxHeight: .infinity)
                             .tabItem {
-                                Label("In & Out", systemImage: "music.mic")
+                                Label("In & Out", systemImage: "speaker")
                             }
                         
                         AboutView().padding()
@@ -58,55 +56,9 @@ struct HomeViewSSE: View {
                         ToolbarItem(placement: .principal) {
                             Image("logo_intern").resizable().frame(width:100,height:17)
                         }
-                        
-                        /*
-                        // Right Spotify Button
-                        ToolbarItem(placement: .topBarTrailing) {
-                            if engine.player == .SPOTIFY{
-                                if !appDelegate.appRemote.isConnected{
-                                    Button {
-                                        appDelegate.appRemote.authorizeAndPlayURI("spotify:")
-                                        engine.stopPlaying()
-                                    } label: {
-                                        Image(systemName: "moonphase.full.moon").resizable().frame(width:7,height:7)
-                                        Image("Spotify").resizable().frame(width:27,height:27).cornerRadius(10.0)
-                                    }
-                                }else{
-                                    Link(destination: URL(string: engine.getMediaLinkspotify())!,label:{
-                                        Image(systemName: "moonphase.full.moon").resizable().frame(width:7,height:7)
-                                        Image("Spotify").resizable().frame(width:27,height:27).cornerRadius(10.0)
-                                    }).disabled(!engine.isSpotifyInstalled)
-                                }
-                            }else{
-                                Button {
-                                    if !engine.isSpotifyInstalled {
-                                        showingPopoverSpotify = true
-                                        return
-                                    }
-                                    engine.player = .SPOTIFY
-                                    engine.stopPlaying()
-                                    if !appDelegate.appRemote.isConnected{
-                                        appDelegate.appRemote.authorizeAndPlayURI("spotify:")
-                                    }
-                                    //engine.stopPlaying()
-                                    engine.updatePlayer()
-                                } label: {
-                                    Image("Spotify").resizable().frame(width:30,height:30).cornerRadius(10.0)
-                                }
-                                .alert("Please install Spotify", isPresented: $showingPopoverSpotify) {
-                                    Button("OK", role: .cancel) { }
-                                }
-                            }
-                        }
-                         */
                     }.onAppear(){
-                        if let window = UIApplication.shared.windows.first{
-                                let phoneSafeAreaTopnInset = window.safeAreaInsets.top
-                                desiredHeight = phoneSafeAreaTopnInset
-                                print(desiredHeight)
-                        }
 #if targetEnvironment(simulator)
-                        
+                 print("simulator - not starting audio engine")
 #else
                         controller.preferedSampleRate = 48000
                         controller.preferedFrames = 64
@@ -116,13 +68,14 @@ struct HomeViewSSE: View {
             }//navstack
             .environment(\.colorScheme, .dark)
             .environmentObject(engine)
+            .background(.black)
         }//geometry
     } // Body
 } // Struct
  
 struct HomeViewSSEPreviews: PreviewProvider {
     static var previews: some View {
-        
+        /*
         HomeViewSSE()
             .previewDevice(PreviewDevice(rawValue: "iPhone 13"))
             .previewDisplayName("iPhone 13")
@@ -134,7 +87,7 @@ struct HomeViewSSEPreviews: PreviewProvider {
         HomeViewSSE()
             .previewDevice(PreviewDevice(rawValue: "iPhone 15 Pro Max"))
             .previewDisplayName("iPhone 15 Pro Max")
-        
+        */
         HomeViewSSE()
             .previewDevice(PreviewDevice(rawValue: "iPhone SE 3rd generation"))
             .previewDisplayName("iPhone SE 3rd generation")

@@ -8,7 +8,6 @@
 import Foundation
 import AVFoundation
 import CoreData
-import UIKit
 import SwiftUI
 import MediaPlayer
 import CoreMedia
@@ -52,10 +51,16 @@ class Engine  : ObservableObject{
     }
     @Published var isSeeking = false
     @Published var musicPlayer : MusicPlayer!
-    @Published var micVolume : Double = 0.5{
+    @Published var micVolume : Double = 0.0{
         didSet {
             AudioFx.shared.dsp.setMicLevel(micVolume)
         }
+    }
+    
+    init(){
+        musicPlayer = iosPlayer
+        isPlaying = musicPlayer.isPlaying()
+        musicPlayer.updateUIParams()
     }
     
     func getStartTime() ->String{
@@ -80,11 +85,7 @@ class Engine  : ObservableObject{
         Engine.shared.setTimeline()
     }
     
-    init(){
-        musicPlayer = iosPlayer
-        isPlaying = musicPlayer.isPlaying()
-        musicPlayer.updateUIParams()
-    }
+
     
     func setTimeline(){
         musicPlayer.setTimeline()
