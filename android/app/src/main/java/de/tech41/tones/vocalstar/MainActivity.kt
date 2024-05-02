@@ -9,14 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -24,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -47,7 +45,7 @@ class MainActivity : ComponentActivity() {
                  */
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
+                    print(innerPadding)
                     TabScreen()
 
                     /*
@@ -92,10 +90,8 @@ fun TabScreen() {
                         icon = {
                             when (index) {
                                 0 -> Icon(imageVector = Icons.Default.Home, contentDescription = null)
-                                1 -> Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                                2 -> Icon(
-                                    imageVector = Icons.Default.Settings,
-                                    contentDescription = null
+                                1 -> Icon(imageVector = Icons.Default.Settings, contentDescription = null)
+                                2 -> Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null
                                 )
                             }
                         }
