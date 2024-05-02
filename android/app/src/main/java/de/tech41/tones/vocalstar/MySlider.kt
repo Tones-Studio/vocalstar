@@ -1,11 +1,9 @@
 package de.tech41.tones.vocalstar
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -14,7 +12,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,23 +26,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.math.log10
 
-
-fun LinearToDecibel(linear: Float): Float {
+fun linearToDecibel(linear: Float): Float {
     val db: Float
     if (linear != 0.0f) db = 20.0f * log10(linear)
     else db = -144.0f // effectively minus infinity
     return db
 }
-@Preview
-@Composable
-fun MySlider():Float {
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
-    var isSpeaker by remember { mutableStateOf(true) }
 
-    var inputDevice by remember { mutableStateOf("Headset") }
-    var outputDevice by remember { mutableStateOf("USB") }
+@Composable
+fun MySlider( viewModel : Model) {
 
     Column {
         Icon(
@@ -75,8 +67,8 @@ fun MySlider():Float {
                 }
                 .width(420.dp)
                 .height(100.dp),
-            value = sliderPosition,
-            onValueChange = { sliderPosition = it },
+            value = viewModel.volume,
+            onValueChange = { viewModel.volume = it },
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
@@ -84,8 +76,8 @@ fun MySlider():Float {
             ),
             valueRange = 0f..1f
         )
-        Text(text = "%.2f Db".format(LinearToDecibel(sliderPosition)), color = Color.White, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
-        Text(text = "%.2f   ".format(sliderPosition), color = Color.White, fontFamily = FontFamily.Monospace)
+        Text(text = "%.2f Db".format(linearToDecibel(viewModel.volume)), color = Color.White, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+        Text(text = "%.2f   ".format(viewModel.volume), color = Color.White, fontFamily = FontFamily.Monospace)
 
         Spacer(modifier = Modifier.height(20.dp))
         //Divider(color = Color.Blue, thickness = 1.dp)
@@ -95,19 +87,18 @@ fun MySlider():Float {
             tint = Color.White
         )
         Switch(
-            checked = isSpeaker,
+            checked = viewModel.isSpeaker,
             onCheckedChange = {
-                isSpeaker = it
+                viewModel.isSpeaker = it
             }
         )
         var text = "Speaker off"
-        if (isSpeaker){
+        if (viewModel.isSpeaker){
             text = "Speaker on"
         }
         Text(text = text, color = Color.White)
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Input: $inputDevice", color = Color.White)
-        Text(text = "Output: $outputDevice", color = Color.White)
+        Text(text = "Input: " + viewModel.inputDevice, color = Color.White)
+        Text(text = "Output: " + viewModel.outputDevice, color = Color.White)
     }
-    return sliderPosition
 }

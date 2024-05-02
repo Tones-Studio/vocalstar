@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.rotationMatrix
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel : Model) {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "Vocalstar",  fontSize = 30.sp)
-        MySlider()
+        MySlider(viewModel)
     }
 }

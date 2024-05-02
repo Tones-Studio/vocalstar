@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,12 +28,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var viewModel: Model
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProvider(this).get(Model::class.java)
+
         enableEdgeToEdge()
         setContent {
             VocalstarTheme {
@@ -46,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     print(innerPadding)
-                    TabScreen()
+                    TabScreen(viewModel)
 
                     /*
                     Greeting(
@@ -69,7 +76,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TabScreen() {
+fun TabScreen(viewModel : Model) {
     var tabIndex by remember { mutableIntStateOf(0) }
 
     val tabs = listOf("Sing", "In-Out", "About")
@@ -77,7 +84,7 @@ fun TabScreen() {
     Box(Modifier.safeDrawingPadding()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             when (tabIndex) {
-                0 -> HomeScreen()
+                0 -> HomeScreen(viewModel)
                 1 -> DeviceScreen()
                 2 -> AboutScreen()
             }
