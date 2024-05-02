@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-   external fun stringFromJNI(): String
+    external fun stringFromJNI(): String
 
     companion object {
         init {

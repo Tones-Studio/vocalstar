@@ -68,7 +68,7 @@ fun MySlider( viewModel : Model) {
                 .width(420.dp)
                 .height(100.dp),
             value = viewModel.volume,
-            onValueChange = { viewModel.volume = it },
+            onValueChange = { viewModel.updateVolume(it) },
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
@@ -89,7 +89,7 @@ fun MySlider( viewModel : Model) {
         Switch(
             checked = viewModel.isSpeaker,
             onCheckedChange = {
-                viewModel.isSpeaker = it
+                viewModel.updateIsSpeaker(it)
             }
         )
         var text = "Speaker off"
