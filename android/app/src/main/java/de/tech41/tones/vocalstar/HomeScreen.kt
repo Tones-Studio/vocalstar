@@ -13,7 +13,7 @@ import androidx.core.graphics.rotationMatrix
 @Composable
 fun HomeScreen() {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Home",  fontSize = 30.sp)
+        Text(text = "Vocalstar",  fontSize = 30.sp)
         MySlider()
     }
 }
