@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "LatencyTuningCallback.h"
+#include "include/LatencyTuningCallback.h"
 
 oboe::DataCallbackResult LatencyTuningCallback::onAudioReady(
      oboe::AudioStream *oboeStream, void *audioData, int32_t numFrames) {

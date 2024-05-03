@@ -1,12 +1,11 @@
 #include <jni.h>
 #include <string>
 #include <oboe/Oboe.h>
-#include "HelloOboeEngine.h"
+#include "include/HelloOboeEngine.h"
 
 extern "C" {
 
-//static HelloOboeEngine sEngine;
-
+   // static HelloOboeEngine sEngine;
 
     JNIEXPORT jstring JNICALL
     Java_de_tech41_tones_vocalstar_MainActivity_stringFromJNI(
@@ -31,11 +30,9 @@ extern "C" {
         puts("update is Speaker");
     }
 
-
     JNIEXPORT jstring JNICALL
     Java_de_tech41_tones_vocalstar_AboutScreenKt_getVersions(JNIEnv *env, jclass clazz) {
         oboe::Version version = oboe::Version();
         return env->NewStringUTF(version.Text);
     }
-
 }

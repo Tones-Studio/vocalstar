@@ -21,8 +21,8 @@
 #include <oboe/Oboe.h>
 #include <oboe/LatencyTuner.h>
 
-#include "shared/TappableAudioSource.h""
-#include "shared/DefaultDataCallback.h""
+#include "TappableAudioSource.h"
+#include "DefaultDataCallback.h"
 
 
 /**

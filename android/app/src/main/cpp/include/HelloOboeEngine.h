@@ -18,8 +18,8 @@
 #define OBOE_HELLO_OBOE_ENGINE_H
 #include <oboe/Oboe.h>
 #include "LatencyTuningCallback.h"
-#include "shared/IRestartable.h"
-#include "shared/DefaultErrorCallback.h"
+#include "IRestartable.h"
+#include "DefaultErrorCallback.h"
 #include <android/log.h>
 
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "vocalstar", __VA_ARGS__)

@@ -1,5 +1,13 @@
-cmake_minimum_required(VERSION 3.22.2) #replace 3.x.x with your CMake Version
+cmake_minimum_required(VERSION 3.22.2)
 project("vocalstar")
+
+include_directories(include)
+
+set (APP_SOURCES
+    native-lib.cpp
+    HelloOboeEngine.cpp
+    LatencyTuningCallback.cpp
+)
 
 add_library(vocalstar SHARED native-lib.cpp)
 find_library(log-lib log)

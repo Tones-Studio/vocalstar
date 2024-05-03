@@ -20,7 +20,7 @@
 
 #include <Oscillator.h>
 
-#include "HelloOboeEngine.h"
+#include "include/HelloOboeEngine.h"
 #include "SoundGenerator.h"
 
 
