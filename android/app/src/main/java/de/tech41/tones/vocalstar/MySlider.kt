@@ -65,7 +65,7 @@ fun MySlider( viewModel : Model) {
                         placeable.place(-placeable.width, 0)
                     }
                 }
-                .width(420.dp)
+                .width(320.dp)
                 .height(100.dp),
             value = viewModel.volume,
             onValueChange = { viewModel.putVol(it) },
