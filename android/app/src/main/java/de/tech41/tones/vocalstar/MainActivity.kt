@@ -1,10 +1,14 @@
 package de.tech41.tones.vocalstar
 
+import android.content.Context
+import android.media.AudioManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +18,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -26,18 +29,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
-
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel: Model
-
+    lateinit var audioManager: AudioManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        var currentAudioMode = audioManager.ringerMode;
+        print(currentAudioMode)
         viewModel = ViewModelProvider(this).get(Model::class.java)
 
         enableEdgeToEdge()
@@ -75,11 +85,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TabScreen(viewModel : Model) {
     var tabIndex by remember { mutableIntStateOf(0) }
-
     val tabs = listOf("Sing", "In-Out", "About")
-
     Box(Modifier.safeDrawingPadding()) {
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.logo_intern),
+                contentScale = ContentScale.Fit,
+                contentDescription = "Vocalstar",
+            )
             when (tabIndex) {
                 0 -> HomeScreen(viewModel)
                 1 -> DeviceScreen()

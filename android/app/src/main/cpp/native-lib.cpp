@@ -43,6 +43,7 @@ Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_isAAudioSupported(JNIEnv *env
 extern "C"
 JNIEXPORT jint JNICALL
 Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getSampleRate(JNIEnv *env, jclass clazz) {
+
     return 48000;
 }
 extern "C"

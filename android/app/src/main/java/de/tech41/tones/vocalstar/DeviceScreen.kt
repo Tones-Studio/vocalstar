@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
@@ -87,14 +88,14 @@ fun MySpinner(
 fun DeviceScreen() {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "In & Out",  fontSize = 30.sp)
-
+        Spacer(modifier = Modifier.height(20.dp))
         Text(text = "Oboe Version: " + getVersions(),  fontSize = 17.sp)
         Text(text = "AAudio Support: " + isAAudioSupported(),  fontSize = 17.sp)
         Text(text = "Sample Rate: " + getSampleRate(),  fontSize = 17.sp)
         Text(text = "Block Size : " + getBlockSize(),  fontSize = 17.sp)
         Text(text = "Latency : " + getLatency() + " ms",  fontSize = 17.sp)
         Text(text = "Channels : " + getChannels() + " ms",  fontSize = 17.sp)
-
+        Spacer(modifier = Modifier.height(20.dp))
         val entry0 = Pair("0", "MIC")
         val entry1 = Pair("1", "Headphone")
         val entry2 = Pair("2", "USB")
