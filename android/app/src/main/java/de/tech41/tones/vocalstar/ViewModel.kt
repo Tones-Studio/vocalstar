@@ -18,22 +18,18 @@ class Model: ViewModel() {
     var inputDevice by mutableStateOf("Headphone")
     var outputDevice by mutableStateOf("USB")
 
-    fun updateVolume(vol:Float){
+    fun putVol(vol:Float){
         volume = vol
-        c_updateVolume(vol)
+        updateVolume(vol)
     }
 
-    fun updateMute(b:Boolean){
+    fun putMute(b:Boolean){
         isMuted = b
-        c_updateMute(b)
+       updateMute(b)
     }
 
-    fun updateIsSpeaker(b:Boolean){
+    fun putIsSpeaker(b:Boolean){
         isSpeaker = b
-        c_updateSpeaker(b)
+        updateSpeaker(b)
     }
-
-    external fun c_updateVolume(vol:Float)
-    external fun c_updateMute(b:Boolean)
-    external fun c_updateSpeaker(b:Boolean)
 }

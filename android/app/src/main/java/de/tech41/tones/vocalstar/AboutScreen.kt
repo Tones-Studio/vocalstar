@@ -16,8 +16,6 @@ fun AboutScreen() {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "About",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Version: " + getVersions(),  fontSize = 17.sp)
     }
 }
 
-external fun getVersions(): String

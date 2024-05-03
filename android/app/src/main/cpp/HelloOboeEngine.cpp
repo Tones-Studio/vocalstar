@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-
 #include <inttypes.h>
 #include <memory>
-
-#include <Oscillator.h>
-
-#include "include/HelloOboeEngine.h"
+#include "include/Oscillator.h"
+#include "HelloOboeEngine.h"
 #include "SoundGenerator.h"
-
+#include "include/DefaultErrorCallback.h"
 
 /**
  * Main audio engine for the HelloOboe sample. It is responsible for:
@@ -36,7 +33,7 @@
  */
 HelloOboeEngine::HelloOboeEngine()
         : mLatencyCallback(std::make_shared<LatencyTuningCallback>()),
-        mErrorCallback(std::make_shared<DefaultErrorCallback>(*this)) {
+          mErrorCallback(std::make_shared<DefaultErrorCallback>(*this)) {
 }
 
 double HelloOboeEngine::getCurrentOutputLatencyMillis() {
@@ -54,6 +51,7 @@ double HelloOboeEngine::getCurrentOutputLatencyMillis() {
     }
 }
 
+/*
 void HelloOboeEngine::setBufferSizeInBursts(int32_t numBursts) {
     std::lock_guard<std::mutex> lock(mLock);
     if (!mStream) return;
@@ -64,14 +62,15 @@ void HelloOboeEngine::setBufferSizeInBursts(int32_t numBursts) {
     if (result) {
         LOGD("Buffer size successfully changed to %d", result.value());
     } else {
-        LOGW("Buffer size could not be changed, %d", result.error());
+        LOGD("Buffer size could not be changed, %d", result.error());
     }
 }
-
+*/
 bool HelloOboeEngine::isLatencyDetectionSupported() {
     return mIsLatencyDetectionSupported;
 }
 
+/*
 bool HelloOboeEngine::isAAudioRecommended() {
     return oboe::AudioStreamBuilder::isAAudioRecommended();
 }
@@ -85,15 +84,15 @@ void HelloOboeEngine::tap(bool isDown) {
 oboe::Result HelloOboeEngine::openPlaybackStream() {
     oboe::AudioStreamBuilder builder;
     oboe::Result result = builder.setSharingMode(oboe::SharingMode::Exclusive)
-        ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
-        ->setFormat(oboe::AudioFormat::Float)
-        ->setFormatConversionAllowed(true)
-        ->setDataCallback(mLatencyCallback)
-        ->setErrorCallback(mErrorCallback)
-        ->setAudioApi(mAudioApi)
-        ->setChannelCount(mChannelCount)
-        ->setDeviceId(mDeviceId)
-        ->openStream(mStream);
+            ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
+            ->setFormat(oboe::AudioFormat::Float)
+            ->setFormatConversionAllowed(true)
+            ->setDataCallback(mLatencyCallback)
+            ->setErrorCallback(mErrorCallback)
+            ->setAudioApi(mAudioApi)
+            ->setChannelCount(mChannelCount)
+            ->setDeviceId(mDeviceId)
+            ->openStream(mStream);
     if (result == oboe::Result::OK) {
         mChannelCount = mStream->getChannelCount();
     }
@@ -173,3 +172,4 @@ oboe::Result HelloOboeEngine::reopenStream() {
         return oboe::Result::OK;
     }
 }
+ */

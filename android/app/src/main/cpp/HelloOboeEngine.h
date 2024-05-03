@@ -16,15 +16,13 @@
 
 #ifndef OBOE_HELLO_OBOE_ENGINE_H
 #define OBOE_HELLO_OBOE_ENGINE_H
-#include <oboe/Oboe.h>
-#include "LatencyTuningCallback.h"
-#include "IRestartable.h"
-#include "DefaultErrorCallback.h"
-#include <android/log.h>
 
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "vocalstar", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "vocalstar", __VA_ARGS__)
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "vocalstar", __VA_ARGS__)
+#include <oboe/Oboe.h>
+
+#include "SoundGenerator.h"
+#include "LatencyTuningCallback.h"
+#include "include/IRestartable.h"
+#include "include/DefaultErrorCallback.h"
 
 constexpr int32_t kBufferSizeAutomatic = 0;
 
@@ -35,7 +33,7 @@ public:
 
     virtual ~HelloOboeEngine() = default;
 
-    void tap(bool isDown);
+   // void tap(bool isDown);
 
     /**
      * Open and start a stream.
@@ -43,19 +41,19 @@ public:
      * using Java/JNI.
      * @return error or OK
      */
-    oboe::Result start(oboe::AudioApi audioApi, int deviceId, int channelCount);
+   // oboe::Result start(oboe::AudioApi audioApi, int deviceId, int channelCount);
     /* Start using current settings. */
-    oboe::Result start();
+   // oboe::Result start();
 
     /**
      * Stop and close the stream.
      */
-    oboe::Result stop();
+   //oboe::Result stop();
 
     // From IRestartable
-    void restart() override;
+   // void restart() override;
 
-    void setBufferSizeInBursts(int32_t numBursts);
+   // void setBufferSizeInBursts(int32_t numBursts);
 
     /**
      * Calculate the current latency between writing a frame to the output stream and
@@ -76,7 +74,7 @@ public:
 
     bool isLatencyDetectionSupported();
 
-    bool isAAudioRecommended();
+   // bool isAAudioRecommended();
 
 private:
     oboe::Result reopenStream();
@@ -85,7 +83,8 @@ private:
     std::shared_ptr<oboe::AudioStream> mStream;
     std::shared_ptr<LatencyTuningCallback> mLatencyCallback;
     std::shared_ptr<DefaultErrorCallback> mErrorCallback;
-    bool mIsLatencyDetectionSupported = false;
+    std::shared_ptr<SoundGenerator> mAudioSource;
+    bool mIsLatencyDetectionSupported = true;
 
     int32_t        mDeviceId = oboe::Unspecified;
     int32_t        mChannelCount = oboe::Unspecified;

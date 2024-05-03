@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "include/LatencyTuningCallback.h"
+#include "LatencyTuningCallback.h"
 
 oboe::DataCallbackResult LatencyTuningCallback::onAudioReady(
      oboe::AudioStream *oboeStream, void *audioData, int32_t numFrames) {
@@ -35,10 +35,10 @@ oboe::DataCallbackResult LatencyTuningCallback::onAudioReady(
     *
     * See https://developer.android.com/studio/profile/systrace-commandline.html
     */
-    if (Trace::isEnabled()) Trace::beginSection("numFrames %d, Underruns %d, buffer size %d",
-        numFrames, underrunCountResult.value(), bufferSize);
+    //if (Trace::isEnabled()) Trace::beginSection("numFrames %d, Underruns %d, buffer size %d",
+      // numFrames, underrunCountResult.value(), bufferSize);
     auto result = DefaultDataCallback::onAudioReady(oboeStream, audioData, numFrames);
-    if (Trace::isEnabled()) Trace::endSection();
+    //if (Trace::isEnabled()) Trace::endSection();
     return result;
 }
 
