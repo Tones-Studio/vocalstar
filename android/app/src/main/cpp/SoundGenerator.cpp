@@ -29,7 +29,7 @@ SoundGenerator::SoundGenerator(int32_t sampleRate, int32_t channelCount) :
         mOscillators[i].setFrequency(frequency);
         mOscillators[i].setSampleRate(mSampleRate);
         mOscillators[i].setAmplitude(amplitude);
-        frequency += interval;
+       // frequency += interval;
     }
 }
 
@@ -39,7 +39,7 @@ void SoundGenerator::renderAudio(float *audioData, int32_t numFrames) {
     for (int i = 0; i < mChannelCount; ++i) {
         mOscillators[i].renderAudio(mBuffer.get(), numFrames);
         for (int j = 0; j < numFrames; ++j) {
-            audioData[(j * mChannelCount) + i] = mBuffer[j];
+           audioData[(j * mChannelCount) + i] = mBuffer[j] * 0.1;
         }
     }
 }

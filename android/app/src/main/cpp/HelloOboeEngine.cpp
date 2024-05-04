@@ -88,6 +88,7 @@ oboe::Result HelloOboeEngine::openPlaybackStream() {
             ->setAudioApi(mAudioApi)
             ->setChannelCount(mChannelCount)
             ->setDeviceId(mDeviceId)
+            ->setDirection(oboe::Direction::Output)
             ->openStream(mStream);
     if (result == oboe::Result::OK) {
         mChannelCount = mStream->getChannelCount();
@@ -126,12 +127,11 @@ oboe::Result HelloOboeEngine::start() {
                                                             mStream->getChannelCount());
             mLatencyCallback->setSource(
                     std::dynamic_pointer_cast<IRenderableAudio>(mAudioSource));
-            /*
+
             LOGD("Stream opened: AudioAPI = %d, channelCount = %d, deviceID = %d",
                  mStream->getAudioApi(),
                  mStream->getChannelCount(),
                  mStream->getDeviceId());
-            */
 
             result = mStream->requestStart();
             if (result != oboe::Result::OK) {

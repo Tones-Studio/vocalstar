@@ -14,3 +14,4 @@ external fun getChannels(): Int
 external fun updateVolume(vol:Float)
 external fun updateMute(b:Boolean)
 external fun updateSpeaker(b:Boolean)
+external fun tap(b:Boolean)

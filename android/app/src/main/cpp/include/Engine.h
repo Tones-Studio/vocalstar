@@ -11,12 +11,17 @@
 class Engine {
 
 public:
+    Engine(){
+        isRunning = false;
+    }
     int start();
+    void stop();
     double getLatency();
+    void tap(bool isDown);
 
 private:
    HelloOboeEngine helloEngine;
-   bool isRunning = false;
+   bool isRunning;
 };
 
 

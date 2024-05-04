@@ -58,7 +58,6 @@ Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_isAAudioSupported(JNIEnv *env
 
 JNIEXPORT jint JNICALL
 Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getSampleRate(JNIEnv *env, jclass clazz) {
-
     return 48000;
 }
 
@@ -67,19 +66,25 @@ Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getBlockSize(JNIEnv *env, jcl
     return 64;
 }
 
-JNIEXPORT jdouble JNICALL
-Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getLatency(JNIEnv *env, jclass clazz) {
-   engine.getLatency();
-}
-
-
 JNIEXPORT jint JNICALL
 Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getChannels(JNIEnv *env, jclass clazz) {
     return 2;
 }
 
 JNIEXPORT jint JNICALL
-Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_startEngine(JNIEnv *env, jclass clazz) {
-    engine.start();
+Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_startEngine(JNIEnv *env, jclass clazz,
+                                                               jint audio_api, jint device_id,
+                                                               jint channel_count) {
+    return engine.start();
 }
+}
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getLatency(JNIEnv *env, jclass clazz) {
+    return engine.getLatency();
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_tap(JNIEnv *env, jclass clazz, jboolean b) {
+    engine.tap(b);
 }

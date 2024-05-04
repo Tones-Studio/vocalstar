@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
+import androidx.media3.common.util.Log
 @Composable
 fun ButtonStart(onClick: () -> Unit) {
     Button(onClick = { onClick() }) {
@@ -23,20 +23,34 @@ fun ButtonStop(onClick: () -> Unit) {
         Text("Stop")
     }
 }
+
+@Composable
+fun ButtonTap(onClick: () -> Unit) {
+    Button(onClick = { onClick() }) {
+        Text("Tap")
+    }
+}
 @Composable
 fun HomeScreen(viewModel : Model) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row() {
             ButtonStart(onClick = {
-                print("Start")
 
                 var res = startEngine(0,0, 2)
-                print(res)
+                if(res == 0){
+                    viewModel.isRunning = true
+
+                    Log.d("de.tech41.tones.vocalstar.HomeScreen", "Audio Engine Started")
+                }
             })
             ButtonStop(onClick = {
                 stopEngine()
             })
         }
+        ButtonTap(onClick = {
+            viewModel.isTapDown =! viewModel.isTapDown
+           tap(viewModel.isTapDown)
+        })
         MySlider(viewModel)
     }
 }
