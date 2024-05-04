@@ -1,20 +1,22 @@
 cmake_minimum_required(VERSION 3.22.2)
 project("vocalstar")
 
-set (OBOE_DIR  ./oboe)
+set (OBOE_DIR ./oboe)
 add_subdirectory (${OBOE_DIR} ./oboe)
 include_directories (${OBOE_DIR}/include)
+include_directories(${OBOE_DIR}/include ${OBOE_DIR}/samples/shared)
+include_directories (include)
 
 set (APP_SOURCES
-        native-lib.cpp
         HelloOboeEngine.cpp
         LatencyTuningCallback.cpp
         SoundGenerator.cpp
+        native-lib.cpp
+        Engine.cpp
 )
 
-add_library(vocalstar SHARED native-lib.cpp)
+add_library(vocalstar SHARED  ${APP_SOURCES})
 find_library(log-lib log)
-#find_package (oboe REQUIRED CONFIG)
 target_link_libraries(vocalstar ${log-lib} oboe)
 
 

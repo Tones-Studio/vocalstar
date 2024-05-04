@@ -1,4 +1,13 @@
 package de.tech41.tones.vocalstar
+
+/*
+external fun startEngine(audioApi: Int, deviceId: Int, channelCount: Int): Int
+
+external fun stopEngine(): Int
+*/
+
+external fun startEngine(): Int
+
 external fun stringFromJNI(): String
 external fun getVersions(): String
 external fun isAAudioSupported(): Boolean

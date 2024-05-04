@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "SoundGenerator.h"
+#include "include/SoundGenerator.h"
 
 SoundGenerator::SoundGenerator(int32_t sampleRate, int32_t channelCount) :
         TappableAudioSource(sampleRate, channelCount)

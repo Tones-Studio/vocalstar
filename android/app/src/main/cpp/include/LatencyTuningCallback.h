@@ -18,11 +18,11 @@
 #ifndef SAMPLES_LATENCY_TUNING_CALLBACK_H
 #define SAMPLES_LATENCY_TUNING_CALLBACK_H
 
-#include <oboe/Oboe.h>
-#include <oboe/LatencyTuner.h>
+#include "oboe/Oboe.h"
+#include "oboe/LatencyTuner.h"
 
-#include "include/TappableAudioSource.h"
-#include "include/DefaultDataCallback.h"
+#include "TappableAudioSource.h"
+#include "DefaultDataCallback.h"
 
 
 /**

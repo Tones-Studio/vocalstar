@@ -17,8 +17,8 @@
 #include <inttypes.h>
 #include <memory>
 #include "include/Oscillator.h"
-#include "HelloOboeEngine.h"
-#include "SoundGenerator.h"
+#include "include/HelloOboeEngine.h"
+#include "include/SoundGenerator.h"
 #include "include/DefaultErrorCallback.h"
 
 /**
@@ -31,9 +31,7 @@
  * - Calculating the audio latency of the stream
  *
  */
-HelloOboeEngine::HelloOboeEngine()
-        : mLatencyCallback(std::make_shared<LatencyTuningCallback>()),
-          mErrorCallback(std::make_shared<DefaultErrorCallback>(*this)) {
+HelloOboeEngine::HelloOboeEngine() : mLatencyCallback(std::make_shared<LatencyTuningCallback>()), mErrorCallback(std::make_shared<DefaultErrorCallback>(*this)) {
 }
 
 double HelloOboeEngine::getCurrentOutputLatencyMillis() {
@@ -51,7 +49,6 @@ double HelloOboeEngine::getCurrentOutputLatencyMillis() {
     }
 }
 
-/*
 void HelloOboeEngine::setBufferSizeInBursts(int32_t numBursts) {
     std::lock_guard<std::mutex> lock(mLock);
     if (!mStream) return;
@@ -62,15 +59,14 @@ void HelloOboeEngine::setBufferSizeInBursts(int32_t numBursts) {
     if (result) {
         LOGD("Buffer size successfully changed to %d", result.value());
     } else {
-        LOGD("Buffer size could not be changed, %d", result.error());
+        LOGD("Buffer size could not be changed");
     }
 }
-*/
+
 bool HelloOboeEngine::isLatencyDetectionSupported() {
     return mIsLatencyDetectionSupported;
 }
 
-/*
 bool HelloOboeEngine::isAAudioRecommended() {
     return oboe::AudioStreamBuilder::isAAudioRecommended();
 }
@@ -130,11 +126,12 @@ oboe::Result HelloOboeEngine::start() {
                                                             mStream->getChannelCount());
             mLatencyCallback->setSource(
                     std::dynamic_pointer_cast<IRenderableAudio>(mAudioSource));
-
+            /*
             LOGD("Stream opened: AudioAPI = %d, channelCount = %d, deviceID = %d",
                  mStream->getAudioApi(),
                  mStream->getChannelCount(),
                  mStream->getDeviceId());
+            */
 
             result = mStream->requestStart();
             if (result != oboe::Result::OK) {
@@ -172,4 +169,3 @@ oboe::Result HelloOboeEngine::reopenStream() {
         return oboe::Result::OK;
     }
 }
- */

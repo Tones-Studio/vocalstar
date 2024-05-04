@@ -17,8 +17,8 @@
 #ifndef SAMPLES_SOUNDGENERATOR_H
 #define SAMPLES_SOUNDGENERATOR_H
 
-#include "include/Oscillator.h"
-#include "include/TappableAudioSource.h"
+#include "Oscillator.h"
+#include "TappableAudioSource.h"
 
 /**
  * Generates a fixed frequency tone for each channel.
