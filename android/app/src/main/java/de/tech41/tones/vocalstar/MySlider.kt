@@ -11,10 +11,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
@@ -22,11 +18,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.math.log10
 
 fun linearToDecibel(linear: Float): Float {
@@ -76,7 +69,7 @@ fun MySlider( viewModel : Model) {
             ),
             valueRange = 0f..1f
         )
-        Text(text = "%.2f Db".format(linearToDecibel(viewModel.volume)), color = Color.White, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+        Text(text = "%.2f Db".format(linearToDecibel(viewModel.volume)))
         Text(text = "%.2f   ".format(viewModel.volume), color = Color.White, fontFamily = FontFamily.Monospace)
 
         Spacer(modifier = Modifier.height(20.dp))

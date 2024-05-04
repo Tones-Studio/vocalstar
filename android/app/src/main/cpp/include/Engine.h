@@ -14,7 +14,7 @@ public:
     int start();
 
 private:
-    static HelloOboeEngine helloEngine;
+   HelloOboeEngine helloEngine;
 };
 
 

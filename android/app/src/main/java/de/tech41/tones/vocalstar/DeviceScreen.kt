@@ -1,6 +1,5 @@
 package de.tech41.tones.vocalstar
 
-import android.widget.Spinner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -87,14 +85,14 @@ fun MySpinner(
 @Composable
 fun DeviceScreen() {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "In & Out",  fontSize = 30.sp)
+        androidx.compose.material3.Text("In & Out",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Oboe Version: " + getVersions(),  fontSize = 17.sp)
-        Text(text = "AAudio Support: " + isAAudioSupported(),  fontSize = 17.sp)
-        Text(text = "Sample Rate: " + getSampleRate(),  fontSize = 17.sp)
-        Text(text = "Block Size : " + getBlockSize(),  fontSize = 17.sp)
-        Text(text = "Latency : " + getLatency() + " ms",  fontSize = 17.sp)
-        Text(text = "Channels : " + getChannels() + " ms",  fontSize = 17.sp)
+        androidx.compose.material3.Text("Oboe Version: " + getVersions(), Modifier.height(20.dp),  fontSize = 17.sp)
+        androidx.compose.material3.Text("AAudio Support: " + isAAudioSupported(),  fontSize = 17.sp)
+        androidx.compose.material3.Text("Sample Rate: " + getSampleRate(),  fontSize = 17.sp)
+        androidx.compose.material3.Text("Block Size : " + getBlockSize(),  fontSize = 17.sp)
+        androidx.compose.material3.Text("Latency : " + getLatency() + " ms",  fontSize = 17.sp)
+        androidx.compose.material3.Text( "Channels : " + getChannels() + " ms",  fontSize = 17.sp)
         Spacer(modifier = Modifier.height(20.dp))
         val entry0 = Pair("0", "MIC")
         val entry1 = Pair("1", "Headphone")
