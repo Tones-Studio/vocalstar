@@ -1,5 +1,6 @@
 package de.tech41.tones.vocalstar
 
+import android.media.AudioDeviceInfo
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +23,9 @@ class Model: ViewModel() {
     var framesPerBurst = 0
 
     var isRunning = false
+
+    var devices = arrayOfNulls<AudioDeviceInfo>(0) as Array<AudioDeviceInfo>
+
 
     fun putVol(vol:Float){
         volume = vol

@@ -1,6 +1,7 @@
 package de.tech41.tones.vocalstar
 
 import android.content.Context
+import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -40,15 +41,34 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
+import androidx.media3.common.util.Log
+import androidx.privacysandbox.tools.core.model.Types
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import android.Manifest
+import androidx.core.app.ActivityCompat
+import android.widget.Toast
 class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
+    private var AUDIO_RECORD_REQUEST_CODE = 300
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(Model::class.java)
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+            Log.d("permission", "have permission to record audio")
+        }else{
+            Toast.makeText(this, "Please allow Mic access", Toast.LENGTH_SHORT).show()
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.RECORD_AUDIO), AUDIO_RECORD_REQUEST_CODE)
+            Log.d("permission", "Don't have permission to record audio")
+        }
+
 
         // Query the AudioManager
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -60,6 +80,30 @@ class MainActivity : ComponentActivity() {
         print( viewModel.framesPerBurst)
         var currentAudioMode = audioManager.ringerMode;
         print(currentAudioMode)
+
+        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        viewModel.devices = devices
+        for (device in devices) {
+
+            Log.d("Product Name", device.productName.toString());
+            Log.d("Is Sink", device.isSink().toString())
+            Log.d("Is Source ", device.isSource().toString())
+            Log.d("Type",device.type.toString())
+            when(device.getType() ){
+                AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> Log.d("device", "Speaker")
+                AudioDeviceInfo.TYPE_USB_DEVICE -> Log.d("device","USB")
+                AudioDeviceInfo.TYPE_BLE_HEADSET-> Log.d("device","Headset")
+                AudioDeviceInfo.TYPE_BUILTIN_EARPIECE-> Log.d("device","Earpiece")
+                AudioDeviceInfo.TYPE_BUILTIN_MIC-> Log.d("device","Built in Mic")
+                AudioDeviceInfo.TYPE_WIRED_HEADPHONES-> Log.d("device","Wired headphones")
+                AudioDeviceInfo.TYPE_WIRED_HEADSET-> Log.d("device","Wired headphone")
+                AudioDeviceInfo.TYPE_TELEPHONY-> Log.d("device","Telephony")
+
+                else -> { // Note the block
+                    Log.d("device","not known Type " + device.getType().toString())
+                }
+            }
+        }
 
         enableEdgeToEdge()
         setContent {
@@ -84,13 +128,13 @@ fun TabScreen(viewModel : Model) {
     Box(
         Modifier
             .safeDrawingPadding()
-            .background( MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.background)
             .clip(shape = RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))) {
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally ) {
             Box ( contentAlignment = Alignment.Center,  modifier = Modifier
                 .height(40.dp)
                 .fillMaxWidth()
-                .background(color =  Color.Black))
+                .background(color = Color.Black))
                 {
                 Image(
                     painter = painterResource(id = R.drawable.logo_intern),
