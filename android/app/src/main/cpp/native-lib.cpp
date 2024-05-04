@@ -67,9 +67,9 @@ Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getBlockSize(JNIEnv *env, jcl
     return 64;
 }
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jdouble JNICALL
 Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getLatency(JNIEnv *env, jclass clazz) {
-    return 12;
+   engine.getLatency();
 }
 
 

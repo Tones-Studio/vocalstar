@@ -12,9 +12,11 @@ class Engine {
 
 public:
     int start();
+    double getLatency();
 
 private:
    HelloOboeEngine helloEngine;
+   bool isRunning = false;
 };
 
 

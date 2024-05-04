@@ -48,32 +48,24 @@ class MainActivity : ComponentActivity() {
     lateinit var audioManager: AudioManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(Model::class.java)
+
+        // Query the AudioManager
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val sampleRateStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
+        viewModel.sampleRate = sampleRateStr.toInt()
+        print(viewModel.sampleRate)
+        val framesPerBurstStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
+        viewModel.framesPerBurst = framesPerBurstStr.toInt()
+        print( viewModel.framesPerBurst)
         var currentAudioMode = audioManager.ringerMode;
         print(currentAudioMode)
-        viewModel = ViewModelProvider(this).get(Model::class.java)
 
         enableEdgeToEdge()
         setContent {
             VocalstarTheme {
-                /*
-                https://medium.com/@alessandro.lombardi.089/android-adding-native-code-to-an-empty-compose-activity-project-f6f23bffd6e3
-                Surface(color = MaterialTheme.colors.background) {
-                    MessageFromNativeLibrary(stringFromJNI())
-                }
-
-                 */
-
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    print(innerPadding)
                     TabScreen(viewModel)
-
-                    /*
-                    Greeting(
-                        name = "Android " + stringFromJNI(),
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                     */
                 }
             }
         }
@@ -111,8 +103,8 @@ fun TabScreen(viewModel : Model) {
             Spacer(modifier = Modifier.weight(0.5f))
             when (tabIndex) {
                 0 -> HomeScreen(viewModel)
-                1 -> DeviceScreen()
-                2 -> AboutScreen()
+                1 -> DeviceScreen(viewModel)
+                2 -> AboutScreen(viewModel)
             }
             Spacer(modifier = Modifier.weight(1f))
             TabRow(selectedTabIndex = tabIndex) {

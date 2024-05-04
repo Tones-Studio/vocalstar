@@ -83,16 +83,19 @@ fun MySpinner(
 }
 
 @Composable
-fun DeviceScreen() {
+fun DeviceScreen(viewModel : Model) {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         androidx.compose.material3.Text("In & Out",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(20.dp))
         androidx.compose.material3.Text("Oboe Version: " + getVersions(), Modifier.height(20.dp),  fontSize = 17.sp)
         androidx.compose.material3.Text("AAudio Support: " + isAAudioSupported(),  fontSize = 17.sp)
-        androidx.compose.material3.Text("Sample Rate: " + getSampleRate(),  fontSize = 17.sp)
-        androidx.compose.material3.Text("Block Size : " + getBlockSize(),  fontSize = 17.sp)
-        androidx.compose.material3.Text("Latency : " + getLatency() + " ms",  fontSize = 17.sp)
-        androidx.compose.material3.Text( "Channels : " + getChannels() + " ms",  fontSize = 17.sp)
+
+        if (viewModel.isRunning){
+        androidx.compose.material3.Text("Sample Rate: " + getSampleRate(), fontSize = 17.sp)
+        androidx.compose.material3.Text("Block Size : " + getBlockSize(), fontSize = 17.sp)
+        androidx.compose.material3.Text("Latency : " + getLatency() + " ms", fontSize = 17.sp)
+        androidx.compose.material3.Text("Channels : " + getChannels() + " ms", fontSize = 17.sp)
+        }
         Spacer(modifier = Modifier.height(20.dp))
         val entry0 = Pair("0", "MIC")
         val entry1 = Pair("1", "Headphone")

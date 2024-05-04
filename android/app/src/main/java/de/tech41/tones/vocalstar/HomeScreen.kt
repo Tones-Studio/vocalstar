@@ -1,15 +1,16 @@
 package de.tech41.tones.vocalstar
 
+import android.content.Context
+import android.media.AudioManager
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
 @Composable
 fun ButtonStart(onClick: () -> Unit) {
     Button(onClick = { onClick() }) {
@@ -28,9 +29,12 @@ fun HomeScreen(viewModel : Model) {
         Row() {
             ButtonStart(onClick = {
                 print("Start")
+
+                var res = startEngine(0,0, 2)
+                print(res)
             })
             ButtonStop(onClick = {
-                print("Stop")
+                stopEngine()
             })
         }
         MySlider(viewModel)

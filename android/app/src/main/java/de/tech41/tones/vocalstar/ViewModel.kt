@@ -18,6 +18,11 @@ class Model: ViewModel() {
     var inputDevice by mutableStateOf("Headphone")
     var outputDevice by mutableStateOf("USB")
 
+    var sampleRate : Int = 48000
+    var framesPerBurst = 0
+
+    var isRunning = false
+
     fun putVol(vol:Float){
         volume = vol
         updateVolume(vol)

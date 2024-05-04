@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(viewModel : Model) {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "About",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(20.dp))

@@ -11,3 +11,11 @@ int Engine::start(){
     helloEngine.start();
     return 0;
 }
+
+double Engine::getLatency() {
+    if (isRunning) {
+        return helloEngine.getCurrentOutputLatencyMillis();
+    }else{
+        return -1;
+    }
+}
