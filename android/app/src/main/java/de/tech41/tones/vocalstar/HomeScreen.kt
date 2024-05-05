@@ -1,7 +1,5 @@
 package de.tech41.tones.vocalstar
 
-import android.content.Context
-import android.media.AudioManager
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +31,7 @@ fun ButtonTap(onClick: () -> Unit) {
 @Composable
 fun HomeScreen(viewModel : Model) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row() {
+        Row {
             ButtonStart(onClick = {
 
                 var res = startEngine(0,0, 2)

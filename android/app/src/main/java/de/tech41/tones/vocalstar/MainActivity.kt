@@ -79,18 +79,18 @@ class MainActivity : ComponentActivity() {
         val framesPerBurstStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
         viewModel.framesPerBurst = framesPerBurstStr.toInt()
         print( viewModel.framesPerBurst)
-        var currentAudioMode = audioManager.ringerMode;
+        var currentAudioMode = audioManager.ringerMode
         print(currentAudioMode)
 
         val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
         viewModel.devices = devices
         for (device in devices) {
 
-            Log.d("Product Name", device.productName.toString());
-            Log.d("Is Sink", device.isSink().toString())
-            Log.d("Is Source ", device.isSource().toString())
+            Log.d("Product Name", device.productName.toString())
+            Log.d("Is Sink", device.isSink.toString())
+            Log.d("Is Source ", device.isSource.toString())
             Log.d("Type",device.type.toString())
-            when(device.getType() ){
+            when(device.type){
                 AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> Log.d("device", "Speaker")
                 AudioDeviceInfo.TYPE_USB_DEVICE -> Log.d("device","USB")
                 AudioDeviceInfo.TYPE_BLE_HEADSET-> Log.d("device","Headset")
@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
                 AudioDeviceInfo.TYPE_TELEPHONY-> Log.d("device","Telephony")
 
                 else -> { // Note the block
-                    Log.d("device","not known Type " + device.getType().toString())
+                    Log.d("device","not known Type " + device.type.toString())
                 }
             }
         }

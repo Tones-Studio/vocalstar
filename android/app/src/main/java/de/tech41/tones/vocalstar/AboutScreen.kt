@@ -1,21 +1,97 @@
 package de.tech41.tones.vocalstar
-
+// https://developer.android.com/jetpack/androidx/releases/media3#kts
+import androidx.annotation.OptIn
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+
+@OptIn(UnstableApi::class)
+@Composable
+fun VideoPlayerExo(
+    videoUrl: String
+) {
+    val context = LocalContext.current
+    val player = ExoPlayer.Builder(context).build().apply {
+        setMediaItem(MediaItem.fromUri(videoUrl))
+    }
+    val playerView = PlayerView(context)
+    val playWhenReady by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    playerView.player = player
+    player.setRepeatMode(Player.REPEAT_MODE_ALL);
+   // player.setForegroundMode(false)
+    playerView.setShowFastForwardButton(false)
+    playerView.setShowNextButton(false)
+    playerView.setShowPreviousButton(false)
+    playerView.setShowRewindButton(false)
+    playerView.setShowPlayButtonIfPlaybackIsSuppressed(false)
+    playerView.setShowShuffleButton(false)
+    playerView.setShowVrButton(false)
+    playerView.setShowSubtitleButton(false)
+    playerView.controllerAutoShow = false
+    playerView.controllerShowTimeoutMs = 1
+    playerView.setControllerAnimationEnabled(false)
+
+    LaunchedEffect(player) {
+        player.prepare()
+        player.playWhenReady = playWhenReady
+    }
+
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.9F)
+            .padding(20.dp)
+            .scale(4.0f)
+            .clip(RoundedCornerShape(0.dp)),
+        factory = {
+            playerView
+        })
+}
 
 @Composable
 fun AboutScreen(viewModel : Model) {
-    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "About",  fontSize = 30.sp)
-        Spacer(modifier = Modifier.height(20.dp))
+    val context = LocalContext.current
+    val path = "android.resource://" + context.packageName + "/" + R.raw.future
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        VideoPlayerExo(path)
+        Column (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally){
+            Text(text = "About", fontSize = 30.sp)
+            Spacer(Modifier.height(20.dp))
+            var t = "This is a very long Text. This is a very long Text.This is a very long Text.This is a very long Text.This is a very long Text.This is a very long Text."
+            Text(text = t,  maxLines = 25,  fontSize = 21.sp)
+        }
+
     }
 }
 
