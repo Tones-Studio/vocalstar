@@ -80,6 +80,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.compose.runtime:runtime-rxjava2")
+    implementation("androidx.glance:glance:1.1.0-beta02")
 
     implementation(libs.androidx.ui)
     implementation("androidx.compose.ui:ui-tooling-preview")
