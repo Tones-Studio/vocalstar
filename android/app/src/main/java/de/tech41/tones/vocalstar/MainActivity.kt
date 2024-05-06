@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,8 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -49,18 +46,96 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 
+
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
 class MainActivity : ComponentActivity() {
-
+    private val TAG: String = MainActivity::class.java.name
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
+    var isPlaying = false
+
+    override fun onStart(){
+        super.onStart()
+        volumeControlStream = AudioManager.STREAM_MUSIC
+        LiveEffectEngine.setRecordingDeviceId(getRecordingDeviceId())
+        LiveEffectEngine.setPlaybackDeviceId(getPlaybackDeviceId())
+    }
+    
+    private fun getRecordingDeviceId(): Int {
+        return 2 //(recordingDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
+    }
+
+    private fun getPlaybackDeviceId(): Int {
+        return 701 //(playbackDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LiveEffectEngine.create()
+        mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
+        EnableAudioApiUI(true)
+        LiveEffectEngine.setAPI(apiSelection)
+    }
+
+    override fun onPause() {
+        stopEffect()
+        LiveEffectEngine.delete()
+        super.onPause()
+    }
+
+    fun toggleEffect() {
+        if (isPlaying) {
+            stopEffect()
+        } else {
+            LiveEffectEngine.setAPI(apiSelection)
+            startEffect()
+        }
+    }
+    private fun isRecordPermissionGranted(): Boolean {
+        return (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    private fun requestRecordPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.RECORD_AUDIO),
+            AUDIO_EFFECT_REQUEST
+        )
+    }
+    private fun startEffect() {
+        Log.d(TAG, "Attempting to start")
+
+        if (!isRecordPermissionGranted()) {
+            requestRecordPermission()
+            return
+        }
+
+        val success = LiveEffectEngine.setEffectOn(true)
+        if (success) {
+            //statusText.setText(R.string.status_playing)
+           // toggleEffectButton.setText(R.string.stop_effect)
+            isPlaying = true
+            EnableAudioApiUI(false)
+        } else {
+           // statusText.setText(R.string.status_open_failed)
+            isPlaying = false
+        }
+    }
+
+    private fun stopEffect() {
+        Log.d(TAG, "Playing, attempting to stop")
+        LiveEffectEngine.setEffectOn(false)
+       // resetStatusView()
+       // toggleEffectButton.setText(R.string.start_effect)
+        isPlaying = false
+        EnableAudioApiUI(true)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(Model::class.java)
-
 
         // Get MIC Permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
@@ -93,6 +168,7 @@ class MainActivity : ComponentActivity() {
             Log.d("Is Sink", device.isSink.toString())
             Log.d("Is Source ", device.isSource.toString())
             Log.d("Type",device.type.toString())
+            Log.d("DeviceId",device.id.toString())
             when(device.type){
                 AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> Log.d("device", "Speaker")
                 AudioDeviceInfo.TYPE_USB_DEVICE -> Log.d("device","USB")
@@ -140,12 +216,13 @@ fun TabScreen(viewModel : Model) {
                 .fillMaxWidth()
                 .background(color = Color.Black))
                 {
+                /*
                 Image(
-                    painter = painterResource(id = R.drawable.logo_intern),
+                    painter = painterResource(id = R.drawable.logoheader), // TODO set Vocalstar logo
                     modifier = Modifier.height(20.dp),
                     contentDescription = "Vocalstar",
                     contentScale = ContentScale.FillHeight
-                )
+                )*/
             }
 
             Spacer(modifier = Modifier.weight(0.5f))

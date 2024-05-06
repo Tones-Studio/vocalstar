@@ -8,7 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.util.Log
+import android.media.AudioManager
+
 @Composable
 fun ButtonStart(onClick: () -> Unit) {
     Button(onClick = { onClick() }) {
@@ -33,8 +36,8 @@ fun ButtonTap(onClick: () -> Unit) {
 private val OBOE_API_AAUDIO = 0
 private val OBOE_API_OPENSL_ES = 1
 
-private var mAAudioRecommended = true
-private var apiSelection: Int = OBOE_API_AAUDIO
+internal var mAAudioRecommended = true
+var apiSelection: Int = OBOE_API_AAUDIO
 
 fun EnableAudioApiUI(enable: Boolean) {
     if (apiSelection == OBOE_API_AAUDIO && !mAAudioRecommended) {
@@ -43,7 +46,7 @@ fun EnableAudioApiUI(enable: Boolean) {
 }
 @Composable
 fun HomeScreen(viewModel : Model) {
-
+    val context = LocalContext.current
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row {
             ButtonStart(onClick = {
@@ -52,6 +55,7 @@ fun HomeScreen(viewModel : Model) {
                 EnableAudioApiUI(true)
                 LiveEffectEngine.setAPI(apiSelection)
 
+                LiveEffectEngine.setDefaultStreamValues(context)
 
                 /* original Engine
                 var res = startEngine(0,0, 2)
