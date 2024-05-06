@@ -13,6 +13,7 @@ set (APP_SOURCES
         SoundGenerator.cpp
         native-lib.cpp
         Engine.cpp
+        LiveEffectEngine.cpp
 )
 
 add_library(vocalstar SHARED  ${APP_SOURCES})

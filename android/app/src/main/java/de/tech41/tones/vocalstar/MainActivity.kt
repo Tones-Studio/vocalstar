@@ -1,9 +1,12 @@
 package de.tech41.tones.vocalstar
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -40,16 +43,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
-import androidx.privacysandbox.tools.core.model.Types
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
-import android.Manifest
-import androidx.core.app.ActivityCompat
-import android.widget.Toast
 class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel: Model
@@ -58,6 +57,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(Model::class.java)
+
+        LiveEffectEngine.create()
 
         // Get MIC Permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){

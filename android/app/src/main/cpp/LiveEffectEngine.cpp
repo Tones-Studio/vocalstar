@@ -15,8 +15,7 @@
  */
 
 #include <cassert>
-#include <logging_macros.h>
-
+#include "include/logging_macros.h"
 #include "include/LiveEffectEngine.h"
 
 LiveEffectEngine::LiveEffectEngine() {
