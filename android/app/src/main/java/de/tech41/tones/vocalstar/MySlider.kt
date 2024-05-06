@@ -31,14 +31,7 @@ fun linearToDecibel(linear: Float): Float {
 
 @Composable
 fun MySlider( viewModel : Model) {
-
     Column {
-        Icon(
-            painterResource(R.drawable.mic),
-            "Mic",
-            tint = Color.White
-        )
-
         Slider(
             modifier = Modifier
                 .graphicsLayer {

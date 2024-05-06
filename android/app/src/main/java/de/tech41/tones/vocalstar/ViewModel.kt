@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class Model: ViewModel() {
     var isSpeaker by mutableStateOf(false)
-    var isMuted by mutableStateOf(false)
+    var isMuted by mutableStateOf(true)
     var volume by mutableFloatStateOf(0f)
     var inputDevice by mutableStateOf("Headphone")
     var outputDevice by mutableStateOf("USB")
@@ -25,16 +25,16 @@ class Model: ViewModel() {
     var isTapDown = false
     fun putVol(vol:Float){
         volume = vol
-        updateVolume(vol)
+
     }
 
     fun putMute(b:Boolean){
         isMuted = b
-       updateMute(b)
+
     }
 
     fun putIsSpeaker(b:Boolean){
         isSpeaker = b
-        updateSpeaker(b)
+
     }
 }

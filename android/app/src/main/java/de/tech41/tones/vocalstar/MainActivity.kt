@@ -1,11 +1,13 @@
 package de.tech41.tones.vocalstar
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Context
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
-import android.os.Bundle
+import android.os.IBinder
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -45,30 +47,104 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
-
+import android.content.Intent
+import android.os.Bundle
 
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
-class MainActivity : ComponentActivity() {
+class MainActivity :ComponentActivity()  { //ComponentActivity()
     private val TAG: String = MainActivity::class.java.name
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
     var isPlaying = false
+    private var vService: VService? = null
+    private var isBound = false
 
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as VService.VServiceBinder
+            vService = binder.getService()
+            isBound = true
+        }
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isBound = false
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(Model::class.java)
+
+        // Get MIC Permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+            Log.d("permission", "have permission to record audio")
+        }else{
+            Toast.makeText(this, "Please allow Mic access", Toast.LENGTH_SHORT).show()
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.RECORD_AUDIO), AUDIO_RECORD_REQUEST_CODE)
+            Log.d("permission", "Don't have permission to record audio")
+        }
+
+        // Query the AudioManager
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val sampleRateStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
+        viewModel.sampleRate = sampleRateStr.toInt()
+        print(viewModel.sampleRate)
+        val framesPerBurstStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
+        viewModel.framesPerBurst = framesPerBurstStr.toInt()
+        print( viewModel.framesPerBurst)
+        var currentAudioMode = audioManager.ringerMode
+        print(currentAudioMode)
+
+        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        viewModel.devices = devices
+        for (device in devices) {
+            Log.d("Product Name", device.productName.toString())
+            Log.d("Is Sink", device.isSink.toString())
+            Log.d("Is Source ", device.isSource.toString())
+            Log.d("Type",device.type.toString())
+            Log.d("DeviceId",device.id.toString())
+            when(device.type){
+                AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> Log.d("device", "Speaker")
+                AudioDeviceInfo.TYPE_USB_DEVICE -> Log.d("device","USB")
+                AudioDeviceInfo.TYPE_BLE_HEADSET-> Log.d("device","Headset")
+                AudioDeviceInfo.TYPE_BUILTIN_EARPIECE-> Log.d("device","Earpiece")
+                AudioDeviceInfo.TYPE_BUILTIN_MIC-> Log.d("device","Built in Mic")
+                AudioDeviceInfo.TYPE_WIRED_HEADPHONES-> Log.d("device","Wired headphones")
+                AudioDeviceInfo.TYPE_WIRED_HEADSET-> Log.d("device","Wired headphone")
+                AudioDeviceInfo.TYPE_TELEPHONY-> Log.d("device","Telephony")
+                else -> { // Note the block
+                    Log.d("device","not known Type " + device.type.toString())
+                }
+            }
+        }
+
+        enableEdgeToEdge()
+        setContent {
+            VocalstarTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    TabScreen(viewModel)
+                }
+            }
+        }
+    }
     override fun onStart(){
         super.onStart()
         volumeControlStream = AudioManager.STREAM_MUSIC
         LiveEffectEngine.setRecordingDeviceId(getRecordingDeviceId())
         LiveEffectEngine.setPlaybackDeviceId(getPlaybackDeviceId())
-    }
-    
-    private fun getRecordingDeviceId(): Int {
-        return 2 //(recordingDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
+        val intent = Intent(this, VService::class.java)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
-    private fun getPlaybackDeviceId(): Int {
-        return 701 //(playbackDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
+    override fun onStop() {
+        super.onStop()
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
+        }
     }
 
     override fun onResume() {
@@ -92,6 +168,19 @@ class MainActivity : ComponentActivity() {
             LiveEffectEngine.setAPI(apiSelection)
             startEffect()
         }
+    }
+
+/*
+===================================================================================================================
+Private
+===================================================================================================================
+ */
+    private fun getRecordingDeviceId(): Int {
+        return 2 //(recordingDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
+    }
+
+    private fun getPlaybackDeviceId(): Int {
+        return 701 //(playbackDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
     }
     private fun isRecordPermissionGranted(): Boolean {
         return (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
@@ -133,67 +222,7 @@ class MainActivity : ComponentActivity() {
         EnableAudioApiUI(true)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(Model::class.java)
 
-        // Get MIC Permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
-            Log.d("permission", "have permission to record audio")
-        }else{
-            Toast.makeText(this, "Please allow Mic access", Toast.LENGTH_SHORT).show()
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.RECORD_AUDIO), AUDIO_RECORD_REQUEST_CODE)
-            Log.d("permission", "Don't have permission to record audio")
-        }
-
-
-        // Query the AudioManager
-        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val sampleRateStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
-        viewModel.sampleRate = sampleRateStr.toInt()
-        print(viewModel.sampleRate)
-        val framesPerBurstStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
-        viewModel.framesPerBurst = framesPerBurstStr.toInt()
-        print( viewModel.framesPerBurst)
-        var currentAudioMode = audioManager.ringerMode
-        print(currentAudioMode)
-
-        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-        viewModel.devices = devices
-        for (device in devices) {
-
-            Log.d("Product Name", device.productName.toString())
-            Log.d("Is Sink", device.isSink.toString())
-            Log.d("Is Source ", device.isSource.toString())
-            Log.d("Type",device.type.toString())
-            Log.d("DeviceId",device.id.toString())
-            when(device.type){
-                AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> Log.d("device", "Speaker")
-                AudioDeviceInfo.TYPE_USB_DEVICE -> Log.d("device","USB")
-                AudioDeviceInfo.TYPE_BLE_HEADSET-> Log.d("device","Headset")
-                AudioDeviceInfo.TYPE_BUILTIN_EARPIECE-> Log.d("device","Earpiece")
-                AudioDeviceInfo.TYPE_BUILTIN_MIC-> Log.d("device","Built in Mic")
-                AudioDeviceInfo.TYPE_WIRED_HEADPHONES-> Log.d("device","Wired headphones")
-                AudioDeviceInfo.TYPE_WIRED_HEADSET-> Log.d("device","Wired headphone")
-                AudioDeviceInfo.TYPE_TELEPHONY-> Log.d("device","Telephony")
-
-                else -> { // Note the block
-                    Log.d("device","not known Type " + device.type.toString())
-                }
-            }
-        }
-
-        enableEdgeToEdge()
-        setContent {
-            VocalstarTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TabScreen(viewModel)
-                }
-            }
-        }
-    }
     companion object {
         init {
             System.loadLibrary("vocalstar")

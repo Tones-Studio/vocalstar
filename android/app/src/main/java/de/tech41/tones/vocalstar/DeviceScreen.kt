@@ -94,7 +94,6 @@ fun DeviceScreen(viewModel : Model) {
         if (viewModel.isRunning){
 
         Text("Block Size : " + getBlockSize(), fontSize = 17.sp)
-        Text("Latency : " + getLatency() + " ms", fontSize = 17.sp)
         Text("Channels : " + getChannels(), fontSize = 17.sp)
         }
         Spacer(modifier = Modifier.height(20.dp))

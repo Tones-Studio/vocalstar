@@ -11,31 +11,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.util.Log
 import android.media.AudioManager
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 
+// https://medium.com/@dugguRK/kotlin-music-foreground-service-play-on-android-4b57b10fe583
 @Composable
 fun ButtonStart(onClick: () -> Unit) {
     Button(onClick = { onClick() }) {
-        Text("Start")
+        Text(" Mic On")
     }
 }
 @Composable
 fun ButtonStop(onClick: () -> Unit) {
     Button(onClick = { onClick() }) {
-        Text("Stop")
+        Text("Mic Off")
     }
 }
-
-@Composable
-fun ButtonTap(onClick: () -> Unit) {
-    Button(onClick = { onClick() }) {
-        Text("Tap")
-    }
-}
-
 
 private val OBOE_API_AAUDIO = 0
 private val OBOE_API_OPENSL_ES = 1
-
 internal var mAAudioRecommended = true
 var apiSelection: Int = OBOE_API_AAUDIO
 
@@ -48,6 +43,11 @@ fun EnableAudioApiUI(enable: Boolean) {
 fun HomeScreen(viewModel : Model) {
     val context = LocalContext.current
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            painterResource(R.drawable.mic),
+            "Mic",
+            tint = if (viewModel.isMuted) Color.Red else Color.Green
+        )
         Row {
             ButtonStart(onClick = {
                 LiveEffectEngine.create()
@@ -56,15 +56,13 @@ fun HomeScreen(viewModel : Model) {
                 LiveEffectEngine.setAPI(apiSelection)
                 LiveEffectEngine.setDefaultStreamValues(context)
                 LiveEffectEngine.setEffectOn(true)
+                viewModel.isMuted = false
             })
             ButtonStop(onClick = {
-                stopEngine()
+                LiveEffectEngine.setEffectOn(false)
+                viewModel.isMuted = true
             })
         }
-        ButtonTap(onClick = {
-            viewModel.isTapDown =! viewModel.isTapDown
-           tap(viewModel.isTapDown)
-        })
         MySlider(viewModel)
     }
 }
