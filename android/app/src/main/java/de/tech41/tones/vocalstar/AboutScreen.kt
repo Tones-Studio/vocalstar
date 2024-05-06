@@ -37,7 +37,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-0
+
 @OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayerExo(
