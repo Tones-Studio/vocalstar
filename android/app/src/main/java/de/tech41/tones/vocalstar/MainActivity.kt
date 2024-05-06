@@ -49,16 +49,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 
+private val AUDIO_EFFECT_REQUEST = 0
+private var AUDIO_RECORD_REQUEST_CODE = 300
+
 class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
-    private var AUDIO_RECORD_REQUEST_CODE = 300
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(Model::class.java)
 
-        LiveEffectEngine.create()
 
         // Get MIC Permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
@@ -172,6 +174,8 @@ fun TabScreen(viewModel : Model) {
         }
     }
 }
+
+
 
 @Composable
 fun MessageFromNativeLibrary(name: String) {
