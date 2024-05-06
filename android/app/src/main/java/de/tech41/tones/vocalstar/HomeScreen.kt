@@ -56,7 +56,7 @@ fun HomeScreen(viewModel : Model) {
                 LiveEffectEngine.setAPI(apiSelection)
 
                 LiveEffectEngine.setDefaultStreamValues(context)
-
+                LiveEffectEngine.setEffectOn(true)
                 /* original Engine
                 var res = startEngine(0,0, 2)
                 if(res == 0){
