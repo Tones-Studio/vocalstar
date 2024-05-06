@@ -54,16 +54,8 @@ fun HomeScreen(viewModel : Model) {
                 mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
                 EnableAudioApiUI(true)
                 LiveEffectEngine.setAPI(apiSelection)
-
                 LiveEffectEngine.setDefaultStreamValues(context)
                 LiveEffectEngine.setEffectOn(true)
-                /* original Engine
-                var res = startEngine(0,0, 2)
-                if(res == 0){
-                    viewModel.isRunning = true
-                    Log.d("de.tech41.tones.vocalstar.HomeScreen", "Audio Engine Started")
-                }
-                */
             })
             ButtonStop(onClick = {
                 stopEngine()

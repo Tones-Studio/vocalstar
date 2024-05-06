@@ -6,7 +6,6 @@
 #define VOCALSTAR_ENGINE_H
 
 #include "oboe/Oboe.h"
-#include "HelloOboeEngine.h"
 
 class Engine {
 
@@ -20,7 +19,7 @@ public:
     void tap(bool isDown);
 
 private:
-   HelloOboeEngine helloEngine;
+
    bool isRunning;
 };
 

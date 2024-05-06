@@ -8,7 +8,6 @@ include_directories(${OBOE_DIR}/include ${OBOE_DIR}/samples/shared)
 include_directories (include)
 
 set (APP_SOURCES
-        HelloOboeEngine.cpp
         LatencyTuningCallback.cpp
         SoundGenerator.cpp
         native-lib.cpp
