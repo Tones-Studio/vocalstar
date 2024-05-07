@@ -58,7 +58,7 @@ class VService: Service() {
     override fun onCreate() {
         super.onCreate()
         var audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        android.os.Debug.waitForDebugger();
+       // android.os.Debug.waitForDebugger(); // this needs to be off !!!
         LiveEffectEngine.create()
         mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
