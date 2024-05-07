@@ -1,5 +1,6 @@
 package de.tech41.tones.vocalstar
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,10 +58,12 @@ fun HomeScreen(viewModel : Model) {
                 LiveEffectEngine.setDefaultStreamValues(context)
                 LiveEffectEngine.setEffectOn(true)
                 viewModel.isMuted = false
+                viewModel.isRunning = true
             })
             ButtonStop(onClick = {
                 LiveEffectEngine.setEffectOn(false)
                 viewModel.isMuted = true
+                viewModel.isRunning = false
             })
         }
         MySlider(viewModel)

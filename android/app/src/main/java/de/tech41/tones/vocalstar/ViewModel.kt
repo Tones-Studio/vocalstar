@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class Model: ViewModel() {
     val devicesIn: MutableList<Pair<String, String>> = ArrayList()
     val devicesOut: MutableList<Pair<String, String>> = ArrayList()
-
+    var vService: VService? = null
     init {
         devicesIn.add(Pair("0", "MIC"))
         devicesIn.add(Pair("1", "Headphone"))

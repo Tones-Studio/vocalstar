@@ -24,14 +24,15 @@
         </activity>
         <service
             android:name=".VService"
-            android:foregroundServiceType="mediaPlayback"
+            android:foregroundServiceType="microphone"
             android:exported="false"
-            tools:ignore="ForegroundServicePermission">
+            tools:node="merge">
         </service>
     </application>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 </manifest>
+

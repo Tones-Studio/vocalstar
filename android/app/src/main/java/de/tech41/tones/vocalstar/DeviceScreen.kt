@@ -91,29 +91,32 @@ fun DeviceScreen(viewModel : Model) {
         Text("AAudio Support: " + isAAudioSupported(),  fontSize = 17.sp)
         Text("Sample Rate: " + viewModel.sampleRate, fontSize = 17.sp)
         Text("Frames per burst: " +viewModel.framesPerBurst, fontSize = 17.sp)
-        if (viewModel.isRunning){
 
-        Text("Block Size : " + getBlockSize(), fontSize = 17.sp)
-        Text("Channels : " + getChannels(), fontSize = 17.sp)
+        if (viewModel.isRunning){
+            Text("Latency: " + viewModel.vService?.getLatency().toString(), fontSize = 17.sp)
+            Text("Block Size : " + getBlockSize(), fontSize = 17.sp)
+            Text("Channels : " + getChannels(), fontSize = 17.sp)
         }
         Spacer(modifier = Modifier.height(20.dp))
 
-        MySpinner(
-            "Input Device",
-            viewModel.devicesIn,
-            preselected = viewModel.devicesIn[0],
-            onSelectionChanged = { selected ->
-                print("selected $selected")
-            }
-        )
+        if (viewModel.devicesIn.count() > 0) {
+            MySpinner(
+                "Input Device",
+                viewModel.devicesIn,
+                preselected = viewModel.devicesIn[0],
+                onSelectionChanged = { selected ->
+                    print("selected $selected")
+                }
+            )
 
-        MySpinner(
-            "Output Device",
-            viewModel.devicesOut,
-            preselected = viewModel.devicesOut[0],
-            onSelectionChanged = { selected ->
-                print("selected $selected")
-            }
-        )
+            MySpinner(
+                "Output Device",
+                viewModel.devicesOut,
+                preselected = viewModel.devicesOut[0],
+                onSelectionChanged = { selected ->
+                    print("selected $selected")
+                }
+            )
+        }
     }
 }

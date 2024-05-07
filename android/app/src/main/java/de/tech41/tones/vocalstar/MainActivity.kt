@@ -1,17 +1,25 @@
 package de.tech41.tones.vocalstar
 
 import android.Manifest
+import android.app.ForegroundServiceStartNotAllowedException
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,12 +51,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
-import android.content.Intent
-import android.os.Bundle
 
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
@@ -57,14 +66,22 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     private val TAG: String = MainActivity::class.java.name
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
-    var isPlaying = false
-    private var vService: VService? = null
     private var isBound = false
+
+    private var mContext: Context? = null
+
+    fun getContext(): Context? {
+        return mContext
+    }
+
+    fun setContext(mContext: Context?) {
+        this.mContext = mContext
+    }
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as VService.VServiceBinder
-            vService = binder.getService()
+            viewModel.vService = binder.getService()
             isBound = true
         }
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -72,9 +89,25 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         }
     }
 
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Vocalstar"
+            val descriptionText = "Vocalstar Audio Service"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("Vocalstar", name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(Model::class.java)
+        createNotificationChannel()
 
         // Get MIC Permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
@@ -91,12 +124,9 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val sampleRateStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
         viewModel.sampleRate = sampleRateStr.toInt()
-        print(viewModel.sampleRate)
         val framesPerBurstStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
         viewModel.framesPerBurst = framesPerBurstStr.toInt()
-        print( viewModel.framesPerBurst)
         var currentAudioMode = audioManager.ringerMode
-        print(currentAudioMode)
 
         val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
         viewModel.devicesIn.clear()
@@ -139,42 +169,25 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     }
     override fun onStart(){
         super.onStart()
-        volumeControlStream = AudioManager.STREAM_MUSIC
-        LiveEffectEngine.setRecordingDeviceId(getRecordingDeviceId())
-        LiveEffectEngine.setPlaybackDeviceId(getPlaybackDeviceId())
+        val notification = NotificationCompat.Builder(this, "Vocalstar Audio").build()
         val intent = Intent(this, VService::class.java)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        applicationContext.startForegroundService(intent)
     }
 
     override fun onStop() {
         super.onStop()
-        if (isBound) {
-            unbindService(connection)
-            isBound = false
-        }
+    //if (isBound) {
+      //   unbindService(connection)
+       // isBound = false
+        //}
     }
 
     override fun onResume() {
         super.onResume()
-        LiveEffectEngine.create()
-        mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
-        EnableAudioApiUI(true)
-        LiveEffectEngine.setAPI(apiSelection)
     }
 
     override fun onPause() {
-        stopEffect()
-        LiveEffectEngine.delete()
         super.onPause()
-    }
-
-    fun toggleEffect() {
-        if (isPlaying) {
-            stopEffect()
-        } else {
-            LiveEffectEngine.setAPI(apiSelection)
-            startEffect()
-        }
     }
 
 /*
@@ -182,59 +195,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
 Private
 ===================================================================================================================
  */
-    private fun getRecordingDeviceId(): Int {
-        return 2 //(recordingDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
-    }
 
-    private fun getPlaybackDeviceId(): Int {
-        return 701 //(playbackDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
-    }
-    private fun isRecordPermissionGranted(): Boolean {
-        return (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
-    }
-
-    private fun requestRecordPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.RECORD_AUDIO),
-            AUDIO_EFFECT_REQUEST
-        )
-    }
-    private fun startEffect() {
-        Log.d(TAG, "Attempting to start")
-
-        if (!isRecordPermissionGranted()) {
-            requestRecordPermission()
-            return
-        }
-
-        val success = LiveEffectEngine.setEffectOn(true)
-        if (success) {
-            //statusText.setText(R.string.status_playing)
-           // toggleEffectButton.setText(R.string.stop_effect)
-            isPlaying = true
-            EnableAudioApiUI(false)
-        } else {
-           // statusText.setText(R.string.status_open_failed)
-            isPlaying = false
-        }
-    }
-
-    private fun stopEffect() {
-        Log.d(TAG, "Playing, attempting to stop")
-        LiveEffectEngine.setEffectOn(false)
-       // resetStatusView()
-       // toggleEffectButton.setText(R.string.start_effect)
-        isPlaying = false
-        EnableAudioApiUI(true)
-    }
-
-
-    companion object {
-        init {
-            System.loadLibrary("vocalstar")
-        }
-    }
 }
 
 @Composable
