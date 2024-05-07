@@ -1,7 +1,6 @@
 package de.tech41.tones.vocalstar
 
 import android.Manifest
-import android.app.ForegroundServiceStartNotAllowedException
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
@@ -9,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
-import android.content.pm.ServiceInfo
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Build
@@ -52,7 +50,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
@@ -67,17 +64,6 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
     private var isBound = false
-
-    private var mContext: Context? = null
-
-    fun getContext(): Context? {
-        return mContext
-    }
-
-    fun setContext(mContext: Context?) {
-        this.mContext = mContext
-    }
-
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as VService.VServiceBinder
@@ -166,12 +152,16 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
                 }
             }
         }
+        val intent = Intent(this, VService::class.java)
+        applicationContext.startForegroundService(intent)
     }
     override fun onStart(){
         super.onStart()
-        val notification = NotificationCompat.Builder(this, "Vocalstar Audio").build()
-        val intent = Intent(this, VService::class.java)
-        applicationContext.startForegroundService(intent)
+
+        // Bind to LocalService.
+        Intent(this, VService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     override fun onStop() {
@@ -180,6 +170,12 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
       //   unbindService(connection)
        // isBound = false
         //}
+    }
+
+    public override fun onDestroy() {
+        super.onDestroy()
+        val intent = Intent(this, VService::class.java)
+        applicationContext.stopService(intent)
     }
 
     override fun onResume() {
