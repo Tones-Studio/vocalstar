@@ -103,6 +103,8 @@ oboe::Result  LiveEffectEngine::openStreams() {
 
     mFullDuplexPass.setInputStream(mRecordingStream.get());
     mFullDuplexPass.setOutputStream(mPlayStream.get());
+    mRecordingDeviceId = mRecordingStream->getDeviceId();
+    mPlaybackDeviceId = mPlayStream->getDeviceId();
     return result;
 }
 
@@ -215,8 +217,7 @@ oboe::DataCallbackResult LiveEffectEngine::onAudioReady(
  * @param oboeStream: the stream to close
  * @param error: oboe's reason for closing the stream
  */
-void LiveEffectEngine::onErrorBeforeClose(oboe::AudioStream *oboeStream,
-                                          oboe::Result error) {
+void LiveEffectEngine::onErrorBeforeClose(oboe::AudioStream *oboeStream, oboe::Result error) {
     LOGE("%s stream Error before close: %s",
          oboe::convertToText(oboeStream->getDirection()),
          oboe::convertToText(error));

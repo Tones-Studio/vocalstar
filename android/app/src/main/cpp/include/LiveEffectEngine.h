@@ -51,6 +51,14 @@ public:
     bool setAudioApi(oboe::AudioApi);
     bool isAAudioRecommended(void);
 
+    int32_t getInDevice(){
+        return mRecordingDeviceId;
+    };
+
+    int32_t getOutDevice(){
+        return mPlaybackDeviceId;
+    };
+
 private:
     FullDuplexPass    mFullDuplexPass;
     bool              mIsEffectOn = false;
@@ -59,6 +67,7 @@ private:
     const oboe::AudioFormat mFormat = oboe::AudioFormat::Float; // for easier processing
     oboe::AudioApi    mAudioApi = oboe::AudioApi::AAudio;
     int32_t           mSampleRate = oboe::kUnspecified;
+
     const int32_t     mInputChannelCount = oboe::ChannelCount::Stereo;
     const int32_t     mOutputChannelCount = oboe::ChannelCount::Stereo;
 

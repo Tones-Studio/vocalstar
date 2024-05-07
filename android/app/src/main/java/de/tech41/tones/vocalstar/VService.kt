@@ -35,14 +35,12 @@ class VService: Service() {
     internal var mAAudioRecommended = true
     var apiSelection: Int = OBOE_API_AAUDIO
     var isPlaying = false
-
     val deviceIdIn = 5
     val deviceIdOut = 0
 
     inner class VServiceBinder : Binder() {
         fun getService(): VService = this@VService
     }
-
 
     fun getLatency() :Float{
         return 0.2f
@@ -60,11 +58,8 @@ class VService: Service() {
     override fun onCreate() {
         super.onCreate()
         var audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
         android.os.Debug.waitForDebugger();
         LiveEffectEngine.create()
-        LiveEffectEngine.setRecordingDeviceId(getRecordingDeviceId())
-        LiveEffectEngine.setPlaybackDeviceId(getPlaybackDeviceId())
         mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
         LiveEffectEngine.setAPI(apiSelection)
@@ -122,11 +117,11 @@ class VService: Service() {
     fun startAudio(viewModel : Model){
         this.viewModel = viewModel
         initAudio()
-        LiveEffectEngine.setRecordingDeviceId(getRecordingDeviceId())
-        LiveEffectEngine.setPlaybackDeviceId(getPlaybackDeviceId())
         LiveEffectEngine.setDefaults(viewModel.sampleRate, viewModel.framesPerBurst)
        // Thread(Runnable { LiveEffectEngine.setEffectOn(true) }).start()
        LiveEffectEngine.setEffectOn(true)
+        viewModel.deviceInSelected = LiveEffectEngine.getRecordingDeviceId().toString()
+        viewModel.deviceOutSelected = LiveEffectEngine.getPlaybackDeviceId().toString()
     }
 
     fun getInfoString(adi :AudioDeviceInfo ):String{
@@ -171,6 +166,8 @@ class VService: Service() {
     fun stopAudio(){
         LiveEffectEngine.setEffectOn(false)
     }
+
+    @OptIn(UnstableApi::class)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         try {
             Toast.makeText(this, "Android Audio service starting", Toast.LENGTH_SHORT).show()
@@ -200,13 +197,6 @@ class VService: Service() {
         LiveEffectEngine.delete()
     }
 
-    private fun getRecordingDeviceId(): Int {
-        return 2 //2 //(recordingDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
-    }
-
-    private fun getPlaybackDeviceId(): Int {
-        return 701 // 701 //(playbackDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
-    }
     private fun isRecordPermissionGranted(): Boolean {
         return (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
     }

@@ -56,17 +56,19 @@ fun MySpinner(
                 onDismissRequest = { expanded = false },
             ) {
                 list.forEach { entry ->
-
                     DropdownMenuItem(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             selected = entry
                             expanded = false
+                            onSelectionChanged(entry)
                         },
                         text = {
                             Text(
                                 text = (entry.second),
-                                modifier = Modifier.wrapContentWidth().align(Alignment.Start))
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                                    .align(Alignment.Start))
                         }
                     )
                 }
@@ -83,6 +85,24 @@ fun MySpinner(
                 )
         )
     }
+}
+
+fun getInDevice(viewModel : Model,  deviceId : String): Pair<String,String>{
+    for (device in viewModel.devicesIn) {
+        if (device.first == deviceId){
+            return device
+        }
+    }
+    return Pair("","")
+}
+
+fun getOutDevice(viewModel : Model,  deviceId : String): Pair<String,String>{
+    for (device in viewModel.devicesOut) {
+        if (device.first == deviceId){
+            return device
+        }
+    }
+    return Pair("","")
 }
 
 @Composable
@@ -107,9 +127,12 @@ fun DeviceScreen(viewModel : Model) {
             MySpinner(
                 "Input Device",
                 viewModel.devicesIn,
-                preselected = viewModel.devicesIn[0],
+                preselected = getInDevice(viewModel, viewModel.deviceInSelected),
                 onSelectionChanged = { selected ->
                     print("selected $selected")
+                    LiveEffectEngine.setRecordingDeviceId(selected.first.toInt())
+                    LiveEffectEngine.setEffectOn(false);
+                    LiveEffectEngine.setEffectOn(true);
                 }
             )
         }
@@ -117,9 +140,12 @@ fun DeviceScreen(viewModel : Model) {
             MySpinner(
                 "Output Device",
                 viewModel.devicesOut,
-                preselected = viewModel.devicesOut[0],
+                preselected = getOutDevice(viewModel, viewModel.deviceOutSelected),
                 onSelectionChanged = { selected ->
                     print("selected $selected")
+                    LiveEffectEngine.setPlaybackDeviceId(selected.first.toInt())
+                    LiveEffectEngine.setEffectOn(false);
+                    LiveEffectEngine.setEffectOn(true);
                 }
             )
         }
