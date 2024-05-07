@@ -99,25 +99,32 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         print(currentAudioMode)
 
         val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-        viewModel.devices = devices
+        viewModel.devicesIn.clear()
+        viewModel.devicesOut.clear()
         for (device in devices) {
             Log.d("Product Name", device.productName.toString())
             Log.d("Is Sink", device.isSink.toString())
             Log.d("Is Source ", device.isSource.toString())
             Log.d("Type",device.type.toString())
             Log.d("DeviceId",device.id.toString())
+            var typestr = ""
             when(device.type){
-                AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> Log.d("device", "Speaker")
-                AudioDeviceInfo.TYPE_USB_DEVICE -> Log.d("device","USB")
-                AudioDeviceInfo.TYPE_BLE_HEADSET-> Log.d("device","Headset")
-                AudioDeviceInfo.TYPE_BUILTIN_EARPIECE-> Log.d("device","Earpiece")
-                AudioDeviceInfo.TYPE_BUILTIN_MIC-> Log.d("device","Built in Mic")
-                AudioDeviceInfo.TYPE_WIRED_HEADPHONES-> Log.d("device","Wired headphones")
-                AudioDeviceInfo.TYPE_WIRED_HEADSET-> Log.d("device","Wired headphone")
-                AudioDeviceInfo.TYPE_TELEPHONY-> Log.d("device","Telephony")
+                AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> typestr = "Speaker"
+                AudioDeviceInfo.TYPE_USB_DEVICE ->typestr = "USB"
+                AudioDeviceInfo.TYPE_BLE_HEADSET-> typestr = "Headset"
+                AudioDeviceInfo.TYPE_BUILTIN_EARPIECE-> typestr = "Earpiece"
+                AudioDeviceInfo.TYPE_BUILTIN_MIC-> typestr = "Mic"
+                AudioDeviceInfo.TYPE_WIRED_HEADPHONES-> typestr = "Headphone"
+                AudioDeviceInfo.TYPE_WIRED_HEADSET-> typestr = "Headset"
+                AudioDeviceInfo.TYPE_TELEPHONY-> typestr = "Telephony"
                 else -> { // Note the block
                     Log.d("device","not known Type " + device.type.toString())
                 }
+            }
+            if (device.isSource){
+                viewModel.devicesIn.add(Pair(device.id.toString(), typestr))
+            }else{
+                viewModel.devicesOut.add(Pair(device.id.toString(), typestr))
             }
         }
 

@@ -20,7 +20,8 @@ class VService: Service() {
 
     override fun onCreate() {
         super.onCreate()
-       // mediaPlayer = MediaPlayer.create(this, R.raw.your_music_file) // Replace with your music file
+        android.os.Debug.waitForDebugger();
+        // mediaPlayer = MediaPlayer.create(this, R.raw.your_music_file) // Replace with your music file
        // mediaPlayer.isLooping = true
     }
 

@@ -97,26 +97,20 @@ fun DeviceScreen(viewModel : Model) {
         Text("Channels : " + getChannels(), fontSize = 17.sp)
         }
         Spacer(modifier = Modifier.height(20.dp))
-        val entry0 = Pair("0", "MIC")
-        val entry1 = Pair("1", "Headphone")
-        val entry2 = Pair("2", "USB")
 
         MySpinner(
             "Input Device",
-            listOf(entry0, entry1, entry2),
-            preselected = entry0,
+            viewModel.devicesIn,
+            preselected = viewModel.devicesIn[0],
             onSelectionChanged = { selected ->
                 print("selected $selected")
             }
         )
 
-        val entry4 = Pair("0", "Speaker")
-        val entry5 = Pair("0", "Headphones")
-        val entry6 = Pair("0", "USB")
         MySpinner(
             "Output Device",
-            listOf(entry4, entry5, entry6),
-            preselected = entry4,
+            viewModel.devicesOut,
+            preselected = viewModel.devicesOut[0],
             onSelectionChanged = { selected ->
                 print("selected $selected")
             }
