@@ -106,44 +106,6 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
             Log.d("permission", "Don't have permission to record audio")
         }
 
-        // Query the AudioManager
-        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val sampleRateStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
-        viewModel.sampleRate = sampleRateStr.toInt()
-        val framesPerBurstStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
-        viewModel.framesPerBurst = framesPerBurstStr.toInt()
-        var currentAudioMode = audioManager.ringerMode
-
-        val devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-        viewModel.devicesIn.clear()
-        viewModel.devicesOut.clear()
-        for (device in devices) {
-            Log.d("Product Name", device.productName.toString())
-            Log.d("Is Sink", device.isSink.toString())
-            Log.d("Is Source ", device.isSource.toString())
-            Log.d("Type",device.type.toString())
-            Log.d("DeviceId",device.id.toString())
-            var typestr = ""
-            when(device.type){
-                AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> typestr = "Speaker"
-                AudioDeviceInfo.TYPE_USB_DEVICE ->typestr = "USB"
-                AudioDeviceInfo.TYPE_BLE_HEADSET-> typestr = "Headset"
-                AudioDeviceInfo.TYPE_BUILTIN_EARPIECE-> typestr = "Earpiece"
-                AudioDeviceInfo.TYPE_BUILTIN_MIC-> typestr = "Mic"
-                AudioDeviceInfo.TYPE_WIRED_HEADPHONES-> typestr = "Headphone"
-                AudioDeviceInfo.TYPE_WIRED_HEADSET-> typestr = "Headset"
-                AudioDeviceInfo.TYPE_TELEPHONY-> typestr = "Telephony"
-                else -> { // Note the block
-                    Log.d("device","not known Type " + device.type.toString())
-                }
-            }
-            if (device.isSource){
-                viewModel.devicesIn.add(Pair(device.id.toString(), typestr))
-            }else{
-                viewModel.devicesOut.add(Pair(device.id.toString(), typestr))
-            }
-        }
-
         enableEdgeToEdge()
         setContent {
             VocalstarTheme {
@@ -152,16 +114,23 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
                 }
             }
         }
+
+        Log.d(TAG,"Starting service")
         val intent = Intent(this, VService::class.java)
         applicationContext.startForegroundService(intent)
+
+        Log.d(TAG,"Service Running - MainActivity onCreate complete")
     }
+
+    @OptIn(UnstableApi::class)
     override fun onStart(){
         super.onStart()
-
+        Log.d(TAG,"Binding Service")
         // Bind to LocalService.
         Intent(this, VService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
+        Log.d(TAG,"MainActivity onCreate complete")
     }
 
     override fun onStop() {

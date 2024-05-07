@@ -1,6 +1,6 @@
 package de.tech41.tones.vocalstar
 
-import android.content.Intent
+import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,13 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.media3.common.util.Log
-import android.media.AudioManager
 import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 
-// https://medium.com/@dugguRK/kotlin-music-foreground-service-play-on-android-4b57b10fe583
+private val TAG: String = "HomeScreen"
 @Composable
 fun ButtonStart(onClick: () -> Unit) {
     Button(onClick = { onClick() }) {
@@ -30,9 +30,11 @@ fun ButtonStop(onClick: () -> Unit) {
     }
 }
 
+@OptIn(UnstableApi::class)
 @Composable
 fun HomeScreen(viewModel : Model) {
-    val context = LocalContext.current
+    Log.d(TAG,"HomeScreen")
+    //val context = LocalContext.current
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
             painterResource(R.drawable.mic),
@@ -41,7 +43,7 @@ fun HomeScreen(viewModel : Model) {
         )
         Row {
             ButtonStart(onClick = {
-                viewModel.vService?.startAudio( viewModel.sampleRate, viewModel.framesPerBurst)
+                viewModel.vService?.startAudio(viewModel)
                 viewModel.isMuted = false
                 viewModel.isRunning = true
             })

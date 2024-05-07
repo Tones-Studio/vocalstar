@@ -26,6 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.util.Log
+
+private val TAG: String = "DeviceScreen"
 
 @Composable
 fun MySpinner(
@@ -84,6 +87,7 @@ fun MySpinner(
 
 @Composable
 fun DeviceScreen(viewModel : Model) {
+    Log.d(TAG,"DeviceScreen renders")
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text("In & Out",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(20.dp))
@@ -108,7 +112,8 @@ fun DeviceScreen(viewModel : Model) {
                     print("selected $selected")
                 }
             )
-
+        }
+        if (viewModel.devicesOut.count() > 0) {
             MySpinner(
                 "Output Device",
                 viewModel.devicesOut,

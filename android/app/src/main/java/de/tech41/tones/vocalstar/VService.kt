@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Service
 import android.app.Service.*
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
@@ -19,7 +20,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
-
+import android.media.AudioDeviceInfo
 
 class VService: Service() {
     private val OBOE_API_AAUDIO = 0
@@ -34,12 +35,14 @@ class VService: Service() {
     internal var mAAudioRecommended = true
     var apiSelection: Int = OBOE_API_AAUDIO
     var isPlaying = false
-    @JvmField
-    var CHANNEL_ID = "Vocalstar"
+
+    val deviceIdIn = 5
+    val deviceIdOut = 0
 
     inner class VServiceBinder : Binder() {
         fun getService(): VService = this@VService
     }
+
 
     fun getLatency() :Float{
         return 0.2f
@@ -56,6 +59,8 @@ class VService: Service() {
     }
     override fun onCreate() {
         super.onCreate()
+        var audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
         android.os.Debug.waitForDebugger();
         LiveEffectEngine.create()
         LiveEffectEngine.setRecordingDeviceId(getRecordingDeviceId())
@@ -63,13 +68,104 @@ class VService: Service() {
         mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
         LiveEffectEngine.setAPI(apiSelection)
+        EnableAudioApiUI(false)
     }
 
-    fun startAudio(sampleRate : Int, burst:Int){
-        LiveEffectEngine.setDefaults(sampleRate, burst)
-        EnableAudioApiUI(true)
-        LiveEffectEngine.setAPI(apiSelection)
-        LiveEffectEngine.setEffectOn(true)
+    @OptIn(UnstableApi::class)
+    fun getDevices(devices: Array<AudioDeviceInfo>){
+        for (device in devices) {
+            var str = getInfoString(device)
+            Log.d(TAG, str)
+
+            var typestr = ""
+            when(device.type){
+                AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> typestr = "Speaker"
+                AudioDeviceInfo.TYPE_USB_DEVICE ->typestr = "USB"
+                AudioDeviceInfo.TYPE_BLE_HEADSET-> typestr = "Headset"
+                AudioDeviceInfo.TYPE_BUILTIN_EARPIECE-> typestr = "Earpiece"
+                AudioDeviceInfo.TYPE_BUILTIN_MIC-> typestr = "Mic"
+                AudioDeviceInfo.TYPE_WIRED_HEADPHONES-> typestr = "Headphone"
+                AudioDeviceInfo.TYPE_WIRED_HEADSET-> typestr = "Headset"
+                AudioDeviceInfo.TYPE_TELEPHONY-> typestr = "Telephony"
+                else -> { // Note the block
+                    Log.d("device","not known Type " + device.type.toString())
+                }
+            }
+            if (device.isSource && device.isSink){
+                viewModel.devicesIn.add(Pair(device.id.toString(), device.getProductName().toString() + " " + typestr))
+                Log.d(TAG, "IN ID " + device.id.toString() + " " + typestr)
+            }else if(device.isSource) {
+                viewModel.devicesIn.add(Pair(device.id.toString(), device.getProductName().toString() + " " + typestr))
+                Log.d(TAG, "IN ID " + device.id.toString() + " " + typestr)
+            } else if(device.isSink) {
+                viewModel.devicesOut.add(Pair(device.id.toString(), device.getProductName().toString() + " " + typestr))
+                Log.d(TAG, "OUT ID " + device.id.toString() + " " + typestr)
+            }
+        }
+    }
+
+    @OptIn(UnstableApi::class)
+    fun initAudio(){
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val sampleRateStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)
+        viewModel.sampleRate = sampleRateStr.toInt()
+        val framesPerBurstStr = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
+        viewModel.framesPerBurst = framesPerBurstStr.toInt()
+        var currentAudioMode = audioManager.ringerMode
+        viewModel.devicesIn.clear()
+        viewModel.devicesOut.clear()
+        val devicesIn = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+        getDevices(devicesIn)
+        val devicesOut = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        getDevices(devicesOut)
+    }
+    fun startAudio(viewModel : Model){
+        this.viewModel = viewModel
+        initAudio()
+        LiveEffectEngine.setRecordingDeviceId(getRecordingDeviceId())
+        LiveEffectEngine.setPlaybackDeviceId(getPlaybackDeviceId())
+        LiveEffectEngine.setDefaults(viewModel.sampleRate, viewModel.framesPerBurst)
+       // Thread(Runnable { LiveEffectEngine.setEffectOn(true) }).start()
+       LiveEffectEngine.setEffectOn(true)
+    }
+
+    fun getInfoString(adi :AudioDeviceInfo ):String{
+            var sb =  StringBuilder();
+            sb.append("Id: ");
+            sb.append(adi.getId());
+
+            sb.append("\nProduct name: ");
+            sb.append(adi.getProductName());
+
+            sb.append("\nType: ");
+            sb.append(adi.getType());
+
+            sb.append("\nIs source: ");
+            sb.append((if (adi.isSource())  "Yes" else "No"));
+
+            sb.append("\nIs sink: ");
+            sb.append((if (adi.isSink())  "Yes" else "No"));
+
+            sb.append("\nChannel counts: ");
+            var channelCounts = adi.getChannelCounts();
+            sb.append(channelCounts);
+
+            sb.append("\nChannel masks: ");
+            var channelMasks = adi.getChannelMasks();
+            sb.append(channelMasks);
+
+            sb.append("\nChannel index masks: ");
+            var channelIndexMasks = adi.getChannelIndexMasks();
+            sb.append(channelIndexMasks);
+
+            sb.append("\nEncodings: ");
+            var encodings = adi.getEncodings();
+            sb.append(encodings);
+
+            sb.append("\nSample Rates: ");
+            var sampleRates = adi.getSampleRates();
+            sb.append(sampleRates);
+            return sb.toString()
     }
 
     fun stopAudio(){
@@ -78,7 +174,7 @@ class VService: Service() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         try {
             Toast.makeText(this, "Android Audio service starting", Toast.LENGTH_SHORT).show()
-            val notification = NotificationCompat.Builder(this, CHANNEL_ID).build()
+            val notification = NotificationCompat.Builder(this, "Vocalstar").build()
             ServiceCompat.startForeground(
                 this,
                 100,
@@ -105,35 +201,20 @@ class VService: Service() {
     }
 
     private fun getRecordingDeviceId(): Int {
-        return 2 //(recordingDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
+        return 2 //2 //(recordingDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
     }
 
     private fun getPlaybackDeviceId(): Int {
-        return 701 //(playbackDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
+        return 701 // 701 //(playbackDeviceSpinner.getSelectedItem() as AudioDeviceListEntry).getId()
     }
     private fun isRecordPermissionGranted(): Boolean {
         return (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
-    }
-
-    private fun startEffect() {
-        val success = LiveEffectEngine.setEffectOn(true)
-        if (success) {
-            //statusText.setText(R.string.status_playing)
-            // toggleEffectButton.setText(R.string.stop_effect)
-            isPlaying = true
-            EnableAudioApiUI(false)
-        } else {
-            // statusText.setText(R.string.status_open_failed)
-            isPlaying = false
-        }
     }
 
     @OptIn(UnstableApi::class)
     private fun stopEffect() {
         Log.d(TAG, "Playing, attempting to stop")
         LiveEffectEngine.setEffectOn(false)
-        // resetStatusView()
-        // toggleEffectButton.setText(R.string.start_effect)
         isPlaying = false
         EnableAudioApiUI(true)
     }
