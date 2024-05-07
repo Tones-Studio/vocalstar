@@ -2,8 +2,6 @@ package de.tech41.tones.vocalstar
 
 import android.Manifest
 import android.app.ForegroundServiceStartNotAllowedException
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.app.Service.*
 import android.content.Intent
@@ -24,6 +22,8 @@ import androidx.media3.common.util.UnstableApi
 
 
 class VService: Service() {
+    private val OBOE_API_AAUDIO = 0
+    private val OBOE_API_OPENSL_ES = 1
     private val AUDIO_EFFECT_REQUEST = 0
     private var AUDIO_RECORD_REQUEST_CODE = 300
     private lateinit var mediaPlayer: MediaPlayer
@@ -31,6 +31,8 @@ class VService: Service() {
     private val TAG: String = MainActivity::class.java.name
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
+    internal var mAAudioRecommended = true
+    var apiSelection: Int = OBOE_API_AAUDIO
     var isPlaying = false
     @JvmField
     var CHANNEL_ID = "Vocalstar"
@@ -47,6 +49,11 @@ class VService: Service() {
         return binder
     }
 
+    fun EnableAudioApiUI(enable: Boolean) {
+        if (apiSelection == OBOE_API_AAUDIO && !mAAudioRecommended) {
+            apiSelection = OBOE_API_OPENSL_ES
+        }
+    }
     override fun onCreate() {
         super.onCreate()
         android.os.Debug.waitForDebugger();
@@ -56,6 +63,17 @@ class VService: Service() {
         mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
         LiveEffectEngine.setAPI(apiSelection)
+    }
+
+    fun startAudio(sampleRate : Int, burst:Int){
+        LiveEffectEngine.setDefaults(sampleRate, burst)
+        EnableAudioApiUI(true)
+        LiveEffectEngine.setAPI(apiSelection)
+        LiveEffectEngine.setEffectOn(true)
+    }
+
+    fun stopAudio(){
+        LiveEffectEngine.setEffectOn(false)
     }
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         try {

@@ -166,10 +166,10 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
 
     override fun onStop() {
         super.onStop()
-    //if (isBound) {
-      //   unbindService(connection)
-       // isBound = false
-        //}
+        if (isBound) {
+         unbindService(connection)
+           isBound = false
+           }
     }
 
     public override fun onDestroy() {

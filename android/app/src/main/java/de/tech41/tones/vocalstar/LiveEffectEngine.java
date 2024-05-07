@@ -40,8 +40,11 @@ public enum LiveEffectEngine {
             int defaultSampleRate = Integer.parseInt(sampleRateStr);
             String framesPerBurstStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
             int defaultFramesPerBurst = Integer.parseInt(framesPerBurstStr);
-
             native_setDefaultStreamValues(defaultSampleRate, defaultFramesPerBurst);
         }
+    }
+
+    static void setDefaults(int sampleRate, int framesPerBurst){
+        native_setDefaultStreamValues(sampleRate, framesPerBurst);
     }
 }

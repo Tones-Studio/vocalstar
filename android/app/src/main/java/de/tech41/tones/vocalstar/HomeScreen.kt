@@ -30,16 +30,6 @@ fun ButtonStop(onClick: () -> Unit) {
     }
 }
 
-private val OBOE_API_AAUDIO = 0
-private val OBOE_API_OPENSL_ES = 1
-internal var mAAudioRecommended = true
-var apiSelection: Int = OBOE_API_AAUDIO
-
-fun EnableAudioApiUI(enable: Boolean) {
-    if (apiSelection == OBOE_API_AAUDIO && !mAAudioRecommended) {
-        apiSelection = OBOE_API_OPENSL_ES
-    }
-}
 @Composable
 fun HomeScreen(viewModel : Model) {
     val context = LocalContext.current
@@ -51,17 +41,12 @@ fun HomeScreen(viewModel : Model) {
         )
         Row {
             ButtonStart(onClick = {
-                LiveEffectEngine.create()
-                mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
-                EnableAudioApiUI(true)
-                LiveEffectEngine.setAPI(apiSelection)
-                LiveEffectEngine.setDefaultStreamValues(context)
-                LiveEffectEngine.setEffectOn(true)
+                viewModel.vService?.startAudio( viewModel.sampleRate, viewModel.framesPerBurst)
                 viewModel.isMuted = false
                 viewModel.isRunning = true
             })
             ButtonStop(onClick = {
-                LiveEffectEngine.setEffectOn(false)
+                viewModel.vService?.stopAudio()
                 viewModel.isMuted = true
                 viewModel.isRunning = false
             })
