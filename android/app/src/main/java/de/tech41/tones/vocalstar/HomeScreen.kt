@@ -123,15 +123,9 @@ fun HomeScreen(viewModel : Model) {
             }
         }
 
+
         VolumeSlider(viewModel)
 
-        Row{
-            MicVolumeSlider(viewModel)
-            Icon(
-                if (viewModel.isMuted)  painterResource(R.drawable.mic_off) else painterResource(R.drawable.mic),
-                "Mic",
-                tint = if (viewModel.isMuted) Color.Red else Color.Green
-            )
-        }
+        MicVolumeSlider(viewModel)
     }
 }

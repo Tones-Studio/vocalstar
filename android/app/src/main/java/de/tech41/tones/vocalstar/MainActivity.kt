@@ -190,7 +190,7 @@ fun TabScreen(viewModel : Model) {
                     Image( painterResource(R.drawable.apple_icon), contentDescription = "apple music")
                 }
                 Spacer(Modifier.weight(0.5f))
-                Image(painterResource(R.drawable.logoheader), contentDescription = "vocalstar")
+                Image(painterResource(R.drawable.logoheader), contentDescription = "vocalstar", modifier = Modifier.height(30.dp))
                 Spacer(Modifier.weight(0.5f))
                 IconButton(onClick = { viewModel.setPlayer(PLAYER.FILE) }, modifier = Modifier.size(30.dp)) {
                     Icon( painterResource(R.drawable.audio_file), contentDescription = "file player")
