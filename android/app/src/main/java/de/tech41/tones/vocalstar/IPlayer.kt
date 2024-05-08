@@ -6,7 +6,9 @@ enum class PLAYER {
     APPLE, FILE
 }
     interface IPlayer {
-        fun toggle()
+        fun play()
+        fun stop()
+
         fun back()
         fun forward()
 

@@ -37,7 +37,6 @@ class VService: Service() {
     var isPlaying = false
     val deviceIdIn = 5
     val deviceIdOut = 0
-
     inner class VServiceBinder : Binder() {
         fun getService(): VService = this@VService
     }

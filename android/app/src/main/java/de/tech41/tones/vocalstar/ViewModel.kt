@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import android.content.Context
 
 class Model: ViewModel() {
     val devicesIn: MutableList<Pair<String, String>> = ArrayList()
@@ -24,6 +25,8 @@ class Model: ViewModel() {
     var height = 0.0f
 
     var vService: VService? = null
+    var context : Context = MainActivity.applicationContext()
+
     init {
         devicesIn.add(Pair("0", "MIC"))
         devicesIn.add(Pair("1", "Headphone"))
@@ -60,11 +63,11 @@ class Model: ViewModel() {
     var cover = "DEFAULT"
     var artist = "NiniF"
     var player : IPlayer? = null
-    var playerType by mutableStateOf(PLAYER.APPLE)
+    var playerType by mutableStateOf(PLAYER.FILE)
 
     fun setPlayer(type:PLAYER){
         if (type == PLAYER.FILE){
-            player = FilePlayer()
+            player = FilePlayer(context, this)
             playerType = PLAYER.FILE
         }
         if (type == PLAYER.APPLE){
@@ -84,7 +87,14 @@ class Model: ViewModel() {
     }
     fun toggle(){
         isPlaying = !isPlaying
-        player?.toggle()
+        if (player==null){
+            setPlayer(playerType)
+        }
+        if(isPlaying) {
+            player?.play()
+        }else{
+            player?.stop()
+        }
     }
     fun forward(){
         player?.forward()

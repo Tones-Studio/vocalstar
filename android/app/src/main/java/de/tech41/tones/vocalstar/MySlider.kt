@@ -78,19 +78,22 @@ fun MicVolumeSlider( viewModel : Model) {
                     inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
                 valueRange = 0f..1f,
+
             )
         }
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PositionSlider( viewModel : Model) {
         Slider(
             value = viewModel.positionPercent,
             onValueChange = { viewModel.putPositionPercent(it) },
             colors = SliderDefaults.colors(
-                thumbColor = MaterialTheme.colorScheme.secondary,
-                activeTrackColor = MaterialTheme.colorScheme.secondary,
+                thumbColor = Color(255, 165, 0, 127), //MaterialTheme.colorScheme.secondary,
+                activeTrackColor = Color(255, 165, 0, 117), //MaterialTheme.colorScheme.secondary,
                 inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-            valueRange = 0f..100f
+            valueRange = 0f..100f,
+            thumb = {}
         )
 }

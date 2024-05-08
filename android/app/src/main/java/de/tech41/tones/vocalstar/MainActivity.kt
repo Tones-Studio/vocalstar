@@ -21,12 +21,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -54,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -62,7 +61,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
-import androidx.compose.foundation.border
+import java.io.FileOutputStream
+import java.io.InputStream
+
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
@@ -75,10 +76,37 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as VService.VServiceBinder
             viewModel.vService = binder.getService()
+
             isBound = true
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             isBound = false
+        }
+    }
+
+    init {
+        instance = this
+        /*
+        val instream: InputStream = getResources().openRawResource(R.raw.slow)
+        val out: FileOutputStream = FileOutputStream("Slow.mp3")
+        val buff = ByteArray(1024)
+        var read = 0
+        try {
+            while ((instream.read(buff).also { read = it }) > 0) {
+                out.write(buff, 0, read)
+            }
+        } finally {
+            instream.close()
+            out.close()
+        }
+        */
+    }
+
+    companion object {
+        private var instance: MainActivity? = null
+
+        fun applicationContext() : Context {
+            return instance!!.applicationContext
         }
     }
 
@@ -101,6 +129,8 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         super.onCreate(savedInstanceState)
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         viewModel = ViewModelProvider(this).get(Model::class.java)
+        viewModel.context =  applicationContext()
+
         val displayMetrics: DisplayMetrics = applicationContext.resources.displayMetrics
         viewModel.width = displayMetrics.widthPixels / displayMetrics.density
         viewModel.height = displayMetrics.heightPixels / displayMetrics.density
@@ -126,7 +156,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
                 }
             }
         }
-        val intent = Intent(this, VService::class.java)
+        val intent = Intent(applicationContext(), VService::class.java)
         applicationContext.startForegroundService(intent)
     }
 
@@ -180,25 +210,31 @@ fun TabScreen(viewModel : Model) {
             .clip(shape = RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))) {
 
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally ) {
-            Row(modifier = Modifier.background(Color.Black).padding(5.dp)){
+            Row(modifier = Modifier
+                .background(Color.Black)
+                .padding(5.dp)){
                 IconButton(onClick = { viewModel.setPlayer(PLAYER.APPLE) }, modifier = Modifier.size(24.dp)) {
                     Image( painterResource(R.drawable.apple_icon), contentDescription = "apple music")
                 }
                 if(viewModel.playerType == PLAYER.APPLE) {
                     Box(
-                        modifier = Modifier.size(5.dp).border(
-                            width = 5.dp,
-                            color = Color.Green,
-                            shape = CircleShape
-                        )
+                        modifier = Modifier
+                            .size(5.dp)
+                            .border(
+                                width = 5.dp,
+                                color = Color.Green,
+                                shape = CircleShape
+                            )
                     )
                 }else{
                     Box(
-                        modifier = Modifier.size(5.dp).border(
-                            width = 5.dp,
-                            color = Color.Black,
-                            shape = CircleShape
-                        )
+                        modifier = Modifier
+                            .size(5.dp)
+                            .border(
+                                width = 5.dp,
+                                color = Color.Black,
+                                shape = CircleShape
+                            )
                     )
                 }
                 Spacer(Modifier.weight(0.5f))
@@ -206,19 +242,23 @@ fun TabScreen(viewModel : Model) {
                 Spacer(Modifier.weight(0.5f))
                 if(viewModel.playerType == PLAYER.FILE) {
                     Box(
-                        modifier = Modifier.size(5.dp).border(
-                            width = 5.dp,
-                            color = Color.Green,
-                            shape = CircleShape
-                        )
+                        modifier = Modifier
+                            .size(5.dp)
+                            .border(
+                                width = 5.dp,
+                                color = Color.Green,
+                                shape = CircleShape
+                            )
                     )
                 }else{
                     Box(
-                        modifier = Modifier.size(5.dp).border(
-                            width = 5.dp,
-                            color = Color.Black,
-                            shape = CircleShape
-                        )
+                        modifier = Modifier
+                            .size(5.dp)
+                            .border(
+                                width = 5.dp,
+                                color = Color.Black,
+                                shape = CircleShape
+                            )
                     )
                 }
                 IconButton(onClick = { viewModel.setPlayer(PLAYER.FILE) }, modifier = Modifier.size(30.dp)) {

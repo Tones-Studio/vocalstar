@@ -1,7 +1,11 @@
 package de.tech41.tones.vocalstar
 
 class ApplePlayer : IPlayer{
-    override fun toggle() {
+    override fun play() {
+
+    }
+
+    override fun stop() {
 
     }
 
