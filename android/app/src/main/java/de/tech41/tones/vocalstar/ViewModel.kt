@@ -20,6 +20,9 @@ class Model: ViewModel() {
     var deviceOutSelected = ""
     var frameBurstSelected = "192"
 
+    var width = 0.0f
+    var height = 0.0f
+
     var vService: VService? = null
     init {
         devicesIn.add(Pair("0", "MIC"))

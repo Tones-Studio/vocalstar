@@ -25,7 +25,11 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 
 
 private val TAG: String = "HomeScreen"
@@ -42,14 +46,26 @@ fun ButtonStop(onClick: () -> Unit) {
     }
 }
 
-
+fun convertTime(sec:Double):String{
+    var secTotal :Int = sec.roundToInt()
+    var hours = secTotal / 3600
+    var minutes = (secTotal % 3600) / 60
+    var seconds = secTotal % 60
+    if (hours > 0){
+       return  String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    }
+    if(minutes < 10) {
+        return String.format("%01d:%02d", minutes, seconds)
+    }
+    return String.format("%02d:%02d", minutes, seconds)
+}
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel : Model) {
     Log.d(TAG,"HomeScreen")
 
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(viewModel.artist)
+        Text(viewModel.artist,  fontSize = 26.sp)
         val imageModifier = Modifier
             .size(300.dp)
             .border(BorderStroke(1.dp, Color.Black))
@@ -61,11 +77,11 @@ fun HomeScreen(viewModel : Model) {
             contentScale = ContentScale.Fit,
             modifier = imageModifier
         )
-        Text(viewModel.title)
+        Text(viewModel.title,  fontSize = 26.sp)
         Row{
-            Text(viewModel.startTime.toString())
-            Spacer(modifier = Modifier.width(200.dp))
-            Text(viewModel.timeLeft.toString())
+            Text(convertTime(viewModel.startTime))
+            Spacer(Modifier.weight(1f))
+            Text(convertTime(viewModel.timeLeft))
         }
         PositionSlider(viewModel)
         Row{
