@@ -60,13 +60,16 @@ class Model: ViewModel() {
     var cover = "DEFAULT"
     var artist = "NiniF"
     var player : IPlayer? = null
+    var playerType by mutableStateOf(PLAYER.APPLE)
 
     fun setPlayer(type:PLAYER){
         if (type == PLAYER.FILE){
             player = FilePlayer()
+            playerType = PLAYER.FILE
         }
         if (type == PLAYER.APPLE){
             player = ApplePlayer()
+            playerType = PLAYER.APPLE
         }
     }
     fun toggleIsSpeaker(){

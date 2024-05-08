@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -61,8 +62,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
-
-
+import androidx.compose.foundation.border
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
@@ -126,12 +126,8 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
                 }
             }
         }
-
-        Log.d(TAG,"Starting service")
         val intent = Intent(this, VService::class.java)
         applicationContext.startForegroundService(intent)
-
-        Log.d(TAG,"Service Running - MainActivity onCreate complete")
     }
 
     @OptIn(UnstableApi::class)
@@ -166,13 +162,11 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     override fun onPause() {
         super.onPause()
     }
-
     /*
     ===================================================================================================================
     Private
     ===================================================================================================================
      */
-
 }
 
 @Composable
@@ -184,14 +178,49 @@ fun TabScreen(viewModel : Model) {
             .safeDrawingPadding()
             .background(MaterialTheme.colorScheme.background)
             .clip(shape = RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))) {
-        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally ) {
+
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally ) {
             Row(modifier = Modifier.background(Color.Black).padding(5.dp)){
-                IconButton(onClick = { viewModel.setPlayer(PLAYER.APPLE) }, modifier = Modifier.size(30.dp)) {
+                IconButton(onClick = { viewModel.setPlayer(PLAYER.APPLE) }, modifier = Modifier.size(24.dp)) {
                     Image( painterResource(R.drawable.apple_icon), contentDescription = "apple music")
+                }
+                if(viewModel.playerType == PLAYER.APPLE) {
+                    Box(
+                        modifier = Modifier.size(5.dp).border(
+                            width = 5.dp,
+                            color = Color.Green,
+                            shape = CircleShape
+                        )
+                    )
+                }else{
+                    Box(
+                        modifier = Modifier.size(5.dp).border(
+                            width = 5.dp,
+                            color = Color.Black,
+                            shape = CircleShape
+                        )
+                    )
                 }
                 Spacer(Modifier.weight(0.5f))
                 Image(painterResource(R.drawable.logoheader), contentDescription = "vocalstar", modifier = Modifier.height(30.dp))
                 Spacer(Modifier.weight(0.5f))
+                if(viewModel.playerType == PLAYER.FILE) {
+                    Box(
+                        modifier = Modifier.size(5.dp).border(
+                            width = 5.dp,
+                            color = Color.Green,
+                            shape = CircleShape
+                        )
+                    )
+                }else{
+                    Box(
+                        modifier = Modifier.size(5.dp).border(
+                            width = 5.dp,
+                            color = Color.Black,
+                            shape = CircleShape
+                        )
+                    )
+                }
                 IconButton(onClick = { viewModel.setPlayer(PLAYER.FILE) }, modifier = Modifier.size(30.dp)) {
                     Icon( painterResource(R.drawable.audio_file), contentDescription = "file player")
                 }
