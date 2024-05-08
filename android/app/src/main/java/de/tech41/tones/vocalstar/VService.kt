@@ -57,7 +57,6 @@ class VService: Service() {
     }
     override fun onCreate() {
         super.onCreate()
-        var audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
        // android.os.Debug.waitForDebugger(); // this needs to be off !!!
         LiveEffectEngine.create()
         mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
@@ -118,7 +117,6 @@ class VService: Service() {
         this.viewModel = viewModel
         initAudio()
         LiveEffectEngine.setDefaults(viewModel.sampleRate, viewModel.framesPerBurst)
-       // Thread(Runnable { LiveEffectEngine.setEffectOn(true) }).start()
        LiveEffectEngine.setEffectOn(true)
         viewModel.deviceInSelected = LiveEffectEngine.getRecordingDeviceId().toString()
         viewModel.deviceOutSelected = LiveEffectEngine.getPlaybackDeviceId().toString()
