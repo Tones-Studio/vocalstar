@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <activity android:name=".YourActivity"
+        android:configChanges="orientation"
+        android:screenOrientation="portrait"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,10 +15,13 @@
         android:roundIcon="@mipmap/ic_vocalstar_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Vocalstar"
+
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:theme="@style/Theme.Vocalstar">
             <intent-filter>

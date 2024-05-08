@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import kotlin.math.log10
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
 
 fun linearToDecibel(linear: Float): Float {
     val db: Float
@@ -30,31 +32,11 @@ fun linearToDecibel(linear: Float): Float {
 }
 
 @Composable
-fun MySlider( viewModel : Model) {
+fun VolumeSlider( viewModel : Model) {
     Column {
         Slider(
-            modifier = Modifier
-                .graphicsLayer {
-                    rotationZ = 270f
-                    transformOrigin = TransformOrigin(0f, 0f)
-                }
-                .layout { measurable, constraints ->
-                    val placeable = measurable.measure(
-                        Constraints(
-                            minWidth = constraints.minHeight,
-                            maxWidth = constraints.maxHeight,
-                            minHeight = constraints.minWidth,
-                            maxHeight = constraints.maxHeight,
-                        )
-                    )
-                    layout(placeable.height, placeable.width) {
-                        placeable.place(-placeable.width, 0)
-                    }
-                }
-                .width(320.dp)
-                .height(100.dp),
             value = viewModel.volume,
-            onValueChange = { viewModel.putVol(it) },
+            onValueChange = { viewModel.putVolume(it) },
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
@@ -62,29 +44,35 @@ fun MySlider( viewModel : Model) {
             ),
             valueRange = 0f..1f
         )
-        Text(text = "%.2f Db".format(linearToDecibel(viewModel.volume)))
-        Text(text = "%.2f   ".format(viewModel.volume), color = Color.White, fontFamily = FontFamily.Monospace)
-
-        Spacer(modifier = Modifier.height(20.dp))
-        //Divider(color = Color.Blue, thickness = 1.dp)
-        Icon(
-            painterResource(R.drawable.speaker_2),
-            "Mic",
-            tint = Color.White
+    }
+}
+@Composable
+fun MicVolumeSlider( viewModel : Model) {
+    Column {
+        Slider(
+            value = viewModel.micVolume,
+            onValueChange = { viewModel.putMicVolume(it) },
+            colors = SliderDefaults.colors(
+                thumbColor = MaterialTheme.colorScheme.secondary,
+                activeTrackColor = MaterialTheme.colorScheme.secondary,
+                inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            valueRange = 0f..1f
         )
-        Switch(
-            checked = viewModel.isSpeaker,
-            onCheckedChange = {
-                viewModel.putIsSpeaker(it)
-            }
+    }
+}
+@Composable
+fun PositionSlider( viewModel : Model) {
+    Column {
+        Slider(
+            value = viewModel.position,
+            onValueChange = { viewModel.putPosition(it) },
+            colors = SliderDefaults.colors(
+                thumbColor = MaterialTheme.colorScheme.secondary,
+                activeTrackColor = MaterialTheme.colorScheme.secondary,
+                inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            valueRange = 0f..1f
         )
-        var text = "Speaker off"
-        if (viewModel.isSpeaker){
-            text = "Speaker on"
-        }
-        Text(text = text, color = Color.White)
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Input: " + viewModel.inputDevice, color = Color.White)
-        Text(text = "Output: " + viewModel.outputDevice, color = Color.White)
     }
 }

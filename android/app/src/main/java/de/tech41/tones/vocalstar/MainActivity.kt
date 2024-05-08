@@ -55,7 +55,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
-
+import ndroid.content.pm.ActivityInfo
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
@@ -92,6 +92,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         viewModel = ViewModelProvider(this).get(Model::class.java)
         createNotificationChannel()
 
