@@ -25,12 +25,16 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
-
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 
 private val TAG: String = "HomeScreen"
 @Composable
@@ -46,7 +50,7 @@ fun ButtonStop(onClick: () -> Unit) {
     }
 }
 
-fun convertTime(sec:Double):String{
+fun convertTime(sec:Float):String{
     var secTotal :Int = sec.roundToInt()
     var hours = secTotal / 3600
     var minutes = (secTotal % 3600) / 60
@@ -59,12 +63,15 @@ fun convertTime(sec:Double):String{
     }
     return String.format("%02d:%02d", minutes, seconds)
 }
+
+@OptIn(UnstableApi::class)
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel : Model) {
     Log.d(TAG,"HomeScreen")
 
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+
         Text(viewModel.artist,  fontSize = 26.sp)
         val imageModifier = Modifier
             .size(300.dp)
@@ -79,30 +86,36 @@ fun HomeScreen(viewModel : Model) {
         )
         Text(viewModel.title,  fontSize = 26.sp)
         Row{
-            Text(convertTime(viewModel.startTime))
+            Text(convertTime(viewModel.position))
             Spacer(Modifier.weight(1f))
-            Text(convertTime(viewModel.timeLeft))
+            Text(convertTime(viewModel.duration - viewModel.position))
         }
         PositionSlider(viewModel)
+
+        // Transport
+        val imageBtn = Modifier
+            .size(60.dp)
+            .border(BorderStroke(0.dp, Color.White))
         Row{
             IconButton(onClick = { viewModel.back() }, modifier = Modifier.size(60.dp)) {
-                Icon( painterResource(R.drawable.rewind), contentDescription = "Localized description", tint = { Color.White })
+               Icon( painterResource(R.drawable.rewind), contentDescription = "Localized description", modifier = Modifier.fillMaxSize(1F), tint = { Color.White })
             }
             Spacer(modifier = Modifier.width(50.dp))
-            IconButton(onClick = { viewModel.toggle()},modifier = Modifier.size(60.dp) ) {
+            IconButton(onClick = { viewModel.toggle()}, Modifier.size(60.dp) ) {
                 if (viewModel.isPlaying){
                     Icon(
                         painterResource(R.drawable.pause),
-                        contentDescription = "Localized description",
+                        contentDescription = "Pause",
                         tint = { Color.White })
                 }else {
                     Icon(
                         painterResource(R.drawable.play),
-                        contentDescription = "Localized description",
+                        contentDescription = "Playing",
+
                         tint = { Color.White })
                 }
             }
-            Spacer(modifier = Modifier.width( 50.dp))
+            Spacer(modifier = Modifier.width( 60.dp))
             IconButton(onClick = { viewModel.forward() },
             modifier = Modifier.size(60.dp)
             ) {
@@ -110,13 +123,12 @@ fun HomeScreen(viewModel : Model) {
             }
         }
 
-        Text("Volume")
         VolumeSlider(viewModel)
-        Text("Mic")
+
         Row{
             MicVolumeSlider(viewModel)
             Icon(
-                painterResource(R.drawable.mic),
+                if (viewModel.isMuted)  painterResource(R.drawable.mic_off) else painterResource(R.drawable.mic),
                 "Mic",
                 tint = if (viewModel.isMuted) Color.Red else Color.Green
             )

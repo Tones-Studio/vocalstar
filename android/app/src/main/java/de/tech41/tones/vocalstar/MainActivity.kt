@@ -19,20 +19,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -47,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -142,9 +148,9 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     override fun onStop() {
         super.onStop()
         if (isBound) {
-         unbindService(connection)
-           isBound = false
-           }
+            unbindService(connection)
+            isBound = false
+        }
     }
 
     public override fun onDestroy() {
@@ -161,11 +167,11 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         super.onPause()
     }
 
-/*
-===================================================================================================================
-Private
-===================================================================================================================
- */
+    /*
+    ===================================================================================================================
+    Private
+    ===================================================================================================================
+     */
 
 }
 
@@ -179,20 +185,17 @@ fun TabScreen(viewModel : Model) {
             .background(MaterialTheme.colorScheme.background)
             .clip(shape = RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))) {
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally ) {
-            Box ( contentAlignment = Alignment.Center,  modifier = Modifier
-                .height(40.dp)
-                .fillMaxWidth()
-                .background(color = Color.Black))
-                {
-                /*
-                Image(
-                    painter = painterResource(id = R.drawable.logoheader), // TODO set Vocalstar logo
-                    modifier = Modifier.height(20.dp),
-                    contentDescription = "Vocalstar",
-                    contentScale = ContentScale.FillHeight
-                )*/
+            Row(modifier = Modifier.background(Color.Black).padding(5.dp)){
+                IconButton(onClick = { viewModel.setPlayer(PLAYER.APPLE) }, modifier = Modifier.size(30.dp)) {
+                    Image( painterResource(R.drawable.apple_icon), contentDescription = "apple music")
+                }
+                Spacer(Modifier.weight(0.5f))
+                Image(painterResource(R.drawable.logoheader), contentDescription = "vocalstar")
+                Spacer(Modifier.weight(0.5f))
+                IconButton(onClick = { viewModel.setPlayer(PLAYER.FILE) }, modifier = Modifier.size(30.dp)) {
+                    Icon( painterResource(R.drawable.audio_file), contentDescription = "file player")
+                }
             }
-
             Spacer(modifier = Modifier.weight(0.5f))
             when (tabIndex) {
                 0 -> HomeScreen(viewModel)
@@ -217,28 +220,5 @@ fun TabScreen(viewModel : Model) {
                 }
             }
         }
-    }
-}
-
-
-
-@Composable
-fun MessageFromNativeLibrary(name: String) {
-    Text(text = name)
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    VocalstarTheme {
-        Greeting("Android")
     }
 }

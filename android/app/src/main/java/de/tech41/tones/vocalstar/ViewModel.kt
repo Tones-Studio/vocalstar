@@ -42,38 +42,50 @@ class Model: ViewModel() {
         framesBurst.add(Pair("448", "448"))
         framesBurst.add(Pair("512", "512"))
     }
-
-    var isPlaying = false
-
-    fun back(){
-
-    }
-    fun toggle(){
-
-    }
-    fun forward(){
-
-    }
-
-
+    var isPlaying by mutableStateOf(false)
     var isSpeaker by mutableStateOf(false)
     var isMuted by mutableStateOf(true)
     var volume by mutableFloatStateOf(0f)
     var micVolume by mutableFloatStateOf(0f)
     var position by mutableFloatStateOf(0f)
+    var positionPercent by mutableFloatStateOf(0f)
     var inputDevice by mutableStateOf("Headphone")
     var outputDevice by mutableStateOf("USB")
+    var duration by mutableFloatStateOf(260.0f)
+
     var sampleRate : Int = 0
     var framesPerBurst = 0
     var isRunning = false
-
     var title = "SLOW"
     var cover = "DEFAULT"
     var artist = "NiniF"
+    var player : IPlayer? = null
 
-    var startTime = 0.0
-    var timeLeft = 4.0 * 60.0
+    fun setPlayer(type:PLAYER){
+        if (type == PLAYER.FILE){
+            player = FilePlayer()
+        }
+        if (type == PLAYER.APPLE){
+            player = ApplePlayer()
+        }
+    }
+    fun toggleIsSpeaker(){
+        isSpeaker = !isSpeaker
+    }
 
+    fun toggleMute(){
+        isMuted = !isMuted
+    }
+    fun back(){
+        player?.back()
+    }
+    fun toggle(){
+        isPlaying = !isPlaying
+        player?.toggle()
+    }
+    fun forward(){
+        player?.forward()
+    }
 
     fun putVolume(vol:Float){
         volume = vol
@@ -83,8 +95,9 @@ class Model: ViewModel() {
         micVolume = vol
     }
 
-    fun putPosition(vol:Float){
-        position = vol
+    fun putPositionPercent(percent:Float){
+        positionPercent = percent
+        position = percent * duration / 100.0f
     }
 
     fun putMute(b:Boolean){
