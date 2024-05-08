@@ -108,6 +108,15 @@ fun getOutDevice(viewModel : Model,  deviceId : String): Pair<String,String>{
     return Pair("","")
 }
 
+fun getFrameBurst(viewModel : Model,  frameId : String): Pair<String,String>{
+    for (fr in viewModel.framesBurst) {
+        if (fr.first == frameId){
+            return fr
+        }
+    }
+    return Pair("192","192")
+}
+
 @Composable
 fun DeviceScreen(viewModel : Model) {
     Log.d(TAG,"DeviceScreen renders")
@@ -167,6 +176,17 @@ fun DeviceScreen(viewModel : Model) {
                 }
             )
         }
+            MySpinner(
+                "Frame",
+                viewModel.framesBurst,
+                preselected = getFrameBurst(viewModel, viewModel.frameBurstSelected),
+                onSelectionChanged = { selected ->
+                    print("selected $selected")
+                    LiveEffectEngine.setPlaybackDeviceId(selected.first.toInt())
+                    LiveEffectEngine.setEffectOn(false);
+                    LiveEffectEngine.setEffectOn(true);
+                }
+            )
         Switch(
             checked = viewModel.isSpeaker,
             onCheckedChange = {

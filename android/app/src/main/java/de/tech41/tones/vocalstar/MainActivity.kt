@@ -55,7 +55,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
-import ndroid.content.pm.ActivityInfo
+import android.content.pm.ActivityInfo
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
