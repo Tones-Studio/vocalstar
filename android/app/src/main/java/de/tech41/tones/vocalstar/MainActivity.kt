@@ -67,11 +67,13 @@ import java.io.InputStream
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
+
 class MainActivity :ComponentActivity()  { //ComponentActivity()
     private val TAG: String = MainActivity::class.java.name
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
     private var isBound = false
+    var discoverPlayer = DiscoverPlayer(this)
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as VService.VServiceBinder
@@ -130,6 +132,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         viewModel = ViewModelProvider(this).get(Model::class.java)
         viewModel.context =  applicationContext()
+        discoverPlayer.start()
 
         val displayMetrics: DisplayMetrics = applicationContext.resources.displayMetrics
         viewModel.width = displayMetrics.widthPixels / displayMetrics.density

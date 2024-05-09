@@ -6,7 +6,6 @@ import android.media.MediaPlayer
 import java.io.FileOutputStream
 import java.io.InputStream
 
-
 class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
 
     val context : Context = context

@@ -66,6 +66,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.media3.session)
     val composeBom = platform("androidx.compose:compose-bom:2024.05.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
@@ -83,7 +84,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.compose.runtime:runtime-rxjava2")
     implementation("androidx.glance:glance:1.1.0-beta02")
-
+    
     implementation(libs.androidx.ui)
     implementation("androidx.compose.ui:ui-tooling-preview")
 
@@ -94,7 +95,8 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-dash:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
     implementation ("androidx.media3:media3-common:1.3.1")
-    
+    implementation ("androidx.media:media:1.7.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
