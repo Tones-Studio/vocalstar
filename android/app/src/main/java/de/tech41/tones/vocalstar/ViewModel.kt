@@ -1,11 +1,13 @@
 package de.tech41.tones.vocalstar
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import java.net.URL
 import kotlin.math.ln
 
 class Model: ViewModel() {
@@ -60,6 +62,8 @@ class Model: ViewModel() {
     var artist = "NiniF"
     var player : IPlayer? = null
     var playerType by mutableStateOf(PLAYER.FILE)
+
+    var playerUri : Uri? = null
 
     fun setPlayer(type:PLAYER){
         if (type == PLAYER.FILE){

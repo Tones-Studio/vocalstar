@@ -120,17 +120,23 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // Model
         viewModel = ViewModelProvider(this).get(Model::class.java)
         viewModel.context =  applicationContext()
-        discoverPlayer.start()
-
         val displayMetrics: DisplayMetrics = applicationContext.resources.displayMetrics
         viewModel.width = displayMetrics.widthPixels / displayMetrics.density
         viewModel.height = displayMetrics.heightPixels / displayMetrics.density
 
+        // Fileroot
+        FileHelper(this, viewModel).makeAppFolder(true)
+
+        discoverPlayer.start()
+
+        // notification
         createNotificationChannel()
 
-        // Get MIC Permissions
+        // MIC Permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
             Log.d("permission", "have permission to record audio")
         }else{
@@ -141,6 +147,11 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
             Log.d("permission", "Don't have permission to record audio")
         }
 
+        // Start Audio Service
+        val intent = Intent(applicationContext(), VService::class.java)
+        applicationContext.startForegroundService(intent)
+
+        // the UI Root
         enableEdgeToEdge()
         setContent {
             VocalstarTheme {
@@ -149,9 +160,6 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
                 }
             }
         }
-        val intent = Intent(applicationContext(), VService::class.java)
-        applicationContext.startForegroundService(intent)
-
 
     }
 

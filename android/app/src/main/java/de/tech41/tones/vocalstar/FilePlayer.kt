@@ -1,11 +1,11 @@
 package de.tech41.tones.vocalstar
 
-import android.R
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
+import android.net.Uri
 import android.util.Log
-import java.io.FileOutputStream
-import java.io.InputStream
+
 
 class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
 
@@ -19,9 +19,16 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
     }
 
     override fun setup(){
-        mediaPlayer = MediaPlayer.create(context, de.tech41.tones.vocalstar.R.raw.slow)
-      // mediaPlayer?.prepare()
-        viewModel.duration = 240f//getDuration()
+        // mediaPlayer = MediaPlayer.create(context, de.tech41.tones.vocalstar.R.raw.slow)
+        mediaPlayer = MediaPlayer.create(context, viewModel.playerUri)
+        // mediaPlayer = MediaPlayer.create(context, de.tech41.tones.vocalstar.R.raw.slow) \
+        // mediaPlayer?.prepare()
+
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(viewModel.playerUri?.path)
+        viewModel.duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toFloat() / 1000f
+        mmr.release()
+
         Log.d(TAG, "Duration " + viewModel.duration.toString())
     }
     override fun play() {
@@ -51,12 +58,12 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
     }
 
     override fun setPosition(percent: Float) {
-        mediaPlayer?.seekTo((getDuration() * percent).toInt())
+        mediaPlayer?.seekTo((getDuration() * percent * 10.0f).toInt())
     }
 
     override fun getDuration(): Float {
         val f: Float = mediaPlayer?.duration!!  as Float
-        return  f / 100.0f
+        return  f / 1000.0f
     }
 
     override fun getType(): PLAYER {
