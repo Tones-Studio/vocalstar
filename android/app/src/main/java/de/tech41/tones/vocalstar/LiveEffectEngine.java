@@ -12,6 +12,8 @@ public enum LiveEffectEngine {
     static native boolean setEffectOn(boolean isEffectOn);
     static native void setRecordingDeviceId(int deviceId);
     static native void setPlaybackDeviceId(int deviceId);
+
+    static native void setBlocksize(int blockSize);
     static native int getRecordingDeviceId();
     static native int getPlaybackDeviceId();
     static native void delete();

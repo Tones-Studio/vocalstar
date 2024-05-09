@@ -40,6 +40,10 @@ bool LiveEffectEngine::setAudioApi(oboe::AudioApi api) {
     return true;
 }
 
+void LiveEffectEngine::setBlockSize(int blockSize){
+    oboe::DefaultStreamValues::FramesPerBurst = (int32_t) blockSize;
+}
+
 bool LiveEffectEngine::setEffectOn(bool isOn) {
     bool success = true;
     if (isOn != mIsEffectOn) {

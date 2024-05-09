@@ -81,7 +81,8 @@ Java_de_tech41_tones_vocalstar_LiveEffectEngine_setEffectOn(JNIEnv *env, jclass 
     return lengine->setEffectOn(is_effect_on) ? JNI_TRUE : JNI_FALSE;
 }
 JNIEXPORT void JNICALL
-Java_de_tech41_tones_vocalstar_LiveEffectEngine_setRecordingDeviceId(JNIEnv *env, jclass clazz, jint device_id) {
+Java_de_tech41_tones_vocalstar_LiveEffectEngine_setRecordingDeviceId(JNIEnv *env, jclass clazz,
+                                                                     jint device_id) {
     if (lengine == nullptr) {
         LOGE(
                 "Engine is null, you must call createEngine before calling this "
@@ -91,7 +92,8 @@ Java_de_tech41_tones_vocalstar_LiveEffectEngine_setRecordingDeviceId(JNIEnv *env
     lengine->setRecordingDeviceId(device_id);
 }
 JNIEXPORT void JNICALL
-Java_de_tech41_tones_vocalstar_LiveEffectEngine_setPlaybackDeviceId(JNIEnv *env, jclass clazz,jint deviceId) {
+Java_de_tech41_tones_vocalstar_LiveEffectEngine_setPlaybackDeviceId(JNIEnv *env, jclass clazz,
+                                                                    jint deviceId) {
     if (lengine == nullptr) {
         LOGE(
                 "Engine is null, you must call createEngine before calling this "
@@ -109,16 +111,24 @@ Java_de_tech41_tones_vocalstar_LiveEffectEngine_delete(JNIEnv *env, jclass clazz
     }
 }
 JNIEXPORT void JNICALL
-Java_de_tech41_tones_vocalstar_LiveEffectEngine_native_1setDefaultStreamValues(JNIEnv *env, jclass clazz, jint sampleRate, jint framesPerBurst) {
+Java_de_tech41_tones_vocalstar_LiveEffectEngine_native_1setDefaultStreamValues(JNIEnv *env,
+                                                                               jclass clazz,
+                                                                               jint sampleRate,
+                                                                               jint framesPerBurst) {
     oboe::DefaultStreamValues::SampleRate = (int32_t) sampleRate;
     oboe::DefaultStreamValues::FramesPerBurst = (int32_t) framesPerBurst;
 }
 JNIEXPORT jint JNICALL
 Java_de_tech41_tones_vocalstar_LiveEffectEngine_getRecordingDeviceId(JNIEnv *env, jclass clazz) {
-   return lengine->getInDevice();
+    return lengine->getInDevice();
 }
 JNIEXPORT jint JNICALL
 Java_de_tech41_tones_vocalstar_LiveEffectEngine_getPlaybackDeviceId(JNIEnv *env, jclass clazz) {
     return lengine->getOutDevice();
+}
+JNIEXPORT void JNICALL
+Java_de_tech41_tones_vocalstar_LiveEffectEngine_setBlocksize(JNIEnv *env, jclass clazz,
+                                                             jint block_size) {
+    lengine->setBlockSize(block_size);
 }
 }
