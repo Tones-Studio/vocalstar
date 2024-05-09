@@ -14,14 +14,14 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
     val viewModel : Model = viewModel
     var  mediaPlayer : MediaPlayer? = null
     var lastPosition : Int = 0
-    override fun setVolume(vol:Float){
-        mediaPlayer?.setVolume(vol,vol)
+    override fun setVolume(vol:Float) {
+        mediaPlayer?.setVolume(vol, vol)
     }
 
     override fun setup(){
         mediaPlayer = MediaPlayer.create(context, de.tech41.tones.vocalstar.R.raw.slow)
-       // mediaPlayer?.prepare()
-        viewModel.duration = 400f //getDuration()
+      // mediaPlayer?.prepare()
+        viewModel.duration = 240f//getDuration()
         Log.d(TAG, "Duration " + viewModel.duration.toString())
     }
     override fun play() {

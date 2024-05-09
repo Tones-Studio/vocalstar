@@ -77,6 +77,7 @@ class Model: ViewModel() {
 
     fun toggleMute(){
         isMuted = !isMuted
+        LiveEffectEngine.setEffectOn(!isMuted)
     }
     fun back(){
         player?.back()

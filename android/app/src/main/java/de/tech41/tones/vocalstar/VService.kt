@@ -1,35 +1,21 @@
 package de.tech41.tones.vocalstar
 
 import android.app.ForegroundServiceStartNotAllowedException
-import android.app.PendingIntent
 import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Build
-import android.os.Bundle
 import android.os.IBinder
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
-import androidx.core.app.ActivityCompat
+import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
-import androidx.media.MediaBrowserServiceCompat
-import androidx.media.MediaBrowserServiceCompat.BrowserRoot
-import androidx.media.session.MediaButtonReceiver
 import androidx.media3.common.util.UnstableApi
-import java.io.IOException
 
 
 class VService: Service() {
@@ -110,6 +96,7 @@ class VService: Service() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     @OptIn(UnstableApi::class)
     fun initAudio(){
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -125,10 +112,16 @@ class VService: Service() {
         val devicesOut = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
         getDevices(devicesOut)
 
+        viewModel.isSpeaker = !audioManager.isWiredHeadsetOn() // todo??
+
         // build player
         viewModel.player = FilePlayer(this, viewModel)
         viewModel.player?.setup()
+
+
+
     }
+    @RequiresApi(Build.VERSION_CODES.S)
     fun startAudio(viewModel : Model){
         this.viewModel = viewModel
         initAudio()

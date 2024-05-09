@@ -123,6 +123,8 @@ fun DeviceScreen(viewModel : Model) {
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text("In & Out",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(20.dp))
+
+        /*
         Row {
             ButtonStart(onClick = {
                 viewModel.vService?.startAudio(viewModel)
@@ -135,19 +137,13 @@ fun DeviceScreen(viewModel : Model) {
                 viewModel.isRunning = false
             })
         }
-        Text(text = "%.2f Db".format(linearToDecibel(viewModel.volume)))
-        Text(text = "%.2f   ".format(viewModel.volume), color = Color.White, fontFamily = FontFamily.Monospace)
+        */
 
         Text("Oboe Version: " + getVersions(), Modifier.height(20.dp),  fontSize = 17.sp)
         Text("AAudio Support: " + isAAudioSupported(),  fontSize = 17.sp)
         Text("Sample Rate: " + viewModel.sampleRate, fontSize = 17.sp)
         Text("Frames per burst: " +viewModel.framesPerBurst, fontSize = 17.sp)
 
-        if (viewModel.isRunning){
-            Text("Latency: " + viewModel.vService?.getLatency().toString(), fontSize = 17.sp)
-            Text("Block Size : " + getBlockSize(), fontSize = 17.sp)
-            Text("Channels : " + getChannels(), fontSize = 17.sp)
-        }
         Spacer(modifier = Modifier.height(20.dp))
 
         if (viewModel.devicesIn.count() > 0) {
@@ -187,6 +183,10 @@ fun DeviceScreen(viewModel : Model) {
                     LiveEffectEngine.setEffectOn(true);
                 }
             )
+        if (viewModel.isRunning){
+            Text("Latency: " + viewModel.vService?.getLatency().toString(), fontSize = 17.sp)
+            Text("Block Size : " + getBlockSize(), fontSize = 17.sp)
+        }
         Switch(
             checked = viewModel.isSpeaker,
             onCheckedChange = {
