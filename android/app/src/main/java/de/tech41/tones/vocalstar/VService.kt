@@ -124,6 +124,10 @@ class VService: Service() {
         getDevices(devicesIn)
         val devicesOut = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
         getDevices(devicesOut)
+
+        // build player
+        viewModel.player = FilePlayer(this, viewModel)
+        viewModel.player?.setup()
     }
     fun startAudio(viewModel : Model){
         this.viewModel = viewModel

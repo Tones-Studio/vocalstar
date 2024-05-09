@@ -78,8 +78,12 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as VService.VServiceBinder
             viewModel.vService = binder.getService()
-
             isBound = true
+
+            // open Mic
+            viewModel.vService?.startAudio(viewModel)
+            viewModel.isMuted = false
+            viewModel.isRunning = true
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             isBound = false
@@ -88,20 +92,6 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
 
     init {
         instance = this
-        /*
-        val instream: InputStream = getResources().openRawResource(R.raw.slow)
-        val out: FileOutputStream = FileOutputStream("Slow.mp3")
-        val buff = ByteArray(1024)
-        var read = 0
-        try {
-            while ((instream.read(buff).also { read = it }) > 0) {
-                out.write(buff, 0, read)
-            }
-        } finally {
-            instream.close()
-            out.close()
-        }
-        */
     }
 
     companion object {
@@ -161,11 +151,14 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         }
         val intent = Intent(applicationContext(), VService::class.java)
         applicationContext.startForegroundService(intent)
+
+
     }
 
     @OptIn(UnstableApi::class)
     override fun onStart(){
         super.onStart()
+
         Log.d(TAG,"Binding Service")
         // Bind to LocalService.
         Intent(this, VService::class.java).also { intent ->

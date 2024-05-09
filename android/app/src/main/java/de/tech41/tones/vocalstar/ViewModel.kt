@@ -1,16 +1,12 @@
 package de.tech41.tones.vocalstar
 
-import android.media.AudioDeviceInfo
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import android.content.Context
+import kotlin.math.ln
 
 class Model: ViewModel() {
     val devicesIn: MutableList<Pair<String, String>> = ArrayList()
@@ -54,7 +50,7 @@ class Model: ViewModel() {
     var positionPercent by mutableFloatStateOf(0f)
     var inputDevice by mutableStateOf("Headphone")
     var outputDevice by mutableStateOf("USB")
-    var duration by mutableFloatStateOf(260.0f)
+    var duration by mutableFloatStateOf(0.0f)
 
     var sampleRate : Int = 0
     var framesPerBurst = 0
@@ -93,7 +89,7 @@ class Model: ViewModel() {
         if(isPlaying) {
             player?.play()
         }else{
-            player?.stop()
+            player?.pause()
         }
     }
     fun forward(){
@@ -101,7 +97,11 @@ class Model: ViewModel() {
     }
 
     fun putVolume(vol:Float){
+        var maxVolume = 1.0f
         volume = vol
+        val log1 = (ln(maxVolume - vol) / ln(maxVolume)).toFloat()
+        player?.setVolume(log1)
+
     }
 
     fun putMicVolume(vol:Float){

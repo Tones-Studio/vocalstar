@@ -111,7 +111,6 @@ fun HomeScreen(viewModel : Model) {
                     Icon(
                         painterResource(R.drawable.play),
                         contentDescription = "Playing",
-
                         tint = { Color.White })
                 }
             }
@@ -122,7 +121,6 @@ fun HomeScreen(viewModel : Model) {
                 Icon(painterResource(R.drawable.fast_forward), contentDescription = "forward", tint = { Color.White }, modifier = Modifier.size(60.dp))
             }
         }
-
 
         VolumeSlider(viewModel)
 

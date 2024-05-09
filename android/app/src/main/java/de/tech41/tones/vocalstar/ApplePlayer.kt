@@ -1,11 +1,23 @@
 package de.tech41.tones.vocalstar
 
 class ApplePlayer : IPlayer{
+
+    override fun setup(){
+
+    }
     override fun play() {
 
     }
 
+    override fun setVolume(vol:Float){
+
+    }
+
     override fun stop() {
+
+    }
+
+    override fun pause() {
 
     }
 
