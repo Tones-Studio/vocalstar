@@ -5,7 +5,6 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.util.Log
 
-
 class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
 
     var TAG = "de.tech41.tones.vocalstar.FilePlayer"
@@ -17,15 +16,18 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
         mediaPlayer?.setVolume(vol, vol)
     }
 
+    override fun updatePosition(){
+            var sec : Float = (mediaPlayer?.currentPosition!!.toFloat()) / 1000.0f
+            viewModel.positionPercent = sec * 100.0f / viewModel.duration
+            viewModel.position = sec
+            Log.d(TAG, viewModel.positionPercent.toString() )
+    }
+
     override fun setup(){
-        // mediaPlayer = MediaPlayer.create(context, de.tech41.tones.vocalstar.R.raw.slow)
         mediaPlayer = MediaPlayer.create(context, viewModel.playerUri)
         mediaPlayer?.setOnCompletionListener {it:MediaPlayer ->
             viewModel.isPlaying = false
         }
-
-        // mediaPlayer = MediaPlayer.create(context, de.tech41.tones.vocalstar.R.raw.slow) \
-        // mediaPlayer?.prepare()
 
         val mmr = MediaMetadataRetriever()
         mmr.setDataSource(viewModel.playerUri?.path)
@@ -34,6 +36,7 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
 
         Log.d(TAG, "Duration " + viewModel.duration.toString())
 
+        /*
         val thread: Thread = object : Thread() {
             override fun run() {
                 try {
@@ -52,6 +55,8 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
             }
         }
         thread.start()
+
+         */
     }
     override fun play() {
         if(mediaPlayer == null) {
@@ -90,5 +95,9 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
 
     override fun getType(): PLAYER {
         return PLAYER.FILE
+    }
+
+    override fun release(){
+        mediaPlayer?.release()
     }
 }

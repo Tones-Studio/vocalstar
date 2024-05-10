@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import java.net.URL
 import kotlin.math.ln
 
 class Model: ViewModel() {
@@ -37,7 +36,7 @@ class Model: ViewModel() {
     var title = "SLOW"
     var cover = "DEFAULT"
     var artist = "NiniF"
-    var player : IPlayer? = null
+    lateinit var player : IPlayer
     var playerType by mutableStateOf(PLAYER.FILE)
     var playerUri : Uri? = null
     init {
@@ -51,15 +50,21 @@ class Model: ViewModel() {
         framesBurst.add(Pair("512", "512"))
     }
 
+    fun updatePosition(){
+        player.updatePosition()
+    }
+
     fun setPlayer(type:PLAYER){
         if (type == PLAYER.FILE){
-            player = FilePlayer2(context, this)
+            //player = FilePlayer(context, this)
+            player = FilePlayer(context, this)
             playerType = PLAYER.FILE
         }
         if (type == PLAYER.APPLE){
             player = ApplePlayer()
             playerType = PLAYER.APPLE
         }
+        player.setup()
     }
     fun toggleIsSpeaker(){
         isSpeaker = !isSpeaker
@@ -70,29 +75,28 @@ class Model: ViewModel() {
         LiveEffectEngine.setEffectOn(!isMuted)
     }
     fun back(){
-        player?.back()
+       player.back()
     }
     fun toggle(){
         isPlaying = !isPlaying
-        if (player==null){
+        if (player == null){
             setPlayer(playerType)
         }
         if(isPlaying) {
-            player?.play()
+            player.play()
         }else{
-            player?.pause()
+            player.pause()
         }
     }
     fun forward(){
-        player?.forward()
+        player.forward()
     }
 
     fun putVolume(vol:Float){
         var maxVolume = 1.0f
         volume = vol
         val log1 = (ln(maxVolume - vol) / ln(maxVolume)).toFloat()
-        player?.setVolume(log1)
-
+        player.setVolume(log1)
     }
 
     fun putMicVolume(vol:Float){

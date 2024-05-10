@@ -23,4 +23,8 @@ enum class PLAYER {
         fun getType(): PLAYER
 
         fun setVolume(vol:Float)
+
+        fun release()
+
+        fun updatePosition()
     }

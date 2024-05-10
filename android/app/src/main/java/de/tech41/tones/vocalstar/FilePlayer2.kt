@@ -2,9 +2,16 @@ package de.tech41.tones.vocalstar
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
+import android.os.CountDownTimer
+import android.os.Handler
 
 import android.util.Log
 import androidx.annotation.OptIn
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.liveData
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -12,17 +19,42 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.HttpDataSource.HttpDataSourceException
 import androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException
 import androidx.media3.exoplayer.ExoPlayer
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.microseconds
 
 class FilePlayer2 @OptIn(UnstableApi::class)
 constructor(context:Context, viewModel: Model) : IPlayer{
-
+    val context : Context = context
     val mediaPlayer = ExoPlayer.Builder(context).build()
     var tag = "de.tech41.tones.vocalstar.FilePlayer2"
-    val context : Context = context
+
     val viewModel : Model = viewModel
-    private var lastPosition : Long = 0
+
+    override fun updatePosition(){
+        var sec : Float = (mediaPlayer?.currentPosition!!.toFloat()) / 1000.0f
+        viewModel.positionPercent = sec * 100.0f / viewModel.duration
+        viewModel.position = sec
+        Log.d(tag, viewModel.positionPercent.toString() )
+    }
+    // Main Timer
+    val timer = object: CountDownTimer(1000, 500) {
+        override fun onTick(millisUntilFinished: Long) {
+            Log.d(tag, "timer")
+            if (viewModel.duration > 0  && mediaPlayer.isPlaying) {
+                var sec : Float = (mediaPlayer.currentPosition.toFloat()) / 1000.0f
+                viewModel.positionPercent = sec * 100.0f / viewModel.duration
+                viewModel.position = sec
+                Log.d(tag, viewModel.positionPercent.toString() )
+            }
+        }
+
+        override fun onFinish() {
+
+        }
+    }
 
     init{
+        timer.start()
         mediaPlayer.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -52,7 +84,7 @@ constructor(context:Context, viewModel: Model) : IPlayer{
                 }
             }
         )
-        mediaPlayer.setForegroundMode(true)
+        //mediaPlayer.setForegroundMode(true)
     }
     override fun setVolume(vol:Float) {
         mediaPlayer.volume = vol
@@ -66,24 +98,6 @@ constructor(context:Context, viewModel: Model) : IPlayer{
         mmr.release()
         Log.d(tag, "Duration " + viewModel.duration.toString())
 
-        val thread: Thread = object : Thread() {
-            override fun run() {
-                try {
-                    while (true) {
-                        sleep(500)
-                        if (viewModel.duration > 0  && mediaPlayer.isPlaying) {
-                            var sec : Float = (mediaPlayer.currentPosition.toFloat()) / 1000.0f
-                            viewModel.positionPercent = sec * 100.0f / viewModel.duration
-                            viewModel.position = sec
-                            Log.d(tag, viewModel.positionPercent.toString() )
-                        }
-                    }
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
-            }
-        }
-        thread.start()
     }
     override fun play() {
         viewModel.duration = getDuration()
@@ -94,13 +108,11 @@ constructor(context:Context, viewModel: Model) : IPlayer{
     }
 
     override fun stop() {
-        lastPosition = mediaPlayer.contentPosition
         mediaPlayer.pause()
     }
 
     override fun back() {
         mediaPlayer.seekTo(0)
-        lastPosition = 0
     }
 
     override fun forward() {
@@ -112,11 +124,15 @@ constructor(context:Context, viewModel: Model) : IPlayer{
     }
 
     override fun getDuration(): Float {
-        val f: Float = mediaPlayer.duration  as Float
+        val f: Float = mediaPlayer.duration.toFloat()
         return  f / 1000.0f
     }
 
     override fun getType(): PLAYER {
         return PLAYER.FILE
+    }
+
+    override fun release(){
+        mediaPlayer.release()
     }
 }

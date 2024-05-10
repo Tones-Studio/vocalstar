@@ -29,6 +29,7 @@ class VService: Service() {
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
     internal var mAAudioRecommended = true
+
     var apiSelection: Int = OBOE_API_AAUDIO
     var isPlaying = false
     val deviceIdIn = 5
@@ -56,6 +57,7 @@ class VService: Service() {
     override fun onCreate() {
         super.onCreate()
        // android.os.Debug.waitForDebugger(); // this needs to be off !!!
+
         LiveEffectEngine.create()
         mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
@@ -111,14 +113,7 @@ class VService: Service() {
         getDevices(devicesIn)
         val devicesOut = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
         getDevices(devicesOut)
-
         viewModel.isSpeaker = !audioManager.isWiredHeadsetOn() // todo??
-
-        // build player
-        viewModel.player = FilePlayer(this, viewModel)
-        viewModel.player?.setup()
-
-
 
     }
     @RequiresApi(Build.VERSION_CODES.S)
@@ -126,7 +121,7 @@ class VService: Service() {
         this.viewModel = viewModel
         initAudio()
         LiveEffectEngine.setDefaults(viewModel.sampleRate, viewModel.framesPerBurst)
-       LiveEffectEngine.setEffectOn(true)
+        LiveEffectEngine.setEffectOn(true)
         viewModel.deviceInSelected = LiveEffectEngine.getRecordingDeviceId().toString()
         viewModel.deviceOutSelected = LiveEffectEngine.getPlaybackDeviceId().toString()
     }

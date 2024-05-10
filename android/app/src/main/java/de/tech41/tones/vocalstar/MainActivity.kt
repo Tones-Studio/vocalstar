@@ -19,6 +19,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -75,6 +76,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     private var isBound = false
     var discoverPlayer = DiscoverPlayer(this)
     private val connection = object : ServiceConnection {
+        @RequiresApi(Build.VERSION_CODES.S)
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as VService.VServiceBinder
             viewModel.vService = binder.getService()
@@ -128,9 +130,9 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         viewModel.width = displayMetrics.widthPixels / displayMetrics.density
         viewModel.height = displayMetrics.heightPixels / displayMetrics.density
 
-        // Fileroot
+        // File root
         FileHelper(this, viewModel).makeAppFolder(true)
-
+        viewModel.setPlayer(PLAYER.FILE)
         discoverPlayer.start()
 
         // notification
@@ -149,7 +151,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
 
         // Start Audio Service
         val intent = Intent(applicationContext(), VService::class.java)
-        applicationContext.startForegroundService(intent)
+       applicationContext.startForegroundService(intent)
 
         // the UI Root
         enableEdgeToEdge()

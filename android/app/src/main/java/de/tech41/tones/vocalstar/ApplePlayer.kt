@@ -1,5 +1,7 @@
 package de.tech41.tones.vocalstar
 
+import android.util.Log
+
 class ApplePlayer : IPlayer{
 
     override fun setup(){
@@ -21,6 +23,10 @@ class ApplePlayer : IPlayer{
 
     }
 
+    override fun updatePosition(){
+
+    }
+
     override fun back() {
 
     }
@@ -39,5 +45,9 @@ class ApplePlayer : IPlayer{
 
     override fun getType(): PLAYER {
        return PLAYER.APPLE
+    }
+
+    override fun release(){
+
     }
 }

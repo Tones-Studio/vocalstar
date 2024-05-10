@@ -35,6 +35,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.microseconds
 
 private val TAG: String = "HomeScreen"
 @Composable
@@ -69,7 +76,12 @@ fun convertTime(sec:Float):String{
 @Composable
 fun HomeScreen(viewModel : Model) {
     Log.d(TAG,"HomeScreen")
-
+    LaunchedEffect(Unit) {
+        while(true) {
+            delay(500.microseconds)
+            viewModel.updatePosition()
+        }
+    }
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
 
         Text(viewModel.artist,  fontSize = 26.sp)
