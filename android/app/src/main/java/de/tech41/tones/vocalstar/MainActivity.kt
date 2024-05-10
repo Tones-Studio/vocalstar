@@ -68,7 +68,6 @@ import java.io.InputStream
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
-
 class MainActivity :ComponentActivity()  { //ComponentActivity()
     private val TAG: String = MainActivity::class.java.name
     private lateinit var viewModel: Model
@@ -97,7 +96,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     }
 
     companion object {
-        private var instance: MainActivity? = null
+        public var instance: MainActivity? = null
 
         fun applicationContext() : Context {
             return instance!!.applicationContext
@@ -163,6 +162,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
             }
         }
 
+        viewModel.player.setup()
     }
 
     @OptIn(UnstableApi::class)
@@ -198,11 +198,23 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     override fun onPause() {
         super.onPause()
     }
+
+    private val OPEN_DIRECTORY_REQUEST_CODE = 0xf11e
+
+
+    fun openDirectory() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        startActivityForResult(intent, OPEN_DIRECTORY_REQUEST_CODE)
+    }
     /*
     ===================================================================================================================
     Private
     ===================================================================================================================
      */
+}
+
+fun openFileBrowser(){
+    MainActivity.instance?.openDirectory()
 }
 
 @Composable
@@ -219,6 +231,7 @@ fun TabScreen(viewModel : Model) {
             Row(modifier = Modifier
                 .background(Color.Black)
                 .padding(5.dp)){
+                // Apple
                 IconButton(onClick = { viewModel.setPlayer(PLAYER.APPLE) }, modifier = Modifier.size(24.dp)) {
                     Image( painterResource(R.drawable.apple_icon), contentDescription = "apple music")
                 }
@@ -246,6 +259,8 @@ fun TabScreen(viewModel : Model) {
                 Spacer(Modifier.weight(0.5f))
                 Image(painterResource(R.drawable.logoheader), contentDescription = "vocalstar", modifier = Modifier.height(30.dp))
                 Spacer(Modifier.weight(0.5f))
+
+                // File Player
                 if(viewModel.playerType == PLAYER.FILE) {
                     Box(
                         modifier = Modifier
@@ -267,7 +282,14 @@ fun TabScreen(viewModel : Model) {
                             )
                     )
                 }
-                IconButton(onClick = { viewModel.setPlayer(PLAYER.FILE) }, modifier = Modifier.size(30.dp)) {
+                IconButton(onClick = {
+                    if (viewModel.playerType == PLAYER.FILE){
+                        // user wants to open file browser
+                        openFileBrowser()
+                    }else {
+                        viewModel.setPlayer(PLAYER.FILE)
+                    }
+                   }, modifier = Modifier.size(30.dp)) {
                     Icon( painterResource(R.drawable.audio_file), contentDescription = "file player")
                 }
             }

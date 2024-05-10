@@ -42,6 +42,9 @@ public:
     void onErrorAfterClose(oboe::AudioStream *oboeStream, oboe::Result error) override;
     bool setAudioApi(oboe::AudioApi);
     bool isAAudioRecommended(void);
+   void  setMicVolume(float volume){
+       mFullDuplexPass.volume = volume;
+   }
 
     int32_t getInDevice(){
         return mRecordingDeviceId;

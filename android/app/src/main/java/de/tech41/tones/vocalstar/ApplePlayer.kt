@@ -27,6 +27,10 @@ class ApplePlayer : IPlayer{
 
     }
 
+    override fun isPlaying():Boolean{
+        return false
+    }
+
     override fun back() {
 
     }

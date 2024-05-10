@@ -21,6 +21,7 @@
 
 class FullDuplexPass : public oboe::FullDuplexStream {
 public:
+    float volume = 1.0;
     virtual oboe::DataCallbackResult
     onBothStreamsReady(
             const void *inputData,
@@ -41,7 +42,7 @@ public:
         // It is possible that there may be fewer input than output samples.
         int32_t samplesToProcess = std::min(numInputSamples, numOutputSamples);
         for (int32_t i = 0; i < samplesToProcess; i++) {
-            *outputFloats++ = *inputFloats++ * 0.95; // do some arbitrary processing
+            *outputFloats++ = *inputFloats++ * volume; // do some arbitrary processing
         }
 
         // If there are fewer input samples then clear the rest of the buffer.

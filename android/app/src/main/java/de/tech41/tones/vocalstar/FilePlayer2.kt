@@ -30,8 +30,12 @@ constructor(context:Context, viewModel: Model) : IPlayer{
     var tag = "de.tech41.tones.vocalstar.FilePlayer2"
 
     val viewModel : Model = viewModel
+    var isPlayerInit = false
 
     override fun updatePosition(){
+        if(!isPlayerInit){
+            return
+        }
         var sec : Float = (mediaPlayer?.currentPosition!!.toFloat()) / 1000.0f
         viewModel.positionPercent = sec * 100.0f / viewModel.duration
         viewModel.position = sec
@@ -71,14 +75,24 @@ constructor(context:Context, viewModel: Model) : IPlayer{
         //mediaPlayer.setForegroundMode(true)
     }
     override fun setVolume(vol:Float) {
+        if(!isPlayerInit){
+            return
+        }
         mediaPlayer.volume = vol
+    }
+
+    override fun isPlaying():Boolean{
+        if(!isPlayerInit){
+            return false
+        }
+        return mediaPlayer.isPlaying
     }
 
     @OptIn(UnstableApi::class)
     override fun setup(){
-       // val mediaItem = MediaItem.fromUri(viewModel.playerUri!!)
+        val mediaItem = MediaItem.fromUri(viewModel.playerUri!!)
        // val mediaItem = MediaItem.Builder().setMediaId("0").setTag("vocalstar").setUri(viewModel.playerUri!!).build()
-        val mediaItem = MediaItem.Builder().setUri(viewModel.playerUri!!).setMimeType(MimeTypes.AUDIO_MPEG).build()
+       // val mediaItem = MediaItem.Builder().setUri(viewModel.playerUri!!).setMimeType(MimeTypes.AUDIO_MPEG).build()
         mediaPlayer.prepare()
         mediaPlayer.setMediaItem(mediaItem)
         val mmr = MediaMetadataRetriever()
@@ -86,32 +100,53 @@ constructor(context:Context, viewModel: Model) : IPlayer{
         viewModel.duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toFloat() / 1000f
         mmr.release()
         Log.d(tag, "Duration " + viewModel.duration.toString())
+        isPlayerInit = true
     }
     override fun play() {
+        if(!isPlayerInit){
+            return
+        }
         viewModel.duration = getDuration()
         mediaPlayer.play()
     }
     override fun pause() {
+        if(!isPlayerInit){
+            return
+        }
         mediaPlayer.pause()
     }
 
     override fun stop() {
+        if(!isPlayerInit){
+            return
+        }
         mediaPlayer.pause()
     }
 
     override fun back() {
+        if(!isPlayerInit){
+            return
+        }
         mediaPlayer.seekTo(0)
     }
 
     override fun forward() {
-
+        if(!isPlayerInit){
+            return
+        }
     }
 
     override fun setPosition(percent: Float) {
+        if(!isPlayerInit){
+            return
+        }
         mediaPlayer.seekTo((getDuration() * percent * 10.0f).toLong())
     }
 
     override fun getDuration(): Float {
+        if(!isPlayerInit){
+            return 0f
+        }
         val f: Float = mediaPlayer.duration.toFloat()
         return  f / 1000.0f
     }

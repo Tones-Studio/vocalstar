@@ -70,6 +70,10 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
         mediaPlayer?.pause()
     }
 
+    override fun isPlaying():Boolean{
+        return false
+    }
+
     override fun stop() {
         lastPosition = mediaPlayer?.currentPosition!!
         mediaPlayer?.stop()

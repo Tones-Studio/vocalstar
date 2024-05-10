@@ -131,3 +131,9 @@ Java_de_tech41_tones_vocalstar_LiveEffectEngine_setBlocksize(JNIEnv *env, jclass
     lengine->setBlockSize(block_size);
 }
 }
+extern "C"
+JNIEXPORT void JNICALL
+Java_de_tech41_tones_vocalstar_LiveEffectEngine_setMicVolume(JNIEnv *env, jclass clazz,
+                                                             jfloat volume) {
+    lengine->setMicVolume(volume);
+}

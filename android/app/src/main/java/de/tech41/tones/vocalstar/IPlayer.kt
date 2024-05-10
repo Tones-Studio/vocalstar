@@ -27,4 +27,6 @@ enum class PLAYER {
         fun release()
 
         fun updatePosition()
+
+        fun isPlaying():Boolean
     }

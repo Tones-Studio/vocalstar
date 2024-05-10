@@ -23,7 +23,7 @@ class Model: ViewModel() {
     var isPlaying by mutableStateOf(false)
     var isSpeaker by mutableStateOf(false)
     var isMuted by mutableStateOf(true)
-    var volume by mutableFloatStateOf(0f)
+    var volume by mutableFloatStateOf(0.7f)
     var micVolume by mutableFloatStateOf(0f)
     var position by mutableFloatStateOf(0f)
     var positionPercent by mutableFloatStateOf(0f)
@@ -36,9 +36,10 @@ class Model: ViewModel() {
     var title = "SLOW"
     var cover = "DEFAULT"
     var artist = "NiniF"
-    lateinit var player : IPlayer
+    var player :IPlayer = FilePlayer2(context, this)
     var playerType by mutableStateOf(PLAYER.FILE)
     var playerUri : Uri? = null
+    var isSeeking = false
     init {
         framesBurst.add(Pair("64", "64"))
         framesBurst.add(Pair("128", "128"))
@@ -48,19 +49,30 @@ class Model: ViewModel() {
         framesBurst.add(Pair("384", "384"))
         framesBurst.add(Pair("448", "448"))
         framesBurst.add(Pair("512", "512"))
+
     }
 
     fun updatePosition(){
-        player.updatePosition()
+        if(!isSeeking) {
+            if(player != null && player.isPlaying()) {
+                player.updatePosition()
+            }
+        }
     }
 
     fun setPlayer(type:PLAYER){
         if (type == PLAYER.FILE){
             //player = FilePlayer(context, this)
+            if(playerType== PLAYER.FILE){
+                return
+            }
             player = FilePlayer2(context, this)
             playerType = PLAYER.FILE
         }
         if (type == PLAYER.APPLE){
+            if(playerType== PLAYER.APPLE){
+                return
+            }
             player = ApplePlayer()
             playerType = PLAYER.APPLE
         }
@@ -96,16 +108,22 @@ class Model: ViewModel() {
         var maxVolume = 1.0f
         volume = vol
         val log1 = (ln(maxVolume - vol) / ln(maxVolume)).toFloat()
-        player.setVolume(log1)
+        player.setVolume(vol)
     }
 
     fun putMicVolume(vol:Float){
         micVolume = vol
+        LiveEffectEngine.setMicVolume(vol)
     }
 
-    fun putPositionPercent(percent:Float){
+    fun seekPositionPercent(percent:Float){
+        isSeeking = true
         positionPercent = percent
         position = percent * duration / 100.0f
+    }
+    fun seekDone() {
+        player.setPosition(positionPercent)
+        isSeeking = false
     }
 
     fun putMute(b:Boolean){
