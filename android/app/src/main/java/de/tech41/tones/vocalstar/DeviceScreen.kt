@@ -178,7 +178,7 @@ fun DeviceScreen(viewModel : Model) {
                 preselected = getFrameBurst(viewModel, viewModel.frameBurstSelected),
                 onSelectionChanged = { selected ->
                     print("selected $selected")
-                    LiveEffectEngine.setPlaybackDeviceId(selected.first.toInt())
+                    LiveEffectEngine.setBlocksize(selected.first.toInt())
                     LiveEffectEngine.setEffectOn(false);
                     LiveEffectEngine.setEffectOn(true);
                 }

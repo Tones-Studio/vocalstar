@@ -1,6 +1,5 @@
 #include <jni.h>
 #include <oboe/Oboe.h>
-#include "include/Engine.h"
 #include "LiveEffectEngine.h"
 #include "include/logging_macros.h"
 
@@ -9,7 +8,7 @@ static const int kOboeApiOpenSLES = 1;
 static LiveEffectEngine *lengine = nullptr;
 
 extern "C" {
-static Engine engine;
+
 JNIEXPORT jstring JNICALL
 Java_de_tech41_tones_vocalstar_ExternalFunctionsKt_getVersions(JNIEnv *env, jclass clazz) {
     oboe::Version version = oboe::Version();

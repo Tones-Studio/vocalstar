@@ -11,7 +11,6 @@ set (APP_SOURCES
         LatencyTuningCallback.cpp
         SoundGenerator.cpp
         native-lib.cpp
-        Engine.cpp
         LiveEffectEngine.cpp
 )
 

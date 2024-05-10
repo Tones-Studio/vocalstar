@@ -14,35 +14,13 @@ class Model: ViewModel() {
     val devicesIn: MutableList<Pair<String, String>> = ArrayList()
     val devicesOut: MutableList<Pair<String, String>> = ArrayList()
     val framesBurst: MutableList<Pair<String, String>> = ArrayList()
-
     var deviceInSelected = ""
     var deviceOutSelected = ""
     var frameBurstSelected = "192"
-
     var width = 0.0f
     var height = 0.0f
-
     var vService: VService? = null
     var context : Context = MainActivity.applicationContext()
-
-    init {
-        devicesIn.add(Pair("0", "MIC"))
-        devicesIn.add(Pair("1", "Headphone"))
-        devicesIn.add(Pair("2", "Headphone"))
-
-        devicesOut.add(Pair("0", "MIC"))
-        devicesOut.add(Pair("1", "Headphone"))
-        devicesOut.add(Pair("2", "whatever"))
-
-        framesBurst.add(Pair("64", "64"))
-        framesBurst.add(Pair("128", "128"))
-        framesBurst.add(Pair("192", "192"))
-        framesBurst.add(Pair("256", "256"))
-        framesBurst.add(Pair("320", "320"))
-        framesBurst.add(Pair("384", "384"))
-        framesBurst.add(Pair("448", "448"))
-        framesBurst.add(Pair("512", "512"))
-    }
     var isPlaying by mutableStateOf(false)
     var isSpeaker by mutableStateOf(false)
     var isMuted by mutableStateOf(true)
@@ -53,7 +31,6 @@ class Model: ViewModel() {
     var inputDevice by mutableStateOf("Headphone")
     var outputDevice by mutableStateOf("USB")
     var duration by mutableFloatStateOf(0.0f)
-
     var sampleRate : Int = 0
     var framesPerBurst = 0
     var isRunning = false
@@ -62,12 +39,21 @@ class Model: ViewModel() {
     var artist = "NiniF"
     var player : IPlayer? = null
     var playerType by mutableStateOf(PLAYER.FILE)
-
     var playerUri : Uri? = null
+    init {
+        framesBurst.add(Pair("64", "64"))
+        framesBurst.add(Pair("128", "128"))
+        framesBurst.add(Pair("192", "192"))
+        framesBurst.add(Pair("256", "256"))
+        framesBurst.add(Pair("320", "320"))
+        framesBurst.add(Pair("384", "384"))
+        framesBurst.add(Pair("448", "448"))
+        framesBurst.add(Pair("512", "512"))
+    }
 
     fun setPlayer(type:PLAYER){
         if (type == PLAYER.FILE){
-            player = FilePlayer(context, this)
+            player = FilePlayer2(context, this)
             playerType = PLAYER.FILE
         }
         if (type == PLAYER.APPLE){
