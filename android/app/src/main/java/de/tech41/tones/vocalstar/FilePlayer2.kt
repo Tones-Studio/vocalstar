@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.liveData
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -36,25 +37,8 @@ constructor(context:Context, viewModel: Model) : IPlayer{
         viewModel.position = sec
         Log.d(tag, viewModel.positionPercent.toString() )
     }
-    // Main Timer
-    val timer = object: CountDownTimer(1000, 500) {
-        override fun onTick(millisUntilFinished: Long) {
-            Log.d(tag, "timer")
-            if (viewModel.duration > 0  && mediaPlayer.isPlaying) {
-                var sec : Float = (mediaPlayer.currentPosition.toFloat()) / 1000.0f
-                viewModel.positionPercent = sec * 100.0f / viewModel.duration
-                viewModel.position = sec
-                Log.d(tag, viewModel.positionPercent.toString() )
-            }
-        }
-
-        override fun onFinish() {
-
-        }
-    }
 
     init{
-        timer.start()
         mediaPlayer.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -89,15 +73,19 @@ constructor(context:Context, viewModel: Model) : IPlayer{
     override fun setVolume(vol:Float) {
         mediaPlayer.volume = vol
     }
+
+    @OptIn(UnstableApi::class)
     override fun setup(){
-        val mediaItem = MediaItem.fromUri(viewModel.playerUri!!)
+       // val mediaItem = MediaItem.fromUri(viewModel.playerUri!!)
+       // val mediaItem = MediaItem.Builder().setMediaId("0").setTag("vocalstar").setUri(viewModel.playerUri!!).build()
+        val mediaItem = MediaItem.Builder().setUri(viewModel.playerUri!!).setMimeType(MimeTypes.AUDIO_MPEG).build()
         mediaPlayer.prepare()
+        mediaPlayer.setMediaItem(mediaItem)
         val mmr = MediaMetadataRetriever()
         mmr.setDataSource(viewModel.playerUri?.path)
         viewModel.duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toFloat() / 1000f
         mmr.release()
         Log.d(tag, "Duration " + viewModel.duration.toString())
-
     }
     override fun play() {
         viewModel.duration = getDuration()

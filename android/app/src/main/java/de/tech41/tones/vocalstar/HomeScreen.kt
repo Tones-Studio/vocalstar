@@ -42,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.microseconds
+import kotlin.time.Duration.Companion.milliseconds
 
 private val TAG: String = "HomeScreen"
 @Composable
@@ -78,7 +79,7 @@ fun HomeScreen(viewModel : Model) {
     Log.d(TAG,"HomeScreen")
     LaunchedEffect(Unit) {
         while(true) {
-            delay(500.microseconds)
+            delay(500.milliseconds)
             viewModel.updatePosition()
         }
     }

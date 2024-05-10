@@ -57,7 +57,7 @@ class Model: ViewModel() {
     fun setPlayer(type:PLAYER){
         if (type == PLAYER.FILE){
             //player = FilePlayer(context, this)
-            player = FilePlayer(context, this)
+            player = FilePlayer2(context, this)
             playerType = PLAYER.FILE
         }
         if (type == PLAYER.APPLE){
