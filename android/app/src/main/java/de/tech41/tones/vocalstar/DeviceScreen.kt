@@ -33,6 +33,7 @@ import androidx.media3.common.util.Log
 
 private val TAG: String = "DeviceScreen"
 
+
 @Composable
 fun MySpinner(
     title:String,
@@ -190,7 +191,7 @@ fun DeviceScreen(viewModel : Model) {
         Switch(
             checked = viewModel.isSpeaker,
             onCheckedChange = {
-                viewModel.putIsSpeaker(it)
+                viewModel.toggleIsSpeaker()
             }
         )
         var text = "Speaker off"

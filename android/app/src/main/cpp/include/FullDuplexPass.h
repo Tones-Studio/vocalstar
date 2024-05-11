@@ -21,7 +21,7 @@
 
 class FullDuplexPass : public oboe::FullDuplexStream {
 public:
-    float volume = 1.0;
+    float volume = 0.0;
     virtual oboe::DataCallbackResult
     onBothStreamsReady(
             const void *inputData,

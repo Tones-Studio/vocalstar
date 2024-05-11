@@ -3,9 +3,11 @@ package de.tech41.tones.vocalstar
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -13,6 +15,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.support.v4.media.session.MediaSessionCompat
 import android.util.DisplayMetrics
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -61,9 +64,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
+import androidx.mediarouter.media.MediaRouter
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
-import java.io.FileOutputStream
-import java.io.InputStream
 
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
@@ -74,6 +76,18 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     lateinit var audioManager: AudioManager
     private var isBound = false
     var discoverPlayer = DiscoverPlayer(this)
+    private val intentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+    private val myNoisyAudioStreamReceiver = BecomingNoisyReceiver()
+    private val callback = object : MediaSessionCompat.Callback() {
+
+        override fun onPlay() {
+            registerReceiver(myNoisyAudioStreamReceiver, intentFilter)
+        }
+
+        override fun onStop() {
+            unregisterReceiver(myNoisyAudioStreamReceiver)
+        }
+    }
     private val connection = object : ServiceConnection {
         @RequiresApi(Build.VERSION_CODES.S)
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -316,6 +330,16 @@ fun TabScreen(viewModel : Model) {
                     )
                 }
             }
+        }
+    }
+}
+
+
+private class BecomingNoisyReceiver : BroadcastReceiver() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+            // Pause the playback
         }
     }
 }

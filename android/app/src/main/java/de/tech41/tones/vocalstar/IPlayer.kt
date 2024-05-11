@@ -29,4 +29,8 @@ enum class PLAYER {
         fun updatePosition()
 
         fun isPlaying():Boolean
+
+        fun setSpeaker()
+
+         fun setHeadphone()
     }

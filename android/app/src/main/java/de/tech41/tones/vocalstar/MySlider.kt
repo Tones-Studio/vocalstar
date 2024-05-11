@@ -1,31 +1,17 @@
 package de.tech41.tones.vocalstar
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import android.R.attr.x
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.dp
 import kotlin.math.log10
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.IconButton
+
 
 fun linearToDecibel(linear: Float): Float {
     val db: Float
@@ -46,6 +32,7 @@ fun VolumeSlider( viewModel : Model) {
                     tint =  Color(0xFFFFA500)
                 )
             }
+
             Slider(
                 value = viewModel.volume,
                 onValueChange = { viewModel.putVolume(it) },

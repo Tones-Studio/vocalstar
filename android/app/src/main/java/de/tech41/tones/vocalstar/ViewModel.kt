@@ -1,12 +1,17 @@
 package de.tech41.tones.vocalstar
 
 import android.content.Context
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import kotlin.math.exp
 import kotlin.math.ln
 
 class Model: ViewModel() {
@@ -24,7 +29,7 @@ class Model: ViewModel() {
     var isSpeaker by mutableStateOf(false)
     var isMuted by mutableStateOf(true)
     var volume by mutableFloatStateOf(0.7f)
-    var micVolume by mutableFloatStateOf(0f)
+    var micVolume by mutableFloatStateOf(0.0f)
     var position by mutableFloatStateOf(0f)
     var positionPercent by mutableFloatStateOf(0f)
     var inputDevice by mutableStateOf("Headphone")
@@ -40,6 +45,11 @@ class Model: ViewModel() {
     var playerType by mutableStateOf(PLAYER.FILE)
     var playerUri : Uri? = null
     var isSeeking = false
+
+    private val mAudioManager: AudioManager by lazy {
+        context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    }
+
     init {
         framesBurst.add(Pair("64", "64"))
         framesBurst.add(Pair("128", "128"))
@@ -49,7 +59,6 @@ class Model: ViewModel() {
         framesBurst.add(Pair("384", "384"))
         framesBurst.add(Pair("448", "448"))
         framesBurst.add(Pair("512", "512"))
-
     }
 
     fun updatePosition(){
@@ -80,6 +89,13 @@ class Model: ViewModel() {
     }
     fun toggleIsSpeaker(){
         isSpeaker = !isSpeaker
+        if(isSpeaker){
+            putMicVolume(0f)
+
+            player.setSpeaker()
+        }else{
+            player.setHeadphone()
+        }
     }
 
     fun toggleMute(){
@@ -107,8 +123,23 @@ class Model: ViewModel() {
     fun putVolume(vol:Float){
         var maxVolume = 1.0f
         volume = vol
-        val log1 = (ln(maxVolume - vol) / ln(maxVolume)).toFloat()
-        player.setVolume(vol)
+       // val log1 = (ln(maxVolume - vol) / ln(maxVolume)).toFloat()
+        player.setVolume((volume * volume))
+    }
+
+    fun logslider(position:Float): Float {
+        // position will be between 0 and 100
+        var minp = 0f;
+        var maxp = 1f;
+
+        // The result should be between 100 an 10000000
+        var minv = ln(0F);
+        var maxv = ln(1F);
+
+        // calculate adjustment factor
+        var scale = (maxv - minv) / (maxp - minp);
+
+        return exp(minv + scale*(position-minp)).toFloat();
     }
 
     fun putMicVolume(vol:Float){

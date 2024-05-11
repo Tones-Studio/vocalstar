@@ -111,7 +111,7 @@ fun HomeScreen(viewModel : Model) {
             .border(BorderStroke(0.dp, Color.White))
         Row{
             IconButton(onClick = { viewModel.back() }, modifier = Modifier.size(60.dp)) {
-               Icon( painterResource(R.drawable.rewind), contentDescription = "Localized description", modifier = Modifier.fillMaxSize(1F), tint = { Color.White })
+               Icon( painterResource(R.drawable.rewind), contentDescription = "rewind", modifier = Modifier.fillMaxSize(1F), tint = { Color.White })
             }
             Spacer(modifier = Modifier.width(50.dp))
             IconButton(onClick = { viewModel.toggle()}, Modifier.size(60.dp) ) {

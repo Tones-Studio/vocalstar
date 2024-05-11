@@ -74,6 +74,14 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
         return false
     }
 
+    override fun setHeadphone(){
+
+    }
+
+    override fun setSpeaker(){
+
+    }
+
     override fun stop() {
         lastPosition = mediaPlayer?.currentPosition!!
         mediaPlayer?.stop()

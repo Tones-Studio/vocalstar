@@ -1,27 +1,23 @@
 package de.tech41.tones.vocalstar
 
 import android.content.Context
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.media.MediaMetadataRetriever
-import android.os.CountDownTimer
-import android.os.Handler
-
+import android.media.MediaRouter
+import android.os.Build
 import android.util.Log
 import androidx.annotation.OptIn
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.liveData
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.HttpDataSource.HttpDataSourceException
 import androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException
 import androidx.media3.exoplayer.ExoPlayer
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.microseconds
+
 
 class FilePlayer2 @OptIn(UnstableApi::class)
 constructor(context:Context, viewModel: Model) : IPlayer{
@@ -32,6 +28,10 @@ constructor(context:Context, viewModel: Model) : IPlayer{
     val viewModel : Model = viewModel
     var isPlayerInit = false
 
+
+    private val mAudioManager: AudioManager by lazy {
+        context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    }
     override fun updatePosition(){
         if(!isPlayerInit){
             return
@@ -157,5 +157,31 @@ constructor(context:Context, viewModel: Model) : IPlayer{
 
     override fun release(){
         mediaPlayer.release()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    @OptIn(UnstableApi::class)
+    override fun setSpeaker(){
+        var devices =  mAudioManager.getDevices ( AudioManager.GET_DEVICES_OUTPUTS)
+        for (device in devices){
+            if( device.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER){
+                mediaPlayer.setPreferredAudioDevice(device)
+                LiveEffectEngine.setPlaybackDeviceId(device.id)
+                LiveEffectEngine.setEffectOn(false)
+            }
+        }
+    }
+
+    @OptIn(UnstableApi::class)
+    override fun setHeadphone(){
+        var device =  getOutDevice( viewModel, viewModel.deviceOutSelected)
+        LiveEffectEngine.setPlaybackDeviceId(device.first.toInt())
+        LiveEffectEngine.setEffectOn(true)
+        var devices =  mAudioManager.getDevices ( AudioManager.GET_DEVICES_OUTPUTS)
+        for (d in devices){
+            if( d.id == device.first.toInt()){
+                mediaPlayer.setPreferredAudioDevice(d)
+            }
+        }
     }
 }

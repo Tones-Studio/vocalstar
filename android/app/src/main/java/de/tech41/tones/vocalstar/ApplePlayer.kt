@@ -23,6 +23,10 @@ class ApplePlayer : IPlayer{
 
     }
 
+    override fun setSpeaker(){
+
+    }
+
     override fun updatePosition(){
 
     }
@@ -40,6 +44,10 @@ class ApplePlayer : IPlayer{
     }
 
     override fun setPosition(percent: Float) {
+
+    }
+
+    override fun setHeadphone(){
 
     }
 

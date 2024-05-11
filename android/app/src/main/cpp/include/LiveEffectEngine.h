@@ -23,7 +23,7 @@
 #include <thread>
 #include "FullDuplexPass.h"
 
-class LiveEffectEngine : public oboe::AudioStreamCallback {
+class LiveEffectEngine : public oboe::AudioStreamCallback  {
 public:
     LiveEffectEngine();
     void setRecordingDeviceId(int32_t deviceId);
