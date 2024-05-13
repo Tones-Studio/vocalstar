@@ -64,8 +64,8 @@ public:
 
     void setBlockSize(int blockSize);
 
-    void setupDSP(double sampleRate, int blockSize) {
-        mFullDuplexPass.setup(sampleRate,blockSize);
+    void setupDSP(double sampleRate, int blockSize, jboolean i) {
+        mFullDuplexPass.setup(sampleRate,blockSize, i);
     }
 
 private:

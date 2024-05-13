@@ -45,6 +45,12 @@ class Model: ViewModel() {
     var playerType by mutableStateOf(PLAYER.FILE)
     var playerUri : Uri? = null
     var isSeeking = false
+    var isMonoInput by mutableStateOf(false)
+
+    fun toggleIsMono(){
+        isMonoInput = !isMonoInput
+        LiveEffectEngine.setupDSP(sampleRate.toDouble(), framesPerBurst, isMonoInput)
+    }
 
     private val mAudioManager: AudioManager by lazy {
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager

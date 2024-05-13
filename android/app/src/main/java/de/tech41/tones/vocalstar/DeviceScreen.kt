@@ -147,6 +147,18 @@ fun DeviceScreen(viewModel : Model) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        Switch(
+            checked = viewModel.isMonoInput,
+            onCheckedChange = {
+                viewModel.toggleIsMono()
+            }
+        )
+        var textMic = "Stereo Input"
+        if (viewModel.isMonoInput){
+            textMic = "Mono input"
+        }
+        Text(text = textMic, color = Color.White)
+
         if (viewModel.devicesIn.count() > 0) {
             MySpinner(
                 "Input Device",

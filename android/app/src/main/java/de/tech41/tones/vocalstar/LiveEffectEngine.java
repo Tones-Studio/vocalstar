@@ -20,7 +20,7 @@ public enum LiveEffectEngine {
     static native void native_setDefaultStreamValues(int defaultSampleRate, int defaultFramesPerBurst);
     static native void setMicVolume(float volume);
 
-    static native void setupDSP(double sampleRate, int blockSize);
+    static native void setupDSP(double sampleRate, int blockSize, boolean isMono);
 
     static void setDefaultStreamValues(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){

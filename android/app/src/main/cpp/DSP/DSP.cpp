@@ -4,19 +4,15 @@
 
 #include "DSP.h"
 
-#include "Limiter.h"
-#import "EnvelopeFollower.h"
-
-LimiterAttackHoldRelease limiter;
-NoiseGate noiseGate;
-
-void DSP::setup(double sampleRate, int blockSize, int activeMic){
+void DSP::setup(double sampleRate, int blockSize, bool isMono){
     isActive = false;
     sr = sampleRate;
     expectedBlocksize = blockSize;
-    activeMicType = activeMic;
-    limiter.configure(sampleRate);
-    noiseGate.configure(sampleRate);
+   _isMono = isMono;
+    limiterl.configure(sampleRate);
+    limiterr.configure(sampleRate);
+    noiseGatel.configure(sampleRate);
+    noiseGater.configure(sampleRate);
     isActive = true;
 }
 
@@ -28,41 +24,46 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
     if(!isActive){
         return;
     }
-    for (int i=0; i<blocksize; ++i) {
+    for (int i=0; i<blocksize; i = i + 2) {
 
         // Get
-        float v = bufferIn[i];
+        float l = bufferIn[i];
+        float r = bufferIn[i + 1];
+
+        // merge if mono
+        if(_isMono){
+            l = (l + r) * 0.5;
+            r = l;
+        }
 
         // boost above Gate
-        //if(activeMicType!=1){ // we do not boost for the internal mic
-            v = v * 1.3;
-       // }
+        l = l * 1.3;
+        r = r * 1.3;
 
         // Gate
-        v = noiseGate.process(v);
+        l = noiseGatel.process(l);
+        r = noiseGater.process(r);
 
         // Push Limiter
-        if(activeMicType!=1){
-            v = v * 1.5;
-        }
+        l = l * 1.5;
+        r = r * 1.5;
 
         // Limiter
-        v = limiter.sample(v);
+        l = limiterl.sample(l);
+        r = limiterr.sample(r);
 
         // Vol
-        v = v * micLevel;
-
-        // mad boost
-        if(activeMicType!=1){
-            v = v * 2.5;
-        }
+        l = l * micLevel;
+        r = r * micLevel;
 
         if(isMuted){
-            v = 0;
+            l = 0;
+            r = 0;
         }
 
         // send back
-        bufferOut[i] = v;
+        bufferOut[i] = l;
+        bufferOut[i+1] = r;
     }
 }
 

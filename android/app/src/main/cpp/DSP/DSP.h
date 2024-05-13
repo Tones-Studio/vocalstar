@@ -5,6 +5,9 @@
 #ifndef VOCALSTAR_DSP_H
 #define VOCALSTAR_DSP_H
 
+#include "Limiter.h"
+#import "EnvelopeFollower.h"
+
 class DSP{
 
 public:
@@ -12,7 +15,7 @@ public:
     /*
      Setup can be called again  in case sample rate or expected blocksize changes when the user changes device
      */
-    void setup(double sampleRate, int blockSize, int activeMic);
+    void setup(double sampleRate, int blockSize, bool isMono);
 
     void setMicLevel(double volume){
         micLevel = volume;
@@ -24,10 +27,6 @@ public:
 
     void setMute(bool muted){
         isMuted = muted;
-    }
-
-    void setActiveMicType(int id){
-        activeMicType = id;
     }
 
     void stop();
@@ -47,7 +46,13 @@ private:
     double micLevel = 0.0;
     bool isMuted = false;
     bool isActive = false;
-    int activeMicType;
+    bool _isMono = false;
+
+    LimiterAttackHoldRelease limiterl;
+    LimiterAttackHoldRelease limiterr;
+    NoiseGate noiseGatel;
+    NoiseGate noiseGater;
+
 };
 
 #endif //VOCALSTAR_DSP_H

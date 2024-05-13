@@ -114,7 +114,7 @@ class VService: Service() {
         viewModel.isSpeaker = !audioManager.isWiredHeadsetOn() // todo??
 
         // Setp DSP code
-        LiveEffectEngine.setupDSP(viewModel.sampleRate.toDouble(),  viewModel.framesPerBurst)
+        LiveEffectEngine.setupDSP(viewModel.sampleRate.toDouble(),  viewModel.framesPerBurst, viewModel.isMonoInput)
     }
     @RequiresApi(Build.VERSION_CODES.S)
     fun startAudio(viewModel : Model){

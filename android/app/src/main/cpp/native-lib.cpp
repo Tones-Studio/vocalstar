@@ -130,15 +130,13 @@ Java_de_tech41_tones_vocalstar_LiveEffectEngine_setBlocksize(JNIEnv *env, jclass
                                                              jint block_size) {
     lengine->setBlockSize(block_size);
 }
-}
-extern "C"
 JNIEXPORT void JNICALL
 Java_de_tech41_tones_vocalstar_LiveEffectEngine_setMicVolume(JNIEnv *env, jclass clazz,
                                                              jfloat volume) {
     lengine->setMicVolume(volume);
 }
-extern "C"
 JNIEXPORT void JNICALL
-Java_de_tech41_tones_vocalstar_LiveEffectEngine_setupDSP(JNIEnv *env, jclass clazz, jdouble sample_rate, jint block_size) {
-    lengine->setupDSP(sample_rate,block_size );
+Java_de_tech41_tones_vocalstar_LiveEffectEngine_setupDSP(JNIEnv *env, jclass clazz, jdouble sample_rate, jint block_size, jboolean isMono) {
+    lengine->setupDSP(sample_rate, block_size, isMono);
+}
 }

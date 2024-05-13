@@ -42,10 +42,12 @@ public:
 
         // It is possible that there may be fewer input than output samples.
         int32_t samplesToProcess = std::min(numInputSamples, numOutputSamples);
+        dsp.setMicLevel(volume);
         dsp.render(inputFloats,outputFloats, samplesToProcess );
-        for (int32_t i = 0; i < samplesToProcess; i++) {
-            *outputFloats++ = *inputFloats++ * volume; // do some arbitrary processing
-        }
+
+        //for (int32_t i = 0; i < samplesToProcess; i++) {
+           // *outputFloats++ = *inputFloats++ * volume; // do some arbitrary processing
+       // }
 
         // If there are fewer input samples then clear the rest of the buffer.
         int32_t samplesLeft = numOutputSamples - numInputSamples;
@@ -56,8 +58,8 @@ public:
         return oboe::DataCallbackResult::Continue;
     }
 
-    void setup(double sampleRate, int blockSize){
-        dsp.setup( sampleRate,  blockSize, 0);
+    void setup(double sampleRate, int blockSize, bool isMono){
+        dsp.setup( sampleRate,  blockSize, isMono);
     }
 };
 #endif //SAMPLES_FULLDUPLEXPASS_H
