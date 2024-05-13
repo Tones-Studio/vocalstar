@@ -7,6 +7,11 @@
 
 #include "Limiter.h"
 #import "EnvelopeFollower.h"
+#include "dsp_lib/delay.h"
+#include "dsp_lib/filters.h"
+
+using Delay = signalsmith::delay::Delay<float>;
+using BiquadDesign = signalsmith::filters::BiquadDesign;
 
 class DSP{
 
@@ -52,6 +57,11 @@ private:
     LimiterAttackHoldRelease limiterr;
     NoiseGate noiseGatel;
     NoiseGate noiseGater;
+
+    Delay delayLineL;
+    Delay delayLineR;
+    Delay delayLineM;
+    BiquadDesign filter;
 
 };
 

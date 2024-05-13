@@ -14,6 +14,11 @@ void DSP::setup(double sampleRate, int blockSize, bool isMono){
     noiseGatel.configure(sampleRate);
     noiseGater.configure(sampleRate);
     isActive = true;
+
+    delayLineL.resize(48000,0);
+    delayLineR.resize(48000,0);
+    delayLineM.resize(48000,0);
+
 }
 
 void  DSP::stop(){
@@ -35,6 +40,7 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
             l = (l + r) * 0.5;
             r = l;
         }
+
 
         // boost above Gate
         l = l * 1.3;
@@ -61,9 +67,20 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
             r = 0;
         }
 
+        // add Delay
+        l += 0.1 * delayLineL.read(12000);
+        r += 0.1 * delayLineR.read(8000);
+
+        l+= 0.05 * delayLineM.read(24000);
+        r+= 0.05 * delayLineM.read(24000);
+
         // send back
         bufferOut[i] = l;
         bufferOut[i+1] = r;
+
+        delayLineL.write(l);
+        delayLineR.write(r);
+        delayLineM.write((l + r) * 0.5);
     }
 }
 
