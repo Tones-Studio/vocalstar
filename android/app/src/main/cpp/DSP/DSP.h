@@ -10,6 +10,7 @@
 #include "dsp_lib/delay.h"
 #include "dsp_lib/FilterButterworth24.h"
 #include "dsp_lib/MyFilter.h"
+//#include "Reverb.h"
 
 using Delay = signalsmith::delay::Delay<float>;
 
@@ -66,9 +67,8 @@ private:
 
     MyFilter  filterL;
     MyFilter  filterR;
-    //FilterButterworth24 MyFilter;
-   // FilterButterworth24 filterR;
 
+   // BasicReverb<8, 2> reverb;
 };
 
 #endif //VOCALSTAR_DSP_H

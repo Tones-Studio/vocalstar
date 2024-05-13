@@ -24,6 +24,8 @@ void DSP::setup(double sampleRate, int blockSize, bool isMono){
 
     filterL.prepareToPlay(sampleRate,blockSize);
     filterR.prepareToPlay(sampleRate,blockSize);
+
+    //reverb.configure(sampleRate);
 }
 
 void  DSP::stop(){
@@ -34,6 +36,8 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
     if(!isActive){
         return;
     }
+
+    
     for (int i=0; i<blocksize; i = i + 2) {
 
         // Get
@@ -45,7 +49,6 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
             l = (l + r) * 0.5;
             r = l;
         }
-
 
         // boost above Gate
         l = l * 1.3;
