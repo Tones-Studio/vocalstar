@@ -1,5 +1,6 @@
 package de.tech41.tones.vocalstar
 
+import android.net.Uri
 import android.util.Log
 
 class ApplePlayer : IPlayer{
@@ -40,6 +41,10 @@ class ApplePlayer : IPlayer{
     }
 
     override fun forward() {
+
+    }
+
+    override fun setUri(url: Uri){
 
     }
 

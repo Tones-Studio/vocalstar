@@ -3,6 +3,7 @@ package de.tech41.tones.vocalstar
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
+import android.net.Uri
 import android.util.Log
 
 class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
@@ -79,6 +80,10 @@ class FilePlayer  constructor(context:Context,  viewModel: Model) : IPlayer{
     }
 
     override fun setSpeaker(){
+
+    }
+
+    override fun setUri(url: Uri){
 
     }
 

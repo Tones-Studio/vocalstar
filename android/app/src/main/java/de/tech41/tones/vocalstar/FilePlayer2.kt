@@ -5,6 +5,7 @@ import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
 import android.media.MediaRouter
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.OptIn
@@ -90,15 +91,8 @@ constructor(context:Context, viewModel: Model) : IPlayer{
 
     @OptIn(UnstableApi::class)
     override fun setup(){
-        val mediaItem = MediaItem.fromUri(viewModel.playerUri!!)
-       // val mediaItem = MediaItem.Builder().setMediaId("0").setTag("vocalstar").setUri(viewModel.playerUri!!).build()
-       // val mediaItem = MediaItem.Builder().setUri(viewModel.playerUri!!).setMimeType(MimeTypes.AUDIO_MPEG).build()
-        mediaPlayer.prepare()
-        mediaPlayer.setMediaItem(mediaItem)
-        val mmr = MediaMetadataRetriever()
-        mmr.setDataSource(viewModel.playerUri?.path)
-        viewModel.duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toFloat() / 1000f
-        mmr.release()
+        setUri(viewModel.playerUri!!)
+
         Log.d(tag, "Duration " + viewModel.duration.toString())
         isPlayerInit = true
     }
@@ -157,6 +151,28 @@ constructor(context:Context, viewModel: Model) : IPlayer{
 
     override fun release(){
         mediaPlayer.release()
+    }
+
+    override fun setUri(url: Uri){
+        viewModel.playerUri = url
+        val mediaItem = MediaItem.fromUri(url)
+        mediaPlayer.setMediaItem(mediaItem)
+        mediaPlayer.prepare()
+
+        // get duration - this might fail
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(context,url)
+       try {
+           var r = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+           if(r!=null) {
+               viewModel.duration = r!!.toFloat() / 1000f
+           }else{
+
+           }
+       }catch(e:Exception){
+           viewModel.duration = 0f
+       }
+        mmr.release()
     }
 
     @RequiresApi(Build.VERSION_CODES.S)

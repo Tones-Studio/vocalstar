@@ -187,6 +187,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     private val OPEN_DIRECTORY_REQUEST_CODE = 0xf11e
     val PICK_AUDIO_FILE = 2
 
+    @OptIn(UnstableApi::class)
     override fun onActivityResult(
         requestCode: Int, resultCode: Int, resultData: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
@@ -194,7 +195,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
             // the user selected.
             resultData?.data?.also { uri ->
                 Log.d(TAG,uri.toString())
-                viewModel.playerUri = uri
+                viewModel.setTitle(uri)
             }
         }
     }

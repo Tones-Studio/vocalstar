@@ -1,5 +1,6 @@
 package de.tech41.tones.vocalstar
 
+import android.net.Uri
 import androidx.media3.common.Player
 
 enum class PLAYER {
@@ -33,4 +34,6 @@ enum class PLAYER {
         fun setSpeaker()
 
          fun setHeadphone()
+
+         fun setUri(url: Uri)
     }

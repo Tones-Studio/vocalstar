@@ -37,7 +37,7 @@ class Model: ViewModel() {
     var duration by mutableFloatStateOf(0.0f)
     var sampleRate : Int = 0
     var framesPerBurst = 0
-    var isRunning = false
+    var isRunning = false //engine is started
     var title = "SLOW"
     var cover = "DEFAULT"
     var artist = "NiniF"
@@ -59,6 +59,13 @@ class Model: ViewModel() {
         framesBurst.add(Pair("384", "384"))
         framesBurst.add(Pair("448", "448"))
         framesBurst.add(Pair("512", "512"))
+    }
+
+    fun setTitle(url:Uri){
+        playerUri = url
+        isPlaying = false
+        player.stop()
+        player.setUri(url)
     }
 
     fun updatePosition(){
