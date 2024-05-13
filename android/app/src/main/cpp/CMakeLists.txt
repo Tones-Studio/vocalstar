@@ -13,6 +13,8 @@ set (APP_SOURCES
         native-lib.cpp
         LiveEffectEngine.cpp
         DSP/DSP.cpp
+        DSP/FilterButterworth24.cpp
+        DSP/MyFilter.cpp
 )
 
 add_library(vocalstar SHARED  ${APP_SOURCES})

@@ -19,6 +19,11 @@ void DSP::setup(double sampleRate, int blockSize, bool isMono){
     delayLineR.resize(48000,0);
     delayLineM.resize(48000,0);
 
+    filterL.setButterworth(type_highshelf,  7000.0,  0.1,  1.2);
+    filterR.setButterworth(type_highshelf,  7000.0,  0.1,  1.2);
+
+    filterL.prepareToPlay(sampleRate,blockSize);
+    filterR.prepareToPlay(sampleRate,blockSize);
 }
 
 void  DSP::stop(){
@@ -66,6 +71,9 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
             l = 0;
             r = 0;
         }
+
+        l = filterL.processButterworth(l);
+        r = filterL.processButterworth(r);
 
         // add Delay
         l += 0.1 * delayLineL.read(12000);

@@ -8,10 +8,12 @@
 #include "Limiter.h"
 #import "EnvelopeFollower.h"
 #include "dsp_lib/delay.h"
-#include "dsp_lib/filters.h"
+#include "dsp_lib/FilterButterworth24.h"
+#include "dsp_lib/MyFilter.h"
 
 using Delay = signalsmith::delay::Delay<float>;
-using BiquadDesign = signalsmith::filters::BiquadDesign;
+
+// https://github.com/Signalsmith-Audio/reverb-example-code/blob/main/main.cpp
 
 class DSP{
 
@@ -61,7 +63,11 @@ private:
     Delay delayLineL;
     Delay delayLineR;
     Delay delayLineM;
-    BiquadDesign filter;
+
+    MyFilter  filterL;
+    MyFilter  filterR;
+    //FilterButterworth24 MyFilter;
+   // FilterButterworth24 filterR;
 
 };
 
