@@ -18,12 +18,13 @@
 #define SAMPLES_FULLDUPLEXPASS_H
 
 #include "oboe/Oboe.h"
+#include "../DSP/DSP.h"
 
 class FullDuplexPass : public oboe::FullDuplexStream {
 public:
+    DSP dsp;
     float volume = 0.0;
-    virtual oboe::DataCallbackResult
-    onBothStreamsReady(
+    virtual oboe::DataCallbackResult onBothStreamsReady(
             const void *inputData,
             int   numInputFrames,
             void *outputData,
@@ -41,6 +42,7 @@ public:
 
         // It is possible that there may be fewer input than output samples.
         int32_t samplesToProcess = std::min(numInputSamples, numOutputSamples);
+        dsp.render(inputFloats,outputFloats, samplesToProcess );
         for (int32_t i = 0; i < samplesToProcess; i++) {
             *outputFloats++ = *inputFloats++ * volume; // do some arbitrary processing
         }
@@ -52,6 +54,10 @@ public:
         }
 
         return oboe::DataCallbackResult::Continue;
+    }
+
+    void setup(double sampleRate, int blockSize){
+        dsp.setup( sampleRate,  blockSize, 0);
     }
 };
 #endif //SAMPLES_FULLDUPLEXPASS_H

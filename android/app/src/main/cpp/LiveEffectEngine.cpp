@@ -162,6 +162,7 @@ oboe::AudioStreamBuilder *LiveEffectEngine::setupCommonStreamParameters(
         ->setFormatConversionAllowed(true)
         ->setSharingMode(oboe::SharingMode::Exclusive)
         ->setPerformanceMode(oboe::PerformanceMode::LowLatency);
+
     return builder;
 }
 

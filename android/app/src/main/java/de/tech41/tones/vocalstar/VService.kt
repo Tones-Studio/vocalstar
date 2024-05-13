@@ -56,8 +56,6 @@ class VService: Service() {
     }
     override fun onCreate() {
         super.onCreate()
-       // android.os.Debug.waitForDebugger(); // this needs to be off !!!
-
         LiveEffectEngine.create()
         mAAudioRecommended = LiveEffectEngine.isAAudioRecommended()
         EnableAudioApiUI(true)
@@ -115,6 +113,8 @@ class VService: Service() {
         getDevices(devicesOut)
         viewModel.isSpeaker = !audioManager.isWiredHeadsetOn() // todo??
 
+        // Setp DSP code
+        LiveEffectEngine.setupDSP(viewModel.sampleRate.toDouble(),  viewModel.framesPerBurst)
     }
     @RequiresApi(Build.VERSION_CODES.S)
     fun startAudio(viewModel : Model){

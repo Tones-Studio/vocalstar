@@ -137,3 +137,8 @@ Java_de_tech41_tones_vocalstar_LiveEffectEngine_setMicVolume(JNIEnv *env, jclass
                                                              jfloat volume) {
     lengine->setMicVolume(volume);
 }
+extern "C"
+JNIEXPORT void JNICALL
+Java_de_tech41_tones_vocalstar_LiveEffectEngine_setupDSP(JNIEnv *env, jclass clazz, jdouble sample_rate, jint block_size) {
+    lengine->setupDSP(sample_rate,block_size );
+}
