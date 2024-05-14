@@ -40,6 +40,7 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
     float MR[blocksize];
 
     int index = 0;
+
     for (int i=0; i<blocksize; i = i + 2) {
         // Get
         float l = bufferIn[i];
@@ -86,30 +87,33 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         l+= 0.05 * delayLineM.read(24000);
         r+= 0.05 * delayLineM.read(24000);
 
-        // send back
-        ML[index] = l;
-        MR[index] = r;
-
+        // send to delays
         delayLineL.write(l);
         delayLineR.write(r);
         delayLineM.write((l + r) * 0.5);
+
+        // send to reverb
+        std::array<float, 2> array;
+        array[0,0] =  l;
+        array[0,1] =  r;
+        auto res = reverb.process(array);
+        l = l + res[0,0] * 0.2;
+        r = r + res[0,1] * 0.2;
+
+        // send back
+        ML[index] = l;
+        MR[index] = r;
         ++index;
     }
 
-    std::array<float, 2> array;
-    for(int i =0; i < blocksize / 2; i = i + 1) {
-        array[i,0] =  ML[i];
-        array[i,1] =  MR[i];
-    }
-    auto res = reverb.process(array);
-
     index = 0;
     for(int i =0; i < blocksize; i = i + 2){
-        bufferOut[i] = ML[index];
+        bufferOut[i] = ML[index] ;
         bufferOut[i + 1] = MR[index];
         ++index;
     }
 
+    /*
     for(unsigned i = 0; i < blocksize; ++i)
     {
         float c = 0.1;
@@ -117,6 +121,7 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         bufferOut[i] = state + c * bufferOut[i];
         state = input - c * bufferOut[i];
     }
+     */
 }
 
 

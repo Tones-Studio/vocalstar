@@ -73,7 +73,7 @@ private:
 //    CIC  cicL{3,8,3};
    // CIC  cicR{3,8,3};
 
-    BasicReverb<2, 2> reverb = BasicReverb<2, 2>(100.0, 10);
+    BasicReverb<2, 2> reverb = BasicReverb<2, 2>(100.0, 10,0.0, 1.0);
 };
 
 #endif //VOCALSTAR_DSP_H
