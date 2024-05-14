@@ -15,6 +15,8 @@ set (APP_SOURCES
         DSP/DSP.cpp
         DSP/FilterButterworth24.cpp
         DSP/MyFilter.cpp
+        DSP/CombFilter.cpp
+        DSP/CombFilter2.cpp
 )
 
 add_library(vocalstar SHARED  ${APP_SOURCES})

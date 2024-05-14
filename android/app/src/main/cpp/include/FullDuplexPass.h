@@ -18,7 +18,7 @@
 #define SAMPLES_FULLDUPLEXPASS_H
 
 #include "oboe/Oboe.h"
-#include "../DSP/DSP.h"
+#include "../DSP/dsp_lib/DSP.h"
 
 class FullDuplexPass : public oboe::FullDuplexStream {
 public:

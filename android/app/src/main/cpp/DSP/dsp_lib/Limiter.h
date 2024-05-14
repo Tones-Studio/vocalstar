@@ -5,15 +5,15 @@
 #ifndef VOCALSTAR_LIMITER_H
 #define VOCALSTAR_LIMITER_H
 
-#include "dsp_lib/delay.h"
-#include "dsp_lib/curves.h"
-#include "dsp_lib/rates.h"
-#include "dsp_lib/envelopes.h"
-#include "dsp_lib/filters.h"
-#include "dsp_lib/perf.h"
-#include "dsp_lib/spectral.h"
-#include "dsp_lib/common.h"
-#include "dsp_lib/windows.h"
+#include "delay.h"
+#include "curves.h"
+#include "rates.h"
+#include "envelopes.h"
+#include "filters.h"
+#include "perf.h"
+#include "spectral.h"
+#include "common.h"
+#include "windows.h"
 
 struct ConstantTimeRelease {
     signalsmith::envelopes::PeakHold<double> peakHold{0};

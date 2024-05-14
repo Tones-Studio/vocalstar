@@ -7,11 +7,12 @@
 
 #include "Limiter.h"
 #import "EnvelopeFollower.h"
-#include "dsp_lib/delay.h"
-#include "dsp_lib/FilterButterworth24.h"
-#include "dsp_lib/MyFilter.h"
-#include "dsp_lib/Reverb.h"
-#include "dsp_lib/CIC.h"
+#include "delay.h"
+#include "FilterButterworth24.h"
+#include "MyFilter.h"
+#include "Reverb.h"
+#include "CombFilter.h"
+#include "CombFilter2.h"
 
 using Delay = signalsmith::delay::Delay<float>;
 
@@ -67,14 +68,18 @@ private:
     Delay delayLineL;
     Delay delayLineR;
     Delay delayLineM;
+    Delay delayLineLong;
 
     MyFilter  filterL;
     MyFilter  filterR;
 
-//    CIC  cicL{3,8,3};
-   // CIC  cicR{3,8,3};
+    CombFilter compL = CombFilter(3, 8, 3);
+    CombFilter compR = CombFilter(3, 8, 3);
 
-    BasicReverb<2, 2> reverb = BasicReverb<2, 2>(100.0, 4,0.0, 1.0);
+    CombFilter2 comp2L = CombFilter2(3.0, 0.7,  11);
+    CombFilter2 comp2R = CombFilter2(3.0, 0.7,  17);
+
+    BasicReverb<2, 2> reverb = BasicReverb<2, 2>(50.0, 4,0.0, 1.0);
 };
 
 #endif //VOCALSTAR_DSP_H

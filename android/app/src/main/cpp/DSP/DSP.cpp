@@ -2,7 +2,7 @@
 // Created by Mathias Dietrich on 13.05.24.
 //
 
-#include "DSP.h"
+#include "dsp_lib/DSP.h"
 
 void DSP::setup(double sampleRate, int blockSize, bool isMono){
     isActive = false;
@@ -18,13 +18,16 @@ void DSP::setup(double sampleRate, int blockSize, bool isMono){
     delayLineL.resize(48000,0);
     delayLineR.resize(48000,0);
     delayLineM.resize(48000,0);
+    delayLineLong.resize(2 * 48000,0);
 
     filterL.setButterworth(type_highshelf,  7000.0,  0.1,  1.2);
     filterR.setButterworth(type_highshelf,  7000.0,  0.1,  1.2);
-
     filterL.prepareToPlay(sampleRate,blockSize);
     filterR.prepareToPlay(sampleRate,blockSize);
-     reverb.configure(sampleRate);
+
+    reverb.configure(sampleRate);
+    comp2L.clearDelayLines();
+    comp2R.clearDelayLines();
 }
 
 void  DSP::stop(){
@@ -35,12 +38,14 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
     if(!isActive){
         return;
     }
-
+    int blocksPerChannel = blocksize / 2;
     float ML[blocksize];
     float MR[blocksize];
 
-    int index = 0;
+    float ReverbL[blocksize];
+    float ReverbR[blocksize];
 
+    int index = 0;
     for (int i=0; i<blocksize; i = i + 2) {
         // Get
         float l = bufferIn[i];
@@ -63,8 +68,6 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         // Push Limiter
         l = l * 1.5;
         r = r * 1.5;
-
-        // Limiter
         l = limiterl.sample(l);
         r = limiterr.sample(r);
 
@@ -81,16 +84,27 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         r = filterL.processButterworth(r);
 
         // add Delay
-        l += 0.1 * delayLineL.read(12000);
-        r += 0.1 * delayLineR.read(8000);
+        l += 0.1 * delayLineL.read(7907 * 2);
+        r += 0.1 * delayLineR.read(7919);
 
-        l+= 0.05 * delayLineM.read(24000);
+        float refCenter = delayLineM.read(6000);
+        float lOrg = l;
+        float rOrg = r;
+
+        l+= 0.05 * delayLineM.read(24050);
         r+= 0.05 * delayLineM.read(24000);
 
+       // Echo
+       float longDelay =  delayLineLong.read(80000);
+        l+= 0.01 * longDelay;
+        r+= 0.01 * longDelay;
+
         // send to delays
-        delayLineL.write(l);
-        delayLineR.write(r);
-        delayLineM.write((l + r) * 0.5);
+        delayLineL.write(lOrg);
+        delayLineR.write(rOrg);
+        delayLineM.write((lOrg+ rOrg) * 0.5);
+        float feedback = 0.1;
+        delayLineLong.write((lOrg + rOrg) * 0.5 + longDelay * feedback);
 
         // send to reverb
         std::array<float, 2> array;
@@ -98,6 +112,7 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         array[0,1] =  r;
         auto res = reverb.process(array);
 
+        // AllPath Filter
         float c = 0.1;
         float inputL =  res[0,0];
         float inputR =  res[0,1];
@@ -106,19 +121,25 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         stateL = inputL - c * res[0,0];
         stateR = inputR - c * res[0,1];
 
-        l = l + res[0,0] * 0.05;
-        r = r + res[0,1] * 0.05;
+        // add reverb return
+        ReverbL[index] = res[0,0] * 0.03 + res[0,1] * 0.01; // not full stereo
+        ReverbR[index] = res[0,1] * 0.03 +  res[0,0] * 0.01;
 
-        // send back
+        // back into buffer
         ML[index] = l;
         MR[index] = r;
         ++index;
     }
 
+    // Comp Filter the reverb
+    auto combL = comp2L.combFilterBlock(ReverbL, blocksPerChannel);
+    auto combR = comp2R.combFilterBlock(ReverbR, blocksPerChannel);
+
+    // Add reverb and send back to caller
     index = 0;
     for(int i =0; i < blocksize; i = i + 2){
-        bufferOut[i] = ML[index] ;
-        bufferOut[i + 1] = MR[index];
+        bufferOut[i] = ML[index] + 0.3 * combL[index] +combR[index] * 0.1 ;
+        bufferOut[i + 1] = MR[index] + 0.3 * combR[index] + combL[index] * 0.1;
         ++index;
     }
 }
