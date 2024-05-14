@@ -56,7 +56,8 @@ private:
     bool isMuted = false;
     bool isActive = false;
     bool _isMono = false;
-    float state = 0;
+    float stateL = 0;
+    float stateR = 0;
 
     LimiterAttackHoldRelease limiterl;
     LimiterAttackHoldRelease limiterr;
@@ -73,7 +74,7 @@ private:
 //    CIC  cicL{3,8,3};
    // CIC  cicR{3,8,3};
 
-    BasicReverb<2, 2> reverb = BasicReverb<2, 2>(100.0, 10,0.0, 1.0);
+    BasicReverb<2, 2> reverb = BasicReverb<2, 2>(100.0, 4,0.0, 1.0);
 };
 
 #endif //VOCALSTAR_DSP_H

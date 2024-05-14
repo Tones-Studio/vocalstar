@@ -37,7 +37,7 @@ public:
 
     double e = 0;
     double m_env;
-    float sr = 44100;
+    float sr = 48000;
     double m_a;
     double m_r;
 };
@@ -52,7 +52,6 @@ enum GateState{
 class NoiseGate{
 
 public:
-
     GateState state = CLOSED;
     float gain = 1.0;
 
@@ -63,10 +62,10 @@ public:
 
     float process(float v){
         float env =  envelopeFollower.process(v);
-        if(env < 0.006){
+        if(env < 0.005){
             state = CLOSING;
         }
-        if(env > 0.008){
+        if(env > 0.007){
             state = OPENING;
         }
 
@@ -93,10 +92,10 @@ public:
         }
         return v * gain;
     }
-
+    float sr = 48000;
 private:
     EnvelopeFollower envelopeFollower;
-    float sr = 44100;
+
 };
 
 #endif //VOCALSTAR_ENVELOPEFOLLOWER_H

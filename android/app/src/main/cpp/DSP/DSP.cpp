@@ -97,8 +97,17 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         array[0,0] =  l;
         array[0,1] =  r;
         auto res = reverb.process(array);
-        l = l + res[0,0] * 0.2;
-        r = r + res[0,1] * 0.2;
+
+        float c = 0.1;
+        float inputL =  res[0,0];
+        float inputR =  res[0,1];
+        res[0,0] = stateL + c * inputL;
+        res[0,1] = stateR + c * inputR;
+        stateL = inputL - c * res[0,0];
+        stateR = inputR - c * res[0,1];
+
+        l = l + res[0,0] * 0.05;
+        r = r + res[0,1] * 0.05;
 
         // send back
         ML[index] = l;
@@ -112,16 +121,6 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         bufferOut[i + 1] = MR[index];
         ++index;
     }
-
-    /*
-    for(unsigned i = 0; i < blocksize; ++i)
-    {
-        float c = 0.1;
-        float input =  bufferOut[i];
-        bufferOut[i] = state + c * bufferOut[i];
-        state = input - c * bufferOut[i];
-    }
-     */
 }
 
 
