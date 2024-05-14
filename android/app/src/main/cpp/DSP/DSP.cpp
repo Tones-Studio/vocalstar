@@ -24,8 +24,7 @@ void DSP::setup(double sampleRate, int blockSize, bool isMono){
 
     filterL.prepareToPlay(sampleRate,blockSize);
     filterR.prepareToPlay(sampleRate,blockSize);
-
-    //reverb.configure(sampleRate);
+     reverb.configure(sampleRate);
 }
 
 void  DSP::stop(){
@@ -37,9 +36,11 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         return;
     }
 
-    
-    for (int i=0; i<blocksize; i = i + 2) {
+    float ML[blocksize];
+    float MR[blocksize];
 
+    int index = 0;
+    for (int i=0; i<blocksize; i = i + 2) {
         // Get
         float l = bufferIn[i];
         float r = bufferIn[i + 1];
@@ -86,12 +87,37 @@ void DSP::render(const float * bufferIn, float * bufferOut, int blocksize){
         r+= 0.05 * delayLineM.read(24000);
 
         // send back
-        bufferOut[i] = l;
-        bufferOut[i+1] = r;
+        ML[index] = l;
+        MR[index] = r;
 
         delayLineL.write(l);
         delayLineR.write(r);
         delayLineM.write((l + r) * 0.5);
+        ++index;
+    }
+
+    std::array<float, 2> array;
+    for(int i =0; i < blocksize / 2; i = i + 1) {
+        array[i,0] =  ML[i];
+        array[i,1] =  MR[i];
+    }
+    auto res = reverb.process(array);
+
+    index = 0;
+    for(int i =0; i < blocksize; i = i + 2){
+        bufferOut[i] = ML[index];
+        bufferOut[i + 1] = MR[index];
+        ++index;
+    }
+
+    for(unsigned i = 0; i < blocksize; ++i)
+    {
+        float c = 0.1;
+        float input =  bufferOut[i];
+        bufferOut[i] = state + c * bufferOut[i];
+        state = input - c * bufferOut[i];
     }
 }
+
+
 

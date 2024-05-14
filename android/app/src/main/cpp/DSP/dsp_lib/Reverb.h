@@ -4,36 +4,31 @@
 
 #ifndef VOCALSTAR_REVERB_H
 #define VOCALSTAR_REVERB_H
-#include "dsp_lib/delay.h"
+
+#include "delay.h"
 #include "mix-matrix.h"
 #include <cstdlib>
 
-double randomInRange(double low, double high) {
-    // There are better randoms than this, and you should use them instead 😛
-    double unitRand = rand()/double(RAND_MAX);
-    return low + unitRand*(high - low);
-}
-
 // This is a simple delay class which rounds to a whole number of samples.
-using Delay = signalsmith::delay::Delay<double, signalsmith::delay::InterpolatorNearest>;
+using DelayR = signalsmith::delay::Delay<float, signalsmith::delay::InterpolatorNearest>;
 
 struct SingleChannelFeedback {
-    double delayMs = 80;
-    double decayGain = 0.85;
+    float delayMs = 80;
+    float decayGain = 0.85;
 
     int delaySamples;
-    Delay delay;
+    DelayR delay;
 
-    void configure(double sampleRate) {
+    void configure(float sampleRate) {
         delaySamples = delayMs*0.001*sampleRate;
         delay.resize(delaySamples + 1);
         delay.reset(); // Start with all 0s
     }
 
-    double process(double input) {
-        double delayed = delay.read(delaySamples);
+    float process(float input) {
+        float delayed = delay.read(delaySamples);
 
-        double sum = input + delayed*decayGain;
+        float sum = input + delayed*decayGain;
         delay.write(sum);
 
         return delayed;
@@ -43,19 +38,19 @@ struct SingleChannelFeedback {
 
 template<int channels=8>
 struct MultiChannelFeedback {
-    using Array = std::array<double, channels>;
+    using Array = std::array<float, channels>;
 
-    double delayMs = 150;
-    double decayGain = 0.85;
+    float delayMs = 150;
+    float decayGain = 0.85;
 
     std::array<int, channels> delaySamples;
-    std::array<Delay, channels> delays;
+    std::array<DelayR, channels> delays;
 
-    void configure(double sampleRate) {
-        double delaySamplesBase = delayMs*0.001*sampleRate;
+    void configure(float sampleRate) {
+        float delaySamplesBase = delayMs*0.001*sampleRate;
         for (int c = 0; c < channels; ++c) {
             // Distribute delay times exponentially between delayMs and 2*delayMs
-            double r = c*1.0/channels;
+            float r = c*1.0/channels;
             delaySamples[c] = std::pow(2, r)*delaySamplesBase;
 
             delays[c].resize(delaySamples[c] + 1);
@@ -70,7 +65,7 @@ struct MultiChannelFeedback {
         }
 
         for (int c = 0; c < channels; ++c) {
-            double sum = input[c] + delayed[c]*decayGain;
+            float sum = input[c] + delayed[c]*decayGain;
             delays[c].write(sum);
         }
 
@@ -80,17 +75,17 @@ struct MultiChannelFeedback {
 
 template<int channels=8>
 struct MultiChannelMixedFeedback {
-    using Array = std::array<double, channels>;
-    double delayMs = 150;
-    double decayGain = 0.85;
+    using Array = std::array<float, channels>;
+    float delayMs = 150;
+    float decayGain = 0.85;
 
     std::array<int, channels> delaySamples;
-    std::array<Delay, channels> delays;
+    std::array<DelayR, channels> delays;
 
-    void configure(double sampleRate) {
-        double delaySamplesBase = delayMs*0.001*sampleRate;
+    void configure(float sampleRate) {
+        float delaySamplesBase = delayMs*0.001*sampleRate;
         for (int c = 0; c < channels; ++c) {
-            double r = c*1.0/channels;
+            float r = c*1.0/channels;
             delaySamples[c] = std::pow(2, r)*delaySamplesBase;
             delays[c].resize(delaySamples[c] + 1);
             delays[c].reset();
@@ -105,10 +100,10 @@ struct MultiChannelMixedFeedback {
 
         // Mix using a Householder matrix
         Array mixed = delayed;
-        Householder<double, channels>::inPlace(mixed.data());
+        Householder<float, channels>::inPlace(mixed.data());
 
         for (int c = 0; c < channels; ++c) {
-            double sum = input[c] + mixed[c]*decayGain;
+            float sum = input[c] + mixed[c]*decayGain;
             delays[c].write(sum);
         }
 
@@ -118,18 +113,24 @@ struct MultiChannelMixedFeedback {
 
 template<int channels=8>
 struct DiffusionStep {
-    using Array = std::array<double, channels>;
-    double delayMsRange = 50;
+    using Array = std::array<float, channels>;
+    float delayMsRange = 50;
 
     std::array<int, channels> delaySamples;
-    std::array<Delay, channels> delays;
+    std::array<DelayR, channels> delays;
     std::array<bool, channels> flipPolarity;
 
-    void configure(double sampleRate) {
-        double delaySamplesRange = delayMsRange*0.001*sampleRate;
+    float randomInRange(float low, float high) {
+        // There are better randoms than this, and you should use them instead 😛
+        float unitRand = rand()/float(RAND_MAX);
+        return low + unitRand*(high - low);
+    }
+
+    void configure(float sampleRate) {
+        float delaySamplesRange = delayMsRange*0.001*sampleRate;
         for (int c = 0; c < channels; ++c) {
-            double rangeLow = delaySamplesRange*c/channels;
-            double rangeHigh = delaySamplesRange*(c + 1)/channels;
+            float rangeLow = delaySamplesRange*c/channels;
+            float rangeHigh = delaySamplesRange*(c + 1)/channels;
             delaySamples[c] = randomInRange(rangeLow, rangeHigh);
             delays[c].resize(delaySamples[c] + 1);
             delays[c].reset();
@@ -147,20 +148,19 @@ struct DiffusionStep {
 
         // Mix with a Hadamard matrix
         Array mixed = delayed;
-        Hadamard<double, channels>::inPlace(mixed.data());
+        Hadamard<float, channels>::inPlace(mixed.data());
 
         // Flip some polarities
         for (int c = 0; c < channels; ++c) {
             if (flipPolarity[c]) mixed[c] *= -1;
         }
-
         return mixed;
     }
 };
 
 template<int channels=8, int stepCount=4>
 struct DiffuserEqualLengths {
-    using Array = std::array<double, channels>;
+    using Array = std::array<float, channels>;
 
     using Step = DiffusionStep<channels>;
     std::array<Step, stepCount> steps;
@@ -171,7 +171,7 @@ struct DiffuserEqualLengths {
         }
     }
 
-    void configure(double sampleRate) {
+    void configure(float sampleRate) {
         for (auto &step : steps) step.configure(sampleRate);
     }
 
@@ -185,19 +185,19 @@ struct DiffuserEqualLengths {
 
 template<int channels=8, int stepCount=4>
 struct DiffuserHalfLengths {
-    using Array = std::array<double, channels>;
+    using Array = std::array<float, channels>;
 
     using Step = DiffusionStep<channels>;
     std::array<Step, stepCount> steps;
 
-    DiffuserHalfLengths(double diffusionMs) {
+    DiffuserHalfLengths(float diffusionMs) {
         for (auto &step : steps) {
             diffusionMs *= 0.5;
             step.delayMsRange = diffusionMs;
         }
     }
 
-    void configure(double sampleRate) {
+    void configure(float sampleRate) {
         for (auto &step : steps) step.configure(sampleRate);
     }
 
@@ -211,26 +211,27 @@ struct DiffuserHalfLengths {
 
 template<int channels=8, int diffusionSteps=4>
 struct BasicReverb {
-    using Array = std::array<double, channels>;
+    using Array = std::array<float, channels>;
 
     MultiChannelMixedFeedback<channels> feedback;
     DiffuserHalfLengths<channels, diffusionSteps> diffuser;
-    double dry, wet;
+    float dry, wet;
 
-    BasicReverb(double roomSizeMs, double rt60, double dry=0, double wet=1) : diffuser(roomSizeMs), dry(dry), wet(wet) {
+    BasicReverb(float roomSizeMs, float rt60, float dry=0, float wet=1) : diffuser(roomSizeMs), dry(dry), wet(wet) {
         feedback.delayMs = roomSizeMs;
 
         // How long does our signal take to go around the feedback loop?
-        double typicalLoopMs = roomSizeMs*1.5;
+        float typicalLoopMs = roomSizeMs*1.5;
         // How many times will it do that during our RT60 period?
-        double loopsPerRt60 = rt60/(typicalLoopMs*0.001);
+        float loopsPerRt60 = rt60/(typicalLoopMs*0.001);
         // This tells us how many dB to reduce per loop
-        double dbPerCycle = -60/loopsPerRt60;
+        float dbPerCycle = -60/loopsPerRt60;
+
 
         feedback.decayGain = std::pow(10, dbPerCycle*0.05);
     }
 
-    void configure(double sampleRate) {
+    void configure(float sampleRate) {
         feedback.configure(sampleRate);
         diffuser.configure(sampleRate);
     }

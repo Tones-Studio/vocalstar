@@ -10,7 +10,8 @@
 #include "dsp_lib/delay.h"
 #include "dsp_lib/FilterButterworth24.h"
 #include "dsp_lib/MyFilter.h"
-//#include "Reverb.h"
+#include "dsp_lib/Reverb.h"
+#include "dsp_lib/CIC.h"
 
 using Delay = signalsmith::delay::Delay<float>;
 
@@ -55,6 +56,7 @@ private:
     bool isMuted = false;
     bool isActive = false;
     bool _isMono = false;
+    float state = 0;
 
     LimiterAttackHoldRelease limiterl;
     LimiterAttackHoldRelease limiterr;
@@ -68,7 +70,10 @@ private:
     MyFilter  filterL;
     MyFilter  filterR;
 
-   // BasicReverb<8, 2> reverb;
+//    CIC  cicL{3,8,3};
+   // CIC  cicR{3,8,3};
+
+    BasicReverb<2, 2> reverb = BasicReverb<2, 2>(100.0, 10);
 };
 
 #endif //VOCALSTAR_DSP_H
