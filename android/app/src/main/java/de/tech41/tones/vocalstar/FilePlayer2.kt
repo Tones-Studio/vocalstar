@@ -12,6 +12,7 @@ import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -71,8 +72,23 @@ constructor(context:Context, viewModel: Model) : IPlayer{
                         }
                     }
                 }
+
+                override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+                    print(mediaMetadata)
+                    mediaMetadata.title?.let( {
+                        viewModel.title = mediaMetadata.title.toString()
+                    })
+                    mediaMetadata.artist?.let( {
+                        viewModel.title = mediaMetadata.artist.toString()
+                    })
+                    mediaMetadata.artworkData?.let({
+                        viewModel.cover = ""
+                    })
+                }
             }
+
         )
+
         //mediaPlayer.setForegroundMode(true)
     }
     override fun setVolume(vol:Float) {

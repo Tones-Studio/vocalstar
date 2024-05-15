@@ -4,12 +4,18 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.system.Os.link
+import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.MetadataRetriever
+import androidx.media3.exoplayer.source.TrackGroupArray
+import com.google.common.util.concurrent.FutureCallback
+import com.google.common.util.concurrent.Futures
 import kotlin.math.exp
 import kotlin.math.ln
 
@@ -75,7 +81,10 @@ class Model: ViewModel() {
         framesBurst.add(Pair("512", "512"))
     }
 
+    fun handleMetadata(data: TrackGroupArray?){
 
+    }
+    @OptIn(UnstableApi::class)
     fun setFileTitle(url:Uri){
         isPlaying = false
         player.stop()
@@ -87,12 +96,6 @@ class Model: ViewModel() {
             playerUri = url
             player.setUri(url)
 
-           var artistT = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            if(artistT != null){
-                artist = artistT!!
-            }else{
-                artist = ""
-            }
            //var albumT = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
             var titleT = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
             if(titleT != null){
