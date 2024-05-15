@@ -1,11 +1,10 @@
 package de.tech41.tones.vocalstar
 
 import android.content.Context
-import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.system.Os.link
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +13,14 @@ import androidx.lifecycle.ViewModel
 import kotlin.math.exp
 import kotlin.math.ln
 
+
+enum class CoverType{
+    SLOW,
+    DEFAULT,
+    DYNAMIC
+}
 class Model: ViewModel() {
+    var coverType by mutableStateOf(CoverType.SLOW)
     val devicesIn: MutableList<Pair<String, String>> = ArrayList()
     val devicesOut: MutableList<Pair<String, String>> = ArrayList()
     val framesBurst: MutableList<Pair<String, String>> = ArrayList()
@@ -38,9 +44,11 @@ class Model: ViewModel() {
     var sampleRate : Int = 0
     var framesPerBurst = 0
     var isRunning = false //engine is started
-    var title = "SLOW"
-    var cover = "DEFAULT"
-    var artist = "NiniF"
+
+    var title by mutableStateOf("SLOW")
+    var cover by mutableStateOf("DEFAULT")
+    var artist by mutableStateOf("NiniF")
+    var album by mutableStateOf("")
     var player :IPlayer = FilePlayer2(context, this)
     var playerType by mutableStateOf(PLAYER.FILE)
     var playerUri : Uri? = null
@@ -67,11 +75,41 @@ class Model: ViewModel() {
         framesBurst.add(Pair("512", "512"))
     }
 
-    fun setTitle(url:Uri){
-        playerUri = url
+
+    fun setFileTitle(url:Uri){
         isPlaying = false
         player.stop()
-        player.setUri(url)
+        var retriever = MediaMetadataRetriever()
+         retriever.setDataSource(context, url)
+
+        var hasAudio = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO)
+        if(hasAudio != null && hasAudio == "yes") {
+            playerUri = url
+            player.setUri(url)
+
+           var artistT = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+            if(artistT != null){
+                artist = artistT!!
+            }else{
+                artist = ""
+            }
+           //var albumT = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+            var titleT = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+            if(titleT != null){
+                title = titleT!!
+            }
+            if (titleT == null) {
+                title = url.path?.substring((url.path?.lastIndexOf("/") ?: 0) + 1).toString()
+            }
+            var hasCover = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_IMAGE)
+            if (hasCover != null) {
+                var imgBytes =
+                    retriever.embeddedPicture // TODO find an audio file example that has an image
+            } else {
+                coverType = CoverType.DEFAULT
+            }
+        }
+        retriever.release()
     }
 
     fun updatePosition(){

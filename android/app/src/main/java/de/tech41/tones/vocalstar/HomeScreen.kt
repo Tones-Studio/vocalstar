@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.painter.Painter
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
@@ -85,19 +86,26 @@ fun HomeScreen(viewModel : Model) {
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
 
-        Text(viewModel.artist,  fontSize = 26.sp)
+        viewModel.artist?.let { Text(it,  fontSize = 26.sp) }
         val imageModifier = Modifier
             .size(300.dp)
             .border(BorderStroke(1.dp, Color.Black))
             .background(Color.Black)
-        var res = painterResource(id = R.drawable.slow_cover)
+        var res : Painter = painterResource(id = R.drawable.slow_cover)
+        if (viewModel.coverType == CoverType.DEFAULT) {
+            res = painterResource(id = R.drawable.vocalstar)
+        }
+        if (viewModel.coverType == CoverType.DYNAMIC){
+            // TODO load resource from file system
+        }
+
         Image(
             painter = res,
             contentDescription = "SLOW",
             contentScale = ContentScale.Fit,
             modifier = imageModifier
         )
-        Text(viewModel.title,  fontSize = 26.sp)
+        viewModel.title?.let { Text(it,  fontSize = 26.sp) }
         Row{
             Text(convertTime(viewModel.position))
             Spacer(Modifier.weight(1f))
@@ -134,9 +142,7 @@ fun HomeScreen(viewModel : Model) {
                 Icon(painterResource(R.drawable.fast_forward), contentDescription = "forward", tint = { Color.White }, modifier = Modifier.size(60.dp))
             }
         }
-
         VolumeSlider(viewModel)
-
         MicVolumeSlider(viewModel)
     }
 }

@@ -195,7 +195,7 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
             // the user selected.
             resultData?.data?.also { uri ->
                 Log.d(TAG,uri.toString())
-                viewModel.setTitle(uri)
+                viewModel.setFileTitle(uri)
             }
         }
     }
@@ -221,8 +221,6 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
 fun openFileBrowser(){
     MainActivity.instance?.openDirectory()
 }
-
-
 
 private class BecomingNoisyReceiver : BroadcastReceiver() {
 
