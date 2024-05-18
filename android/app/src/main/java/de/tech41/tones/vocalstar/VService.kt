@@ -16,9 +16,10 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import androidx.media3.common.util.UnstableApi
+import de.tech41.tones.vocalstar.controls.FindMediaAppsTask
 
 
-class VService: Service() {
+class VService: Service() , FindMediaAppsTask.AppListUpdatedCallback {
     private val OBOE_API_AAUDIO = 0
     private val OBOE_API_OPENSL_ES = 1
     private val AUDIO_EFFECT_REQUEST = 0
@@ -38,6 +39,11 @@ class VService: Service() {
     inner class VServiceBinder : Binder() {
         fun getService(): VService = this@VService
     }
+
+    override fun onAppListUpdated(mediaAppEntries: List<MediaAppDetails>){
+        Log.d(TAG, mediaAppEntries.toString())
+    }
+
 
     /* End of MediaSessionCompat */
 

@@ -88,8 +88,6 @@ constructor(context:Context, viewModel: Model) : IPlayer{
             }
 
         )
-
-        //mediaPlayer.setForegroundMode(true)
     }
     override fun setVolume(vol:Float) {
         if(!isPlayerInit){

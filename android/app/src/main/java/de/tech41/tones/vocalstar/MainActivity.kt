@@ -1,10 +1,10 @@
 package de.tech41.tones.vocalstar
 
 import android.Manifest
-import android.R.attr.data
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
@@ -35,13 +35,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
+import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 
 
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
-class MainActivity :ComponentActivity()  { //ComponentActivity()
+class MainActivity :ComponentActivity(){
     private val TAG: String = MainActivity::class.java.name
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
@@ -49,8 +50,8 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
     var discoverPlayer = DiscoverPlayer(this)
     private val intentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
     private val myNoisyAudioStreamReceiver = BecomingNoisyReceiver()
-    private val callback = object : MediaSessionCompat.Callback() {
 
+    private val callback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
             registerReceiver(myNoisyAudioStreamReceiver, intentFilter)
         }
@@ -59,17 +60,24 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
             unregisterReceiver(myNoisyAudioStreamReceiver)
         }
     }
+
     private val connection = object : ServiceConnection {
+        @OptIn(UnstableApi::class)
         @RequiresApi(Build.VERSION_CODES.S)
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as VService.VServiceBinder
             viewModel.vService = binder.getService()
             isBound = true
 
-            // open Mic
+            // Start Audio and open Mic
             viewModel.vService?.startAudio(viewModel)
             viewModel.isMuted = false
             viewModel.isRunning = true
+
+            // get Media Players like Apple and Spotify
+            viewModel.mediaAppBrowser = FindMediaBrowserAppsTask(viewModel.vService!!.applicationContext, viewModel.vService!!)
+            viewModel.mediaAppBrowser?.execute()
+            viewModel.mediaPlayers =  viewModel.mediaAppBrowser?.mediaApps
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             isBound = false
@@ -102,6 +110,20 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         }
     }
 
+    private fun notificationAccessGranted(context:Context):Boolean {
+        var notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return notificationManager.isNotificationListenerAccessGranted(ComponentName(context, VService::class.java))
+    }
+
+    private fun openPermissions() {
+        try {
+            val settingsIntent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+            startActivity(settingsIntent)
+        } catch (e: ActivityNotFoundException) {
+            e.printStackTrace()
+        }
+    }
+
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,7 +138,6 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
 
         // File root
         FileHelper(this, viewModel).makeAppFolder(true)
-        viewModel.setPlayer(PLAYER.FILE)
         discoverPlayer.start()
 
         // notification
@@ -148,6 +169,9 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
         }
 
         viewModel.player.setup()
+        if(!notificationAccessGranted(this)){
+            openPermissions()
+        }
     }
 
     @OptIn(UnstableApi::class)
@@ -160,6 +184,9 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
         Log.d(TAG,"MainActivity onCreate complete")
+
+
+      var players =  viewModel.mediaAppBrowser?.getPlayers()
     }
 
     override fun onStop() {
@@ -197,6 +224,9 @@ class MainActivity :ComponentActivity()  { //ComponentActivity()
                 Log.d(TAG,uri.toString())
                 viewModel.setFileTitle(uri)
             }
+        }
+        if (resultCode == Activity.RESULT_CANCELED) {
+            Log.d(TAG,"File browsing cancelled")
         }
     }
 

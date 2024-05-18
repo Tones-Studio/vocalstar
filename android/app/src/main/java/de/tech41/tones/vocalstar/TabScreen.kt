@@ -18,6 +18,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,11 +37,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun TabScreen(viewModel : Model) {
     var tabIndex by remember { mutableIntStateOf(0) }
+    var showPlayerMenu by remember { mutableStateOf(false) }
+
     val tabs = listOf("Sing", "In-Out", "About")
     Box(
         Modifier
@@ -49,12 +55,41 @@ fun TabScreen(viewModel : Model) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally ) {
             Row(modifier = Modifier
                 .background(Color.Black)
-                .padding(5.dp)){
+                .padding(5.dp)) {
                 // Apple
-                IconButton(onClick = { viewModel.setPlayer(PLAYER.APPLE) }, modifier = Modifier.size(24.dp)) {
-                    Image( painterResource(R.drawable.apple_icon), contentDescription = "apple music")
+                IconButton(onClick = {
+                    if (viewModel.playerType == PLAYER.EXTERNAL) {
+                        showPlayerMenu = true
+                    } else {
+                        viewModel.setPlayer(PLAYER.EXTERNAL)
+                    }
+
+                }, modifier = Modifier.size(22.dp)) {
+                    if(viewModel.currentPlayer == 0) {
+                        Image(painterResource(R.drawable.menu), contentDescription = "Extern Player")
+                    }
                 }
-                if(viewModel.playerType == PLAYER.APPLE) {
+                DropdownMenu(
+                    expanded = showPlayerMenu,
+                    offset = DpOffset(0.dp, 0.dp),
+                    onDismissRequest = { showPlayerMenu = false },
+                    //modifier = Modifier.background(Color.Blue)
+                ) {
+                    viewModel.mediaPlayers =  viewModel.mediaAppBrowser?.mediaApps
+                if (viewModel.mediaPlayers != null) {
+                    for (player in viewModel.mediaPlayers!!) {
+                        DropdownMenuItem(
+                            onClick = {
+                                showPlayerMenu = false
+                            },
+                            text = {
+                                Text(player.appName)
+                            }
+                        )
+                    }
+                }
+            }
+                if(viewModel.playerType == PLAYER.EXTERNAL) {
                     Box(
                         modifier = Modifier
                             .size(5.dp)

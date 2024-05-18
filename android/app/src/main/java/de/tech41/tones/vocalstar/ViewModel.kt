@@ -3,6 +3,7 @@ package de.tech41.tones.vocalstar
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
+import android.media.session.MediaController
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
@@ -10,12 +11,9 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.MetadataRetriever
-import androidx.media3.exoplayer.source.TrackGroupArray
-import com.google.common.util.concurrent.FutureCallback
-import com.google.common.util.concurrent.Futures
+import de.tech41.tones.vocalstar.controls.ExternalPlayer
+import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import kotlin.math.exp
 import kotlin.math.ln
 
@@ -56,10 +54,14 @@ class Model: ViewModel() {
     var artist by mutableStateOf("NiniF")
     var album by mutableStateOf("")
     var player :IPlayer = FilePlayer2(context, this)
-    var playerType by mutableStateOf(PLAYER.FILE)
+    var playerType by mutableStateOf(PLAYER.EXTERNAL)
     var playerUri : Uri? = null
     var isSeeking = false
     var isMonoInput by mutableStateOf(false)
+    var mediaAppBrowser : FindMediaBrowserAppsTask? = null
+    var playController = PlayerController(context)
+    var mediaPlayers : List<MediaAppDetails>? = null
+    var currentPlayer = 0
 
     fun toggleIsMono(){
         isMonoInput = !isMonoInput
@@ -81,9 +83,6 @@ class Model: ViewModel() {
         framesBurst.add(Pair("512", "512"))
     }
 
-    fun handleMetadata(data: TrackGroupArray?){
-
-    }
     @OptIn(UnstableApi::class)
     fun setFileTitle(url:Uri){
         isPlaying = false
@@ -132,12 +131,12 @@ class Model: ViewModel() {
             player = FilePlayer2(context, this)
             playerType = PLAYER.FILE
         }
-        if (type == PLAYER.APPLE){
-            if(playerType== PLAYER.APPLE){
+        if (type == PLAYER.EXTERNAL){
+            if(playerType== PLAYER.EXTERNAL){
                 return
             }
-            player = ApplePlayer()
-            playerType = PLAYER.APPLE
+            player = ExternalPlayer()
+            playerType = PLAYER.EXTERNAL
         }
         player.setup()
     }
