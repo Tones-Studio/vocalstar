@@ -6,9 +6,9 @@ import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.media.MediaBrowserServiceCompat
 import de.tech41.tones.vocalstar.MediaAppDetails
-import java.util.ArrayList
 
 /**
  * Implementation of [FindMediaAppsTask] that uses available implementations of
@@ -17,6 +17,8 @@ import java.util.ArrayList
 class FindMediaBrowserAppsTask constructor(
     context: Context, callback: AppListUpdatedCallback
 ) : FindMediaAppsTask(callback, sortAlphabetical = true) {
+
+    val tag = "de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask"
 
     private val packageManager: PackageManager = context.packageManager
     private val resources: Resources = context.resources
@@ -46,9 +48,10 @@ fun getPlayers():  List<ResolveInfo>{
 
         if (services != null && !services.isEmpty()) {
             for (info in services) {
-                mediaApps.add(
-                    MediaAppDetails(info.serviceInfo, packageManager, resources)
-                )
+                val md = MediaAppDetails(info.serviceInfo, packageManager, resources)
+                Log.d(tag,md.appName)
+                if(md.appName == "TikTok" || md.appName == "Bluetooth Audio" ) continue
+                mediaApps.add(md)
             }
         }
         return mediaApps
