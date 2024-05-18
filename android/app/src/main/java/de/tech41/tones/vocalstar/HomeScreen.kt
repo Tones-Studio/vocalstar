@@ -1,49 +1,41 @@
 package de.tech41.tones.vocalstar
 
+import android.graphics.BitmapFactory
+import android.widget.ImageView
 import androidx.annotation.OptIn
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.size
-import androidx.compose.ui.*
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.foundation.border
-import androidx.compose.foundation.background
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.unit.sp
-import kotlin.math.roundToInt
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
+import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.microseconds
+import java.net.URL
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
+
 
 private val TAG: String = "HomeScreen"
 @Composable
@@ -86,25 +78,22 @@ fun HomeScreen(viewModel : Model) {
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
 
+        // Artist
         viewModel.artist?.let { Text(it,  fontSize = 26.sp) }
-        val imageModifier = Modifier
-            .size(300.dp)
-            .border(BorderStroke(1.dp, Color.Black))
-            .background(Color.Black)
-        var res : Painter = painterResource(id = R.drawable.slow_cover)
-        if (viewModel.coverType == CoverType.DEFAULT) {
-            res = painterResource(id = R.drawable.vocalstar)
-        }
-        if (viewModel.coverType == CoverType.DYNAMIC){
-            // TODO load resource from file system
+
+        // Cover
+        val imageModifier = Modifier.size(300.dp).border(BorderStroke(1.dp, Color.Black)).background(Color.Black)
+        if (viewModel.playerType == PLAYER.FILE) {
+            var res : Painter = painterResource(id = R.drawable.slow_cover)
+            if (viewModel.coverType == CoverType.DEFAULT) {
+                res = painterResource(id = R.drawable.vocalstar)
+            }
+            Image(painter = res, contentDescription = "SLOW", contentScale = ContentScale.Fit, modifier = imageModifier)
+        }else {
+            Image(painter = rememberAsyncImagePainter(viewModel.artworkUri), contentDescription = "SLOW", contentScale = ContentScale.Fit, modifier = imageModifier)
         }
 
-        Image(
-            painter = res,
-            contentDescription = "SLOW",
-            contentScale = ContentScale.Fit,
-            modifier = imageModifier
-        )
+        // Title
         viewModel.title?.let { Text(it,  fontSize = 26.sp) }
         Row{
             Text(convertTime(viewModel.position))

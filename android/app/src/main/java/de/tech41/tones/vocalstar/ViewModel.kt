@@ -2,17 +2,22 @@ package de.tech41.tones.vocalstar
 
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
 import android.media.session.MediaSessionManager
 import android.net.Uri
+import android.widget.ImageView
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModel
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -20,6 +25,7 @@ import com.google.common.util.concurrent.MoreExecutors
 import de.tech41.tones.vocalstar.controls.ExternalPlayer
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.controls.MediaAppDetails
+import java.net.URL
 import kotlin.math.exp
 import kotlin.math.ln
 
@@ -29,6 +35,8 @@ enum class CoverType{
     DYNAMIC
 }
 class Model: ViewModel() {
+
+    val tag = "de.tech41.tones.vocalstar.ViewModel"
     var coverType by mutableStateOf(CoverType.SLOW)
     val devicesIn: MutableList<Pair<String, String>> = ArrayList()
     val devicesOut: MutableList<Pair<String, String>> = ArrayList()
@@ -69,7 +77,9 @@ class Model: ViewModel() {
     var selectedPlayer : MediaAppDetails? by mutableStateOf(null)
     var selectedPlayerIcon by mutableIntStateOf( R.drawable.menu)
     var mediaController : MediaController? = null
-
+    var artworkUri by mutableStateOf(Uri.parse("https://tech41.de"))
+    var bitmap:Bitmap? = null
+    var imageView = ImageView(context)
     fun setPlayer(player: MediaAppDetails){
         selectedPlayer = player
         when(player.appName){
@@ -97,10 +107,19 @@ class Model: ViewModel() {
             duration = mediaController!!.contentDuration.toFloat() / 1000.0f
             position = mediaController!!.contentPosition.toFloat() / 1000.0f
             positionPercent = position * 100 / duration
+            isPlaying = mediaController!!.isPlaying
             var mediaItem = mediaController!!.currentMediaItem
             if (mediaItem != null) {
-                title =  mediaItem.mediaMetadata.title.toString()
-                artist =  mediaItem.mediaMetadata.artist.toString()
+                title = mediaItem.mediaMetadata.title.toString()
+                artist = mediaItem.mediaMetadata.artist.toString()
+                val uri = mediaItem.mediaMetadata.artworkUri
+                if (uri != null) {
+                    if(artworkUri.path != uri.path){
+                        artworkUri = uri
+                        val url = URL(uri.path)
+                        bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                    }
+                }
             }
         }
     }
@@ -167,9 +186,6 @@ class Model: ViewModel() {
             }
 
             if(playerType == PLAYER.EXTERNAL && mediaController != null) {
-                duration = mediaController!!.contentDuration.toFloat() / 1000.0f
-                position = mediaController!!.contentPosition.toFloat() / 1000.0f
-                positionPercent = position * 100 / duration
                 setPlayerData()
             }
         }

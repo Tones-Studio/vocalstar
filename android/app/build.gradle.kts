@@ -98,6 +98,8 @@ dependencies {
     implementation ("androidx.media3:media3-common:1.3.1")
     implementation ("androidx.media:media:1.7.0")
 
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
