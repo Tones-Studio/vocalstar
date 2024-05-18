@@ -23,7 +23,6 @@ import de.tech41.tones.vocalstar.controls.MediaAppDetails
 import kotlin.math.exp
 import kotlin.math.ln
 
-
 enum class CoverType{
     SLOW,
     DEFAULT,
@@ -54,7 +53,6 @@ class Model: ViewModel() {
     var sampleRate : Int = 0
     var framesPerBurst = 0
     var isRunning = false //engine is started
-
     var title by mutableStateOf("SLOW")
     var cover by mutableStateOf("DEFAULT")
     var artist by mutableStateOf("NiniF")
@@ -86,23 +84,25 @@ class Model: ViewModel() {
         controllerFuture.addListener({
             try {
                 mediaController = controllerFuture.get()
-                if (mediaController != null) {
-                    duration = mediaController!!.contentDuration.toFloat() / 1000.0f
-                    position = mediaController!!.contentPosition.toFloat() / 1000.0f
-                    positionPercent = position * 100 / duration
-                    var mediaItem = mediaController!!.currentMediaItem
-                    if (mediaItem != null) {
-                        title =  mediaItem.mediaMetadata.title.toString()
-                        artist =  mediaItem.mediaMetadata.artist.toString()
-                        var art = mediaItem.mediaMetadata.artworkData
-
-                    }
-                }
+                setPlayerData()
             }catch(e:Exception){
 
             }
             // MediaController is available here with controllerFuture.get()
         }, MoreExecutors.directExecutor())
+    }
+
+    private fun setPlayerData(){
+        if (mediaController != null) {
+            duration = mediaController!!.contentDuration.toFloat() / 1000.0f
+            position = mediaController!!.contentPosition.toFloat() / 1000.0f
+            positionPercent = position * 100 / duration
+            var mediaItem = mediaController!!.currentMediaItem
+            if (mediaItem != null) {
+                title =  mediaItem.mediaMetadata.title.toString()
+                artist =  mediaItem.mediaMetadata.artist.toString()
+            }
+        }
     }
 
     fun stopPlayer(){
@@ -162,14 +162,15 @@ class Model: ViewModel() {
 
     fun updatePosition(){
         if(!isSeeking) {
-            if(player != null && player.isPlaying()) {
-                if(playerType == PLAYER.FILE) {
-                    player.updatePosition()
-                }else {
-                    duration = mediaController!!.contentDuration.toFloat() / 1000.0f
-                    position = mediaController!!.contentPosition.toFloat() / 1000.0f
-                    positionPercent = position * 100 / duration
-                }
+            if(playerType == PLAYER.FILE && player != null && player.isPlaying()) {
+                player.updatePosition()
+            }
+
+            if(playerType == PLAYER.EXTERNAL && mediaController != null) {
+                duration = mediaController!!.contentDuration.toFloat() / 1000.0f
+                position = mediaController!!.contentPosition.toFloat() / 1000.0f
+                positionPercent = position * 100 / duration
+                setPlayerData()
             }
         }
     }
@@ -212,6 +213,7 @@ class Model: ViewModel() {
             player.back()
         }else {
             mediaController?.seekToPreviousMediaItem()
+            setPlayerData()
         }
     }
     fun toggle(){
@@ -238,6 +240,7 @@ class Model: ViewModel() {
             player.forward()
         }else {
             mediaController?.seekToNextMediaItem()
+            setPlayerData()
         }
     }
 
