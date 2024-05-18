@@ -1,4 +1,4 @@
-package de.tech41.tones.vocalstar;
+package de.tech41.tones.vocalstar.controls;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -20,31 +20,15 @@ import androidx.media.MediaBrowserServiceCompat;
 
 import java.util.List;
 
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.pm.FeatureInfo;
-import android.content.pm.PackageItemInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.media.session.MediaSession;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.media.MediaBrowserServiceCompat;
 
-import java.util.List;
+import de.tech41.tones.vocalstar.BitmapUtils;
 
-    /**
+/**
      * Stores details about a media app.
      */
  public class MediaAppDetails implements Parcelable {

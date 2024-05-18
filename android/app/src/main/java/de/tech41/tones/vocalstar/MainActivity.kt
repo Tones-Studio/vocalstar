@@ -77,7 +77,8 @@ class MainActivity :ComponentActivity(){
             // get Media Players like Apple and Spotify
             viewModel.mediaAppBrowser = FindMediaBrowserAppsTask(viewModel.vService!!.applicationContext, viewModel.vService!!)
             viewModel.mediaAppBrowser?.execute()
-            viewModel.mediaPlayers =  viewModel.mediaAppBrowser?.mediaApps
+
+            viewModel.mediaPlayers =  viewModel.mediaAppBrowser!!.mediaApps
         }
         override fun onServiceDisconnected(name: ComponentName?) {
             isBound = false

@@ -8,7 +8,6 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import androidx.media.MediaBrowserServiceCompat
-import de.tech41.tones.vocalstar.MediaAppDetails
 
 /**
  * Implementation of [FindMediaAppsTask] that uses available implementations of
@@ -48,12 +47,19 @@ fun getPlayers():  List<ResolveInfo>{
 
         if (services != null && !services.isEmpty()) {
             for (info in services) {
-                val md = MediaAppDetails(info.serviceInfo, packageManager, resources)
+                val md = MediaAppDetails(
+                    info.serviceInfo,
+                    packageManager,
+                    resources
+                )
                 Log.d(tag,md.appName)
                 if(md.appName == "TikTok" || md.appName == "Bluetooth Audio" ) continue
                 mediaApps.add(md)
             }
         }
+
+        //val none: List<MediaAppDetails> = emptyList()
+        //return none
         return mediaApps
     }
 }

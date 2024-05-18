@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import androidx.media3.common.util.UnstableApi
 import de.tech41.tones.vocalstar.controls.FindMediaAppsTask
+import de.tech41.tones.vocalstar.controls.MediaAppDetails
 
 
 class VService: Service() , FindMediaAppsTask.AppListUpdatedCallback {

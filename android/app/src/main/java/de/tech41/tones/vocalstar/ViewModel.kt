@@ -1,19 +1,25 @@
 package de.tech41.tones.vocalstar
 
+import android.content.ComponentName
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
-import android.media.session.MediaController
+import android.media.session.MediaSessionManager
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import com.google.common.util.concurrent.MoreExecutors
 import de.tech41.tones.vocalstar.controls.ExternalPlayer
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
+import de.tech41.tones.vocalstar.controls.MediaAppDetails
 import kotlin.math.exp
 import kotlin.math.ln
 
@@ -60,8 +66,48 @@ class Model: ViewModel() {
     var isMonoInput by mutableStateOf(false)
     var mediaAppBrowser : FindMediaBrowserAppsTask? = null
     var playController = PlayerController(context)
-    var mediaPlayers : List<MediaAppDetails>? = null
-    var currentPlayer = 0
+    var mediaPlayers : List<MediaAppDetails> = emptyList()
+    var currentPlayer  by mutableIntStateOf(0)
+    var selectedPlayer : MediaAppDetails? by mutableStateOf(null)
+    var selectedPlayerIcon by mutableIntStateOf( R.drawable.menu)
+    var mediaController : MediaController? = null
+
+    fun setPlayer(player: MediaAppDetails){
+        selectedPlayer = player
+        when(player.appName){
+            "Apple Music" -> selectedPlayerIcon = R.drawable.apple_icon
+            "Spotify" -> selectedPlayerIcon = R.drawable.spotify
+            "Deezer" -> selectedPlayerIcon = R.drawable.apple_icon
+            "Youtube" -> selectedPlayerIcon = R.drawable.apple_icon
+            "Another" -> selectedPlayerIcon = R.drawable.apple_icon
+        }
+        val sessionToken = SessionToken(context, selectedPlayer!!.componentName)
+        val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
+        controllerFuture.addListener({
+            try {
+                mediaController = controllerFuture.get()
+                if (mediaController != null) {
+                    duration = mediaController!!.contentDuration.toFloat() / 1000.0f
+                    position = mediaController!!.contentPosition.toFloat() / 1000.0f
+                    positionPercent = position * 100 / duration
+                    var mediaItem = mediaController!!.currentMediaItem
+                    if (mediaItem != null) {
+                        title =  mediaItem.mediaMetadata.title.toString()
+                        artist =  mediaItem.mediaMetadata.artist.toString()
+                        var art = mediaItem.mediaMetadata.artworkData
+
+                    }
+                }
+            }catch(e:Exception){
+
+            }
+            // MediaController is available here with controllerFuture.get()
+        }, MoreExecutors.directExecutor())
+    }
+
+    fun stopPlayer(){
+        //MediaController.releaseFuture(mediaController)
+    }
 
     fun toggleIsMono(){
         isMonoInput = !isMonoInput
@@ -117,7 +163,13 @@ class Model: ViewModel() {
     fun updatePosition(){
         if(!isSeeking) {
             if(player != null && player.isPlaying()) {
-                player.updatePosition()
+                if(playerType == PLAYER.FILE) {
+                    player.updatePosition()
+                }else {
+                    duration = mediaController!!.contentDuration.toFloat() / 1000.0f
+                    position = mediaController!!.contentPosition.toFloat() / 1000.0f
+                    positionPercent = position * 100 / duration
+                }
             }
         }
     }
@@ -130,6 +182,7 @@ class Model: ViewModel() {
             }
             player = FilePlayer2(context, this)
             playerType = PLAYER.FILE
+            selectedPlayerIcon = R.drawable.menu
         }
         if (type == PLAYER.EXTERNAL){
             if(playerType== PLAYER.EXTERNAL){
@@ -144,7 +197,6 @@ class Model: ViewModel() {
         isSpeaker = !isSpeaker
         if(isSpeaker){
             putMicVolume(0f)
-
             player.setSpeaker()
         }else{
             player.setHeadphone()
@@ -156,7 +208,11 @@ class Model: ViewModel() {
         LiveEffectEngine.setEffectOn(!isMuted)
     }
     fun back(){
-       player.back()
+        if(playerType == PLAYER.FILE) {
+            player.back()
+        }else {
+            mediaController?.seekToPreviousMediaItem()
+        }
     }
     fun toggle(){
         isPlaying = !isPlaying
@@ -164,13 +220,25 @@ class Model: ViewModel() {
             setPlayer(playerType)
         }
         if(isPlaying) {
-            player.play()
+            if(playerType == PLAYER.FILE) {
+                player.play()
+            }else {
+                mediaController?.play()
+            }
         }else{
-            player.pause()
+            if(playerType == PLAYER.FILE) {
+                player.pause()
+            }else {
+                mediaController?.pause()
+            }
         }
     }
     fun forward(){
-        player.forward()
+        if(playerType == PLAYER.FILE) {
+            player.forward()
+        }else {
+            mediaController?.seekToNextMediaItem()
+        }
     }
 
     fun putVolume(vol:Float){

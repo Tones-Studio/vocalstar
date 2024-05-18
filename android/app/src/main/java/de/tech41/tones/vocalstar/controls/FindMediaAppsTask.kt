@@ -16,7 +16,6 @@
 package de.tech41.tones.vocalstar.controls
 
 import android.os.AsyncTask
-import de.tech41.tones.vocalstar.MediaAppDetails
 
 
 /**
