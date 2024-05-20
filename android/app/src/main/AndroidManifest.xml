@@ -45,7 +45,7 @@
         <service
             android:name=".VService"
             android:foregroundServiceType="microphone|mediaPlayback"
-            android:exported="false"
+            android:exported="true"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
             tools:node="merge">
             <intent-filter>

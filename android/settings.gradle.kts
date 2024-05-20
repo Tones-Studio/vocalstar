@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Vocalstar"
 include(":app")
- 
+include(":vocalstarspotify")

@@ -4,13 +4,11 @@ import android.content.Context
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
-import android.media.MediaRouter
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
@@ -21,7 +19,7 @@ import androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException
 import androidx.media3.exoplayer.ExoPlayer
 
 
-class FilePlayer2 @OptIn(UnstableApi::class)
+class FilePlayer @OptIn(UnstableApi::class)
 constructor(context:Context, viewModel: Model) : IPlayer{
     val context : Context = context
     val mediaPlayer = ExoPlayer.Builder(context).build()

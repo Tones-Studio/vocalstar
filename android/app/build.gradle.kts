@@ -87,7 +87,7 @@ dependencies {
     implementation("androidx.glance:glance:1.1.0-beta02")
     implementation(libs.androidx.ui)
     implementation("androidx.compose.ui:ui-tooling-preview")
-
+    implementation(files("libs/spotify-app-remote-release-0.8.0.aar"))
 
     implementation(libs.androidx.tools.core)
     implementation("com.google.oboe:oboe:1.8.1")
@@ -98,6 +98,7 @@ dependencies {
     implementation ("androidx.media3:media3-common:1.3.1")
     implementation ("androidx.media:media:1.7.0")
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+    implementation ("com.google.code.gson:gson:2.6.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -5,10 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
-import android.media.MediaParser
 import android.net.Uri
-import android.util.Log
-import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
@@ -17,6 +14,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -26,11 +24,6 @@ import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.controls.MediaAppDetails
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 import java.net.URL
 import kotlin.math.exp
 import kotlin.math.ln
@@ -62,8 +55,6 @@ class Model: ViewModel(){
     var micVolume by mutableFloatStateOf(0.0f)
     var position by mutableFloatStateOf(0f)
     var positionPercent by mutableFloatStateOf(0f)
-    var inputDevice by mutableStateOf("Headphone")
-    var outputDevice by mutableStateOf("USB")
     var duration by mutableFloatStateOf(0.0f)
     var sampleRate : Int = 0
     var framesPerBurst = 0
@@ -72,21 +63,20 @@ class Model: ViewModel(){
     var cover by mutableStateOf("DEFAULT")
     var artist by mutableStateOf("NiniF")
     var album by mutableStateOf("")
-    var player :IPlayer = FilePlayer2(context, this)
+    var player :IPlayer = FilePlayer(context, this)
     var playerType by mutableStateOf(PLAYER.EXTERNAL)
     var playerUri : Uri? = null
     var isSeeking = false
     var isMonoInput by mutableStateOf(false)
     var mediaAppBrowser : FindMediaBrowserAppsTask? = null
-    var playController = PlayerController(context)
     var mediaPlayers : List<MediaAppDetails> = emptyList()
-    var currentPlayer  by mutableIntStateOf(0)
-    var selectedPlayer : MediaAppDetails? by mutableStateOf(null)
+    var selectedPlayer : MediaAppDetails? = null
     var selectedPlayerIcon by mutableIntStateOf( R.drawable.menu)
     var mediaController : MediaController? = null
     var artworkUri by mutableStateOf(Uri.parse("https://tech41.de"))
     var bitmap:Bitmap? = null
-    var imageView = ImageView(context)
+
+    @OptIn(UnstableApi::class)
     fun setPlayer(player: MediaAppDetails){
         val sessionToken = SessionToken(context, player.componentName)
         val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
@@ -94,7 +84,6 @@ class Model: ViewModel(){
             controllerFuture.addListener({
                 try {
                     mediaController = controllerFuture.get()
-                    selectedPlayer = player
                     when (player.appName) {
                         "Apple Music" -> selectedPlayerIcon = R.drawable.apple_icon
                         "Spotify" -> selectedPlayerIcon = R.drawable.spotify
@@ -103,8 +92,9 @@ class Model: ViewModel(){
                         "Another" -> selectedPlayerIcon = R.drawable.apple_icon
                     }
                     setPlayerData()
+                    selectedPlayer = player
                 } catch (e: Exception) {
-
+                    Log.e(tag, e.toString())
                 }
                 // MediaController is available here with controllerFuture.get()
             }, MoreExecutors.directExecutor())
@@ -234,7 +224,7 @@ class Model: ViewModel(){
             if(playerType== PLAYER.FILE){
                 return
             }
-            player = FilePlayer2(context, this)
+            player = FilePlayer(context, this)
             playerType = PLAYER.FILE
             selectedPlayerIcon = R.drawable.menu
         }
