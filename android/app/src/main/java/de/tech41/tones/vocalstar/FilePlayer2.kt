@@ -30,7 +30,6 @@ constructor(context:Context, viewModel: Model) : IPlayer{
     val viewModel : Model = viewModel
     var isPlayerInit = false
 
-
     private val mAudioManager: AudioManager by lazy {
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
@@ -74,19 +73,9 @@ constructor(context:Context, viewModel: Model) : IPlayer{
                 }
 
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                    print(mediaMetadata)
-                    mediaMetadata.title?.let( {
-                        viewModel.title = mediaMetadata.title.toString()
-                    })
-                    mediaMetadata.artist?.let( {
-                        viewModel.title = mediaMetadata.artist.toString()
-                    })
-                    mediaMetadata.artworkData?.let({
-                        viewModel.cover = ""
-                    })
+
                 }
             }
-
         )
     }
     override fun setVolume(vol:Float) {

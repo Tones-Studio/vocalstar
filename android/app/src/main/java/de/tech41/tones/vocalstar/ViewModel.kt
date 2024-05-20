@@ -1,13 +1,14 @@
 package de.tech41.tones.vocalstar
 
-import android.content.ComponentName
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
-import android.media.session.MediaSessionManager
+import android.media.MediaParser
 import android.net.Uri
+import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
@@ -15,9 +16,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModel
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -25,16 +24,24 @@ import com.google.common.util.concurrent.MoreExecutors
 import de.tech41.tones.vocalstar.controls.ExternalPlayer
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.controls.MediaAppDetails
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.URL
 import kotlin.math.exp
 import kotlin.math.ln
+
 
 enum class CoverType{
     SLOW,
     DEFAULT,
     DYNAMIC
 }
-class Model: ViewModel() {
+class Model: ViewModel(){
 
     val tag = "de.tech41.tones.vocalstar.ViewModel"
     var coverType by mutableStateOf(CoverType.SLOW)
@@ -81,25 +88,27 @@ class Model: ViewModel() {
     var bitmap:Bitmap? = null
     var imageView = ImageView(context)
     fun setPlayer(player: MediaAppDetails){
-        selectedPlayer = player
-        when(player.appName){
-            "Apple Music" -> selectedPlayerIcon = R.drawable.apple_icon
-            "Spotify" -> selectedPlayerIcon = R.drawable.spotify
-            "Deezer" -> selectedPlayerIcon = R.drawable.apple_icon
-            "Youtube" -> selectedPlayerIcon = R.drawable.apple_icon
-            "Another" -> selectedPlayerIcon = R.drawable.apple_icon
-        }
-        val sessionToken = SessionToken(context, selectedPlayer!!.componentName)
+        val sessionToken = SessionToken(context, player.componentName)
         val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
-        controllerFuture.addListener({
-            try {
-                mediaController = controllerFuture.get()
-                setPlayerData()
-            }catch(e:Exception){
+        if(controllerFuture != null) {
+            controllerFuture.addListener({
+                try {
+                    mediaController = controllerFuture.get()
+                    selectedPlayer = player
+                    when (player.appName) {
+                        "Apple Music" -> selectedPlayerIcon = R.drawable.apple_icon
+                        "Spotify" -> selectedPlayerIcon = R.drawable.spotify
+                        "Deezer" -> selectedPlayerIcon = R.drawable.apple_icon
+                        "Youtube" -> selectedPlayerIcon = R.drawable.apple_icon
+                        "Another" -> selectedPlayerIcon = R.drawable.apple_icon
+                    }
+                    setPlayerData()
+                } catch (e: Exception) {
 
-            }
-            // MediaController is available here with controllerFuture.get()
-        }, MoreExecutors.directExecutor())
+                }
+                // MediaController is available here with controllerFuture.get()
+            }, MoreExecutors.directExecutor())
+        }
     }
 
     private fun setPlayerData(){
@@ -109,16 +118,23 @@ class Model: ViewModel() {
             positionPercent = position * 100 / duration
             isPlaying = mediaController!!.isPlaying
             var mediaItem = mediaController!!.currentMediaItem
+
+
             if (mediaItem != null) {
                 title = mediaItem.mediaMetadata.title.toString()
                 artist = mediaItem.mediaMetadata.artist.toString()
                 val uri = mediaItem.mediaMetadata.artworkUri
-                if (uri != null) {
-                    if(artworkUri.path != uri.path){
-                        artworkUri = uri
-                        val url = URL(uri.path)
-                        bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                try {
+                    if (uri != null) {
+                        if (artworkUri.path != uri.path) {
+                            artworkUri = uri
+                            val url = URL(uri.path)
+                            bitmap =
+                                BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                        }
                     }
+                }catch(e:Exception){
+
                 }
             }
         }
@@ -148,31 +164,52 @@ class Model: ViewModel() {
         framesBurst.add(Pair("512", "512"))
     }
 
+
     @OptIn(UnstableApi::class)
     fun setFileTitle(url:Uri){
         isPlaying = false
         player.stop()
+
         var retriever = MediaMetadataRetriever()
          retriever.setDataSource(context, url)
-
         var hasAudio = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO)
+
+        // Check if this is an Audio File!!
         if(hasAudio != null && hasAudio == "yes") {
             playerUri = url
             player.setUri(url)
 
-           //var albumT = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-            var titleT = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-            if(titleT != null){
-                title = titleT!!
+            // Get Meta Data
+            var file = FileHelper(context, this).fileFromContentUri(url)
+            var f = AudioFileIO.read(file)
+            var t= f.getTag()
+            var artists = t.getAll(FieldKey.ARTIST)
+            if(artists.count() > 0){
+                if(artists[0].count() > 0) {
+                    artist = artists[0]
+                }else{
+                    artist = "?"
+                }
+            }else{
+                artist = "?"
             }
-            if (titleT == null) {
-                title = url.path?.substring((url.path?.lastIndexOf("/") ?: 0) + 1).toString()
+
+            var titles = t.getAll(FieldKey.TITLE)
+            if(titles.count() > 0){
+                if(titles[0].count() > 0) {
+                    title = titles[0]
+                }else{
+                    title = FileHelper(context, this).getPathEnd(url)
+                }
+            }else{
+                title = FileHelper(context, this).getPathEnd(url)
             }
-            var hasCover = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_IMAGE)
-            if (hasCover != null) {
-                var imgBytes =
-                    retriever.embeddedPicture // TODO find an audio file example that has an image
-            } else {
+
+            var covers = t.artworkList
+            if(covers.count() > 0){
+                cover = covers[0].imageUrl
+                coverType = CoverType.DYNAMIC
+            }else{
                 coverType = CoverType.DEFAULT
             }
         }

@@ -5,8 +5,14 @@ import android.content.Context.MODE_PRIVATE
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import android.webkit.MimeTypeMap
+import androidx.compose.ui.text.LinkAnnotation
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
+import java.io.OutputStream
+import java.net.URL
 
 
 class FileHelper(context: Context, viewModel : Model) {
@@ -90,4 +96,43 @@ class FileHelper(context: Context, viewModel : Model) {
         }
     }
 
+    fun getPathEnd(url:Uri):String{
+        return url.path?.substring((url.path?.lastIndexOf("/") ?: 0) + 1).toString()
+    }
+    fun fileFromContentUri(contentUri: Uri): File {
+        val fileExtension = getFileExtension(context, contentUri)
+        val fileName = "temporary_file" + if (fileExtension != null) ".$fileExtension" else ""
+
+        val tempFile = File(context.cacheDir, fileName)
+        tempFile.createNewFile()
+
+        try {
+            val oStream = FileOutputStream(tempFile)
+            val inputStream = context.contentResolver.openInputStream(contentUri)
+
+            inputStream?.let {
+                copy(inputStream, oStream)
+            }
+
+            oStream.flush()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return tempFile
+    }
+
+    private fun getFileExtension(context: Context, uri: Uri): String? {
+        val fileType: String? = context.contentResolver.getType(uri)
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(fileType)
+    }
+
+    @Throws(IOException::class)
+    private fun copy(source: InputStream, target: OutputStream) {
+        val buf = ByteArray(8192)
+        var length: Int
+        while (source.read(buf).also { length = it } > 0) {
+            target.write(buf, 0, length)
+        }
+    }
 }
