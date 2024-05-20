@@ -177,13 +177,11 @@ class MainActivity :ComponentActivity(){
                 }
             }
         }
-
         viewModel.player.setup()
         if(!notificationAccessGranted(this)){
             openPermissions()
         }
         viewModel.spotifyBroadcastReceiver.register(this)
-
     }
 
     @OptIn(UnstableApi::class)
@@ -197,11 +195,10 @@ class MainActivity :ComponentActivity(){
         }
         Log.d(TAG,"MainActivity onCreate complete")
 
-
-
-
-
-        connectSpotify()
+        if(isSpotifyInstalled()) {
+            //connectSpotify()
+           openSpotifySlow()
+        }
     }
 
     override fun onStop() {
@@ -277,6 +274,25 @@ class MainActivity :ComponentActivity(){
     ===================================================================================================================
      */
 
+    fun openSpotifySlow(){
+        val spotifyContent = "https://open.spotify.com/album/4mtJHQbuhjHGmG2yaKemqw"
+        val branchLink = ("https://spotify.link/content_linking?~campaign=" + getPackageName()).toString() + "&\$deeplink_path=" + spotifyContent + "&\$fallback_url=" + spotifyContent
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setData(Uri.parse(branchLink))
+        startActivity(intent)
+    }
+    fun isSpotifyInstalled():Boolean{
+        val pm = packageManager
+        var isSpotifyInstalled = false
+        try {
+            pm.getPackageInfo("com.spotify.music", 0)
+            isSpotifyInstalled = true
+        } catch (e: PackageManager.NameNotFoundException) {
+            isSpotifyInstalled = false
+        }
+        return isSpotifyInstalled
+    }
+
     private fun connectSpotify(){
         val connectionParams = ConnectionParams.Builder(viewModel.clientId)
             .setRedirectUri(viewModel.redirectUri)
@@ -310,7 +326,10 @@ class MainActivity :ComponentActivity(){
     private fun onSpotifyConnect() {
         viewModel.spotifyAppRemote?.let {
             // Play a playlist
-            val playlistURI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL"
+
+           // https://open.spotify.com/album/4mtJHQbuhjHGmG2yaKemqw
+           // val playlistURI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL"
+            val playlistURI = "spotify:album:4mtJHQbuhjHGmG2yaKemqw"
             it.playerApi.play(playlistURI)
             // Subscribe to PlayerState
             it.playerApi.subscribeToPlayerState().setEventCallback {
