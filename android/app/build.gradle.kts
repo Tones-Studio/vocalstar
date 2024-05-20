@@ -99,6 +99,8 @@ dependencies {
     implementation ("androidx.media:media:1.7.0")
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
     implementation ("com.google.code.gson:gson:2.6.1")
+    implementation ("com.spotify.android:auth:1.2.5")
+    implementation ("androidx.browser:browser:1.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

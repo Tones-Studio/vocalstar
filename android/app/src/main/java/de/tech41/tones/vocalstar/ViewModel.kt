@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.widget.ImageView
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -19,23 +18,22 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
+import com.spotify.android.appremote.api.SpotifyAppRemote
 import de.tech41.tones.vocalstar.controls.ExternalPlayer
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.controls.MediaAppDetails
+import de.tech41.tones.vocalstar.spotify.SpotifyBroadcastReceiver
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import java.net.URL
 import kotlin.math.exp
 import kotlin.math.ln
-
-
 enum class CoverType{
     SLOW,
     DEFAULT,
     DYNAMIC
 }
 class Model: ViewModel(){
-
     val tag = "de.tech41.tones.vocalstar.ViewModel"
     var coverType by mutableStateOf(CoverType.SLOW)
     val devicesIn: MutableList<Pair<String, String>> = ArrayList()
@@ -75,6 +73,12 @@ class Model: ViewModel(){
     var mediaController : MediaController? = null
     var artworkUri by mutableStateOf(Uri.parse("https://tech41.de"))
     var bitmap:Bitmap? = null
+    var spotifyBroadcastReceiver = SpotifyBroadcastReceiver()
+
+    // Spotify
+    var spotifyAppRemote  : SpotifyAppRemote? = null
+    val clientId = "7ac580d73cb543de9fbe8eb777891bae"
+    val redirectUri = "https://vocalstar.app/spotify"
 
     @OptIn(UnstableApi::class)
     fun setPlayer(player: MediaAppDetails){
@@ -108,7 +112,6 @@ class Model: ViewModel(){
             positionPercent = position * 100 / duration
             isPlaying = mediaController!!.isPlaying
             var mediaItem = mediaController!!.currentMediaItem
-
 
             if (mediaItem != null) {
                 title = mediaItem.mediaMetadata.title.toString()

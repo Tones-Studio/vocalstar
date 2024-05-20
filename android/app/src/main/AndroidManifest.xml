@@ -55,6 +55,12 @@
                 <!--<action android:name="android.media.browse.MediaBrowserService" />-->
             </intent-filter>
         </service>
+
+        <receiver android:name=".spotify.SpotifyBroadcastReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.spotify.music.active"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

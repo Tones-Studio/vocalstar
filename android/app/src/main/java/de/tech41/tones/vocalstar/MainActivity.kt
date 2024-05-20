@@ -35,6 +35,15 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
+import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
+import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.protocol.types.Track
+import com.spotify.sdk.android.auth.AccountsQueryParameters
+import com.spotify.sdk.android.auth.AuthorizationClient
+import com.spotify.sdk.android.auth.AuthorizationRequest
+import com.spotify.sdk.android.auth.AuthorizationResponse
+import com.spotify.sdk.android.auth.LoginActivity
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 
@@ -173,6 +182,8 @@ class MainActivity :ComponentActivity(){
         if(!notificationAccessGranted(this)){
             openPermissions()
         }
+        viewModel.spotifyBroadcastReceiver.register(this)
+
     }
 
     @OptIn(UnstableApi::class)
@@ -187,7 +198,10 @@ class MainActivity :ComponentActivity(){
         Log.d(TAG,"MainActivity onCreate complete")
 
 
-      var players =  viewModel.mediaAppBrowser?.getPlayers()
+
+
+
+        connectSpotify()
     }
 
     override fun onStop() {
@@ -195,6 +209,9 @@ class MainActivity :ComponentActivity(){
         if (isBound) {
             unbindService(connection)
             isBound = false
+        }
+        viewModel.spotifyAppRemote?.let {
+            SpotifyAppRemote.disconnect(it)
         }
     }
 
@@ -215,9 +232,21 @@ class MainActivity :ComponentActivity(){
     private val OPEN_DIRECTORY_REQUEST_CODE = 0xf11e
     val PICK_AUDIO_FILE = 2
 
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)}\n      with the appropriate {@link ActivityResultContract} and handling the result in the\n      {@link ActivityResultCallback#onActivityResult(Object) callback}.")
     @OptIn(UnstableApi::class)
-    override fun onActivityResult(
-        requestCode: Int, resultCode: Int, resultData: Intent?) {
+    override fun onActivityResult( requestCode: Int, resultCode: Int, resultData: Intent?) {
+        super.onActivityResult(requestCode, resultCode, resultData)
+
+        // Check if result comes from the correct activity
+        if (requestCode == LoginActivity.REQUEST_CODE) {
+            val response = AuthorizationClient.getResponse(resultCode, intent)
+            when (response.type) {
+                AuthorizationResponse.Type.TOKEN -> {}
+                AuthorizationResponse.Type.ERROR -> {}
+                else -> {}
+            }
+            return
+        }
         if (resultCode == Activity.RESULT_OK) {
             // The result data contains a URI for the document or directory that
             // the user selected.
@@ -247,6 +276,50 @@ class MainActivity :ComponentActivity(){
     Private
     ===================================================================================================================
      */
+
+    private fun connectSpotify(){
+        val connectionParams = ConnectionParams.Builder(viewModel.clientId)
+            .setRedirectUri(viewModel.redirectUri)
+            .showAuthView(true)
+            .build()
+
+        SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
+            override fun onConnected(appRemote: SpotifyAppRemote) {
+                viewModel.spotifyAppRemote = appRemote
+                android.util.Log.d("MainActivity", "Connected! Yay!")
+                // Now you can start interacting with App Remote
+                onSpotifyConnect()
+            }
+
+            override fun onFailure(throwable: Throwable) {
+                android.util.Log.e("MainActivity", throwable.message, throwable)
+                // Something went wrong when attempting to connect! Handle errors here
+            }
+        })
+    }
+    fun authorize() {
+        val REQUEST_CODE = 1337
+        val REDIRECT_URI = "https://vocalstar.app/spotify"
+        val builder =  AuthorizationRequest.Builder(AccountsQueryParameters.CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI)
+        builder.setScopes(arrayOf("streaming"))
+        val request = builder.build()
+        AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
+    }
+
+
+    private fun onSpotifyConnect() {
+        viewModel.spotifyAppRemote?.let {
+            // Play a playlist
+            val playlistURI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL"
+            it.playerApi.play(playlistURI)
+            // Subscribe to PlayerState
+            it.playerApi.subscribeToPlayerState().setEventCallback {
+                val track: Track = it.track
+                android.util.Log.d("MainActivity", track.name + " by " + track.artist.name)
+            }
+        }
+
+    }
 }
 
 fun openFileBrowser(){
