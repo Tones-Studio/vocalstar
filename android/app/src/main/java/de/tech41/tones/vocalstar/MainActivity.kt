@@ -33,8 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
+import com.google.gson.GsonBuilder
+import com.spotify.android.appremote.api.ConnectApi
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
@@ -46,19 +49,68 @@ import com.spotify.sdk.android.auth.AuthorizationResponse
 import com.spotify.sdk.android.auth.LoginActivity
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
+import kotlinx.coroutines.launch
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
-class MainActivity :ComponentActivity(){
+class MainActivity :ComponentActivity() {
     private val TAG: String = MainActivity::class.java.name
+
+    private val gson = GsonBuilder().setPrettyPrinting().create()
+
     private lateinit var viewModel: Model
     lateinit var audioManager: AudioManager
     private var isBound = false
     var discoverPlayer = DiscoverPlayer(this)
     private val intentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
     private val myNoisyAudioStreamReceiver = BecomingNoisyReceiver()
+
+    private val CONNECTOR: Connector? = null
+    private val mConnectApi: ConnectApi? = null
+    private var spotifyAppRemote: SpotifyAppRemote? = null
+
+    private suspend fun connectToAppRemote(showAuthView: Boolean): SpotifyAppRemote? = suspendCoroutine { cont: Continuation<SpotifyAppRemote> ->
+        SpotifyAppRemote.connect(
+            application,
+            ConnectionParams.Builder(viewModel.clientId)
+                .setRedirectUri(viewModel.redirectUri)
+                .showAuthView(showAuthView)
+                .build(),
+            object : Connector.ConnectionListener {
+                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                    cont.resume(spotifyAppRemote)
+                }
+
+                override fun onFailure(error: Throwable) {
+                    cont.resumeWithException(error)
+                }
+            })
+        }
+
+    private fun connect(showAuthView: Boolean) {
+        SpotifyAppRemote.disconnect(spotifyAppRemote)
+        lifecycleScope.launch {
+            try {
+                spotifyAppRemote = connectToAppRemote(showAuthView)
+                Log.d(TAG,"Connected to Spotify")
+               // onConnected()
+                onSpotifyConnect()
+            } catch (error: Throwable) {
+                Log.e(TAG,error.toString())
+            }
+        }
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun onConnected() {
+        Log.d(TAG,"connected to Spotify")
+    }
 
     private val callback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
@@ -181,11 +233,18 @@ class MainActivity :ComponentActivity(){
         if(!notificationAccessGranted(this)){
             openPermissions()
         }
-        viewModel.spotifyBroadcastReceiver.register(this)
+        SpotifyAppRemote.setDebugMode(true)
+        if(isSpotifyInstalled()) {
+            viewModel.spotifyBroadcastReceiver.register(this)
+            //connectSpotify()
+
+            connect(true)
+            //  openSpotifySlow()
+        }
     }
 
     @OptIn(UnstableApi::class)
-    override fun onStart(){
+    override  fun onStart(){
         super.onStart()
 
         Log.d(TAG,"Binding Service")
@@ -195,10 +254,7 @@ class MainActivity :ComponentActivity(){
         }
         Log.d(TAG,"MainActivity onCreate complete")
 
-        if(isSpotifyInstalled()) {
-            //connectSpotify()
-           openSpotifySlow()
-        }
+
     }
 
     override fun onStop() {
@@ -293,34 +349,6 @@ class MainActivity :ComponentActivity(){
         return isSpotifyInstalled
     }
 
-    private fun connectSpotify(){
-        val connectionParams = ConnectionParams.Builder(viewModel.clientId)
-            .setRedirectUri(viewModel.redirectUri)
-            .showAuthView(true)
-            .build()
-
-        SpotifyAppRemote.connect(this, connectionParams, object : Connector.ConnectionListener {
-            override fun onConnected(appRemote: SpotifyAppRemote) {
-                viewModel.spotifyAppRemote = appRemote
-                android.util.Log.d("MainActivity", "Connected! Yay!")
-                // Now you can start interacting with App Remote
-                onSpotifyConnect()
-            }
-
-            override fun onFailure(throwable: Throwable) {
-                android.util.Log.e("MainActivity", throwable.message, throwable)
-                // Something went wrong when attempting to connect! Handle errors here
-            }
-        })
-    }
-    fun authorize() {
-        val REQUEST_CODE = 1337
-        val REDIRECT_URI = "https://vocalstar.app/spotify"
-        val builder =  AuthorizationRequest.Builder(AccountsQueryParameters.CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI)
-        builder.setScopes(arrayOf("streaming"))
-        val request = builder.build()
-        AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
-    }
 
 
     private fun onSpotifyConnect() {

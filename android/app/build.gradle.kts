@@ -111,4 +111,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    runtimeOnly("com.fasterxml.jackson.core:jackson-annotations:2.15.2")
+
 }

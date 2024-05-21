@@ -78,7 +78,7 @@ class Model: ViewModel(){
     // Spotify
     var spotifyAppRemote  : SpotifyAppRemote? = null
     val clientId = "7ac580d73cb543de9fbe8eb777891bae"
-    val redirectUri = "https://vocalstar.app/spotify"
+    val redirectUri = "detech41tonesvocalstar://callback"
 
     @OptIn(UnstableApi::class)
     fun setPlayer(player: MediaAppDetails){
