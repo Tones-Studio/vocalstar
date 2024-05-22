@@ -302,7 +302,6 @@ class MainActivity :ComponentActivity() {
     }
 
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             data?.also { uri ->
@@ -310,7 +309,9 @@ class MainActivity :ComponentActivity() {
                 uri.data?.let { viewModel.setFileTitle(it) }
             }
         }
-
+        if (result.resultCode == Activity.RESULT_CANCELED) {
+            Log.d(TAG,"File browsing cancelled")
+        }
         if (result.resultCode == LoginActivity.REQUEST_CODE) {
             val response = AuthorizationClient.getResponse(result.resultCode, intent)
             when (response.type) {
@@ -318,9 +319,6 @@ class MainActivity :ComponentActivity() {
                 AuthorizationResponse.Type.ERROR -> {}
                 else -> {}
             }
-        }
-        if (result.resultCode == Activity.RESULT_CANCELED) {
-            Log.d(TAG,"File browsing cancelled")
         }
     }
 

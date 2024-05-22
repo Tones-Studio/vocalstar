@@ -88,10 +88,8 @@ class Model: ViewModel(){
     @OptIn(UnstableApi::class)
     fun setPlayer(p: MediaAppDetails){
         if (p.appName ==  "Spotify"){
-            player = SpotifyPlayer(context, this)
             selectedPlayer = p
-            player.setup()
-            playerType = PLAYER.SPOTIFY
+            setPlayer(PLAYER.SPOTIFY)
             return
         }
         selectedPlayer = p
@@ -103,8 +101,7 @@ class Model: ViewModel(){
                     mediaController = controllerFuture.get()
                     when (p.appName) {
                         "Apple Music" -> {
-                            playerType = PLAYER.APPLE
-                            player = ApplePlayer(context, this)
+                            setPlayer(PLAYER.APPLE)
                         }
                         "Deezer" -> player = ApplePlayer(context, this)
                         "Youtube" -> player = ApplePlayer(context, this)
@@ -294,6 +291,7 @@ class Model: ViewModel(){
         isSeeking = true
         positionPercent = percent
         position = percent * duration / 100.0f
+        player.setPosition(percent)
     }
     fun seekDone() {
         player.setPosition(positionPercent)

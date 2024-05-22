@@ -131,12 +131,14 @@ fun HomeScreen(viewModel: Model) {
             }
 
             PLAYER.APPLE -> {
-                Image(
-                    painter = rememberAsyncImagePainter(viewModel.artworkUri),
-                    contentDescription = viewModel.title,
-                    contentScale = ContentScale.Fit,
-                    modifier = imageModifier
-                )
+                viewModel.artworkBitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = viewModel.title,
+                        contentScale = ContentScale.Fit,
+                        modifier = imageModifier
+                    )
+                }
             }
         }
 
