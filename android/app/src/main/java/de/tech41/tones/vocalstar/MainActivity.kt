@@ -25,6 +25,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,6 +61,7 @@ import kotlin.coroutines.suspendCoroutine
 private val AUDIO_EFFECT_REQUEST = 0
 private var AUDIO_RECORD_REQUEST_CODE = 300
 
+@UnstableApi
 class MainActivity :ComponentActivity() {
     private val TAG: String = MainActivity::class.java.name
 
@@ -290,44 +292,36 @@ class MainActivity :ComponentActivity() {
     private val OPEN_DIRECTORY_REQUEST_CODE = 0xf11e
     val PICK_AUDIO_FILE = 2
 
-    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)}\n      with the appropriate {@link ActivityResultContract} and handling the result in the\n      {@link ActivityResultCallback#onActivityResult(Object) callback}.")
-    @OptIn(UnstableApi::class)
-    override fun onActivityResult( requestCode: Int, resultCode: Int, resultData: Intent?) {
-        super.onActivityResult(requestCode, resultCode, resultData)
+    fun openDirectory() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "audio/*"
+            putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse("/"))
+        }
+        resultLauncher.launch(intent)
+    }
 
-        // Check if result comes from the correct activity
-        if (requestCode == LoginActivity.REQUEST_CODE) {
-            val response = AuthorizationClient.getResponse(resultCode, intent)
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            data?.also { uri ->
+                Log.d(TAG,uri.toString())
+                uri.data?.let { viewModel.setFileTitle(it) }
+            }
+        }
+
+        if (result.resultCode == LoginActivity.REQUEST_CODE) {
+            val response = AuthorizationClient.getResponse(result.resultCode, intent)
             when (response.type) {
                 AuthorizationResponse.Type.TOKEN -> {}
                 AuthorizationResponse.Type.ERROR -> {}
                 else -> {}
             }
-            return
         }
-        if (resultCode == Activity.RESULT_OK) {
-            // The result data contains a URI for the document or directory that
-            // the user selected.
-            resultData?.data?.also { uri ->
-                Log.d(TAG,uri.toString())
-                viewModel.setFileTitle(uri)
-            }
-        }
-        if (resultCode == Activity.RESULT_CANCELED) {
+        if (result.resultCode == Activity.RESULT_CANCELED) {
             Log.d(TAG,"File browsing cancelled")
         }
-    }
-
-    fun openDirectory() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "audio/*"
-
-            // Optionally, specify a URI for the file that should appear in the
-            // system file picker when it loads.
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse("/"))
-        }
-        startActivityForResult(intent, PICK_AUDIO_FILE)
     }
 
    private fun openSpotifySlow(){

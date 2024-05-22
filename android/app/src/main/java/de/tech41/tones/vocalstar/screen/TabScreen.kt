@@ -68,14 +68,16 @@ fun TabScreen(viewModel : Model) {
             .background(MaterialTheme.colorScheme.background)
             .clip(shape = RoundedCornerShape(0.dp, 0.dp, 15.dp, 15.dp))) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally ) {
+
+            // Left Menu Button
             Row(modifier = Modifier
                 .background(Color.Black)
                 .padding(5.dp)) {
                 IconButton(onClick = {
-                    if (viewModel.playerType == PLAYER.APPLE || viewModel.selectedPlayer == null) {
+                    if (viewModel.selectedPlayer == null ||  viewModel.playerType != PLAYER.FILE){
                         showPlayerMenu = true
                     } else {
-                        viewModel.setPlayer(PLAYER.APPLE)
+                        viewModel.setPlayer(viewModel.lastPlayerType)
                     }
                 }, modifier = Modifier.size(16.dp)) {
                     if (viewModel.selectedPlayer != null){
@@ -125,7 +127,7 @@ fun TabScreen(viewModel : Model) {
                         }
                     }
                 }
-                if(viewModel.playerType == PLAYER.APPLE) {
+                if(viewModel.playerType != PLAYER.FILE) {
                     Box(
                         modifier = Modifier
                             .size(5.dp)
@@ -173,6 +175,9 @@ fun TabScreen(viewModel : Model) {
                     )
                 }
                 IconButton(onClick = {
+                    if(viewModel.lastPlayerType != PLAYER.FILE) {
+                        viewModel.lastPlayerType = viewModel.playerType
+                    }
                     if (viewModel.playerType == PLAYER.FILE){
                         // user wants to open file browser
                         openFileBrowser()

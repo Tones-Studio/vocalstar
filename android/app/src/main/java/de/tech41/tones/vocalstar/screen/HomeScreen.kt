@@ -43,12 +43,14 @@ import kotlin.time.Duration.Companion.milliseconds
 
 
 private val TAG: String = "HomeScreen"
+
 @Composable
 fun ButtonStart(onClick: () -> Unit) {
     Button(onClick = { onClick() }) {
         Text(" Mic On")
     }
 }
+
 @Composable
 fun ButtonStop(onClick: () -> Unit) {
     Button(onClick = { onClick() }) {
@@ -56,15 +58,15 @@ fun ButtonStop(onClick: () -> Unit) {
     }
 }
 
-fun convertTime(sec:Float):String{
-    var secTotal :Int = sec.roundToInt()
+fun convertTime(sec: Float): String {
+    var secTotal: Int = sec.roundToInt()
     var hours = secTotal / 3600
     var minutes = (secTotal % 3600) / 60
     var seconds = secTotal % 60
-    if (hours > 0){
-       return  String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    if (hours > 0) {
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
-    if(minutes < 10) {
+    if (minutes < 10) {
         return String.format("%01d:%02d", minutes, seconds)
     }
     return String.format("%02d:%02d", minutes, seconds)
@@ -73,29 +75,46 @@ fun convertTime(sec:Float):String{
 @OptIn(UnstableApi::class)
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel : Model) {
-    Log.d(TAG,"HomeScreen")
+fun HomeScreen(viewModel: Model) {
+    Log.d(TAG, "HomeScreen")
     LaunchedEffect(Unit) {
-        while(true) {
+        while (true) {
             delay(500.milliseconds)
             viewModel.updatePosition()
         }
     }
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
 
         // Artist
-        viewModel.artist?.let { Text(it,  fontSize = 26.sp) }
+        viewModel.artist?.let { Text(it, fontSize = 26.sp) }
 
         // Cover
-        val imageModifier = Modifier.size(300.dp).border(BorderStroke(1.dp, Color.Black)).background(Color.Black)
+        val imageModifier =
+            Modifier
+                .size(300.dp)
+                .border(BorderStroke(1.dp, Color.Black))
+                .background(Color.Black)
         when (viewModel.playerType) {
-            PLAYER.SPOTIFY -> viewModel.artworkBitmap?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = viewModel.title,
-                    contentScale = ContentScale.Fit,
-                    modifier = imageModifier
-                )
+            PLAYER.SPOTIFY -> {
+                viewModel.artworkBitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = viewModel.title,
+                        contentScale = ContentScale.Fit,
+                        modifier = imageModifier
+                    )
+                }
+                if (viewModel.artworkBitmap == null) {
+                    Image(
+                        painter = painterResource(id = R.drawable.vocalstar),
+                        contentDescription = "",
+                        contentScale = ContentScale.Fit,
+                        modifier = imageModifier
+                    )
+                }
             }
 
             PLAYER.FILE -> {
@@ -122,8 +141,8 @@ fun HomeScreen(viewModel : Model) {
         }
 
         // Title
-        viewModel.title?.let { Text(it,  fontSize = 26.sp) }
-        Row{
+        viewModel.title?.let { Text(it, fontSize = 26.sp) }
+        Row {
             Text(convertTime(viewModel.position))
             Spacer(Modifier.weight(1f))
             Text(convertTime(viewModel.duration - viewModel.position))
@@ -134,29 +153,39 @@ fun HomeScreen(viewModel : Model) {
         val imageBtn = Modifier
             .size(60.dp)
             .border(BorderStroke(0.dp, Color.White))
-        Row{
+        Row {
             IconButton(onClick = { viewModel.back() }, modifier = Modifier.size(60.dp)) {
-               Icon( painterResource(R.drawable.rewind), contentDescription = "rewind", modifier = Modifier.fillMaxSize(1F), tint = { Color.White })
+                Icon(
+                    painterResource(R.drawable.rewind),
+                    contentDescription = "rewind",
+                    modifier = Modifier.fillMaxSize(1F),
+                    tint = { Color.White })
             }
             Spacer(modifier = Modifier.width(50.dp))
-            IconButton(onClick = { viewModel.toggle()}, Modifier.size(60.dp) ) {
-                if (viewModel.isPlaying){
+            IconButton(onClick = { viewModel.toggle() }, Modifier.size(60.dp)) {
+                if (viewModel.isPlaying) {
                     Icon(
                         painterResource(R.drawable.pause),
                         contentDescription = "Pause",
                         tint = { Color.White })
-                }else {
+                } else {
                     Icon(
                         painterResource(R.drawable.play),
                         contentDescription = "Playing",
                         tint = { Color.White })
                 }
             }
-            Spacer(modifier = Modifier.width( 60.dp))
-            IconButton(onClick = { viewModel.forward() },
-            modifier = Modifier.size(60.dp)
+            Spacer(modifier = Modifier.width(60.dp))
+            IconButton(
+                onClick = { viewModel.forward() },
+                modifier = Modifier.size(60.dp)
             ) {
-                Icon(painterResource(R.drawable.fast_forward), contentDescription = "forward", tint = { Color.White }, modifier = Modifier.size(60.dp))
+                Icon(
+                    painterResource(R.drawable.fast_forward),
+                    contentDescription = "forward",
+                    tint = { Color.White },
+                    modifier = Modifier.size(60.dp)
+                )
             }
         }
         VolumeSlider(viewModel)

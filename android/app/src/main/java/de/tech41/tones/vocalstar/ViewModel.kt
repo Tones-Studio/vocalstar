@@ -66,7 +66,8 @@ class Model: ViewModel(){
     var artist by mutableStateOf("NiniF")
     var album by mutableStateOf("")
     var player : IPlayer = FilePlayer(context, this)
-    var playerType by mutableStateOf(PLAYER.APPLE)
+    var playerType by mutableStateOf(PLAYER.FILE)
+    var lastPlayerType by mutableStateOf(PLAYER.FILE)
     var playerUri : Uri? = null
     private var isSeeking = false
     var isMonoInput by mutableStateOf(false)
@@ -226,6 +227,9 @@ class Model: ViewModel(){
         }
         if (type == PLAYER.SPOTIFY) {
             player = SpotifyPlayer(context, this)
+        }
+        if (playerType != PLAYER.FILE){
+            lastPlayerType = playerType
         }
         playerType = type
         player.setup()
