@@ -1,74 +1,91 @@
 package de.tech41.tones.vocalstar.spotify
 
+import android.content.Context
 import android.net.Uri
+import android.os.AsyncTask
+import android.util.Log
+import com.spotify.protocol.client.Subscription
+import com.spotify.protocol.types.Image
+import com.spotify.protocol.types.PlayerState
 import de.tech41.tones.vocalstar.IPlayer
+import de.tech41.tones.vocalstar.Model
 import de.tech41.tones.vocalstar.PLAYER
+import java.util.concurrent.TimeUnit
 
-class SpotifyPlayer : IPlayer {
+
+class SpotifyPlayer(context : Context, viewModel : Model ) : IPlayer {
+    val tag = "de.tech41.tones.vocalstar.spotify.SpotifyPlayer"
+    val context : Context = context
+    val viewModel : Model = viewModel
+    private var _isPlaying = false
+
     override fun setup() {
-        TODO("Not yet implemented")
+        viewModel.spotifyAppRemote?.getPlayerApi()?.subscribeToPlayerState()?.setEventCallback(Subscription.EventCallback<PlayerState?>() {
+            viewModel.title = it.track.name
+            viewModel.artist = it.track.artist.name
+            viewModel.duration = (it.track.duration).toFloat() / 1000.0f
+            viewModel.spotifyAppRemote?.imagesApi?.getImage(it.track.imageUri, Image.Dimension.MEDIUM)?.setResultCallback { bitmap ->
+                viewModel.artworkBitmap = bitmap
+            }
+            _isPlaying = !it.isPaused
+        })
     }
 
     override fun play() {
-        TODO("Not yet implemented")
+        viewModel.spotifyAppRemote?.playerApi?.resume()
     }
 
     override fun stop() {
-        TODO("Not yet implemented")
+        viewModel.spotifyAppRemote?.playerApi?.pause()
     }
 
     override fun back() {
-        TODO("Not yet implemented")
+        viewModel.spotifyAppRemote?.playerApi?.skipPrevious()
     }
 
     override fun forward() {
-        TODO("Not yet implemented")
+        viewModel.spotifyAppRemote?.playerApi?.skipNext()
     }
 
     override fun pause() {
-        TODO("Not yet implemented")
+        viewModel.spotifyAppRemote?.playerApi?.pause()
     }
 
     override fun setPosition(percent: Float) {
-        TODO("Not yet implemented")
+
     }
 
     override fun getDuration(): Float {
-        TODO("Not yet implemented")
-        return 0.0f;
+        return 0.0f
     }
 
     override fun getType(): PLAYER {
-        TODO("Not yet implemented")
         return PLAYER.SPOTIFY
     }
 
     override fun setVolume(vol: Float) {
-        TODO("Not yet implemented")
+
     }
 
     override fun release() {
-        TODO("Not yet implemented")
+
     }
 
     override fun updatePosition() {
-        TODO("Not yet implemented")
-    }
 
+    }
     override fun isPlaying(): Boolean {
-        TODO("Not yet implemented")
-        return false
+        return _isPlaying
     }
-
     override fun setSpeaker() {
-        TODO("Not yet implemented")
+
     }
 
     override fun setHeadphone() {
-        TODO("Not yet implemented")
+
     }
 
     override fun setUri(url: Uri) {
-        TODO("Not yet implemented")
+
     }
 }

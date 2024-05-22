@@ -1,10 +1,13 @@
 package de.tech41.tones.vocalstar.controls
 
+import android.content.Context
 import android.net.Uri
 import de.tech41.tones.vocalstar.IPlayer
 import de.tech41.tones.vocalstar.PLAYER
 
-class ExternalPlayer : IPlayer {
+class ExternalPlayer(context : Context) : IPlayer {
+
+    val context : Context = context
 
     override fun setup(){
 

@@ -1,6 +1,7 @@
 package de.tech41.tones.vocalstar
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -70,10 +71,9 @@ class MainActivity :ComponentActivity() {
     var discoverPlayer = DiscoverPlayer(this)
     private val intentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
     private val myNoisyAudioStreamReceiver = BecomingNoisyReceiver()
-
     private val CONNECTOR: Connector? = null
     private val mConnectApi: ConnectApi? = null
-    private var spotifyAppRemote: SpotifyAppRemote? = null
+
     init {
         instance = this
     }
@@ -124,7 +124,8 @@ class MainActivity :ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VocalstarTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) {
+                    var s = it.toString()
                     TabScreen(viewModel)
                 }
             }
@@ -135,6 +136,12 @@ class MainActivity :ComponentActivity() {
         }
         SpotifyAppRemote.setDebugMode(true)
         if(isSpotifyInstalled()) {
+            val REQUEST_CODE = 1337
+            val builder = AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, viewModel.redirectUri)
+            builder.setScopes(arrayOf("app-remote-control")) // streaming
+            val request = builder.build()
+            AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
+
             viewModel.spotifyBroadcastReceiver.register(this)
             connect(true)
             //  openSpotifySlow()
@@ -150,11 +157,6 @@ class MainActivity :ComponentActivity() {
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
         Log.d(TAG,"MainActivity onCreate complete")
-        val REQUEST_CODE = 1337
-        val builder = AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, viewModel.redirectUri)
-        builder.setScopes(arrayOf("app-remote-control")) // streaming
-        val request = builder.build()
-        AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
     }
     override fun onStop() {
         super.onStop()
@@ -162,7 +164,7 @@ class MainActivity :ComponentActivity() {
             unbindService(connection)
             isBound = false
         }
-        spotifyAppRemote?.let {
+        viewModel.spotifyAppRemote?.let {
             SpotifyAppRemote.disconnect(it)
         }
     }
@@ -176,7 +178,11 @@ class MainActivity :ComponentActivity() {
         super.onDestroy()
         val intent = Intent(this, VService::class.java)
         applicationContext.stopService(intent)
-        applicationContext.unregisterReceiver(viewModel.spotifyBroadcastReceiver)
+        try {
+            applicationContext.unregisterReceiver(viewModel.spotifyBroadcastReceiver)
+        }catch(e:Exception){
+
+        }
     }
     /* =============================================================================================
     Private Methods
@@ -199,14 +205,15 @@ class MainActivity :ComponentActivity() {
             })
         }
 
+    @OptIn(UnstableApi::class)
     private fun connect(showAuthView: Boolean) {
-        SpotifyAppRemote.disconnect(spotifyAppRemote)
+        SpotifyAppRemote.disconnect( viewModel.spotifyAppRemote)
         lifecycleScope.launch {
             try {
-                spotifyAppRemote = connectToAppRemote(showAuthView)
+                viewModel.spotifyAppRemote = connectToAppRemote(showAuthView)
                 Log.d(TAG,"Connected to Spotify")
                // onConnected()
-                onSpotifyConnect()
+              //  onSpotifyConnect()
             } catch (error: Throwable) {
                 Log.e(TAG,error.toString())
             }
@@ -331,18 +338,15 @@ class MainActivity :ComponentActivity() {
         startActivity(intent)
     }
     private fun isSpotifyInstalled():Boolean{
-        val pm = packageManager
-        var isSpotifyInstalled = false
         try {
-            pm.getPackageInfo("com.spotify.music", 0)
-            isSpotifyInstalled = true
+            packageManager.getPackageInfo("com.spotify.music", 0)
+            return true
         } catch (e: PackageManager.NameNotFoundException) {
-            isSpotifyInstalled = false
+            return false
         }
-        return isSpotifyInstalled
     }
     private fun onSpotifyConnect() {
-        spotifyAppRemote?.let {
+        viewModel.spotifyAppRemote?.let {
             val playlistURI = "spotify:album:4mtJHQbuhjHGmG2yaKemqw"
             it.playerApi.play(playlistURI)
             // Subscribe to PlayerState
@@ -352,9 +356,6 @@ class MainActivity :ComponentActivity() {
             }
         }
     }
-
-
-
 }
 
 private class BecomingNoisyReceiver : BroadcastReceiver() {

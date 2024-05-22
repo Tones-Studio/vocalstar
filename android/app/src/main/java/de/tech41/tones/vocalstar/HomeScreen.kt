@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -83,14 +84,37 @@ fun HomeScreen(viewModel : Model) {
 
         // Cover
         val imageModifier = Modifier.size(300.dp).border(BorderStroke(1.dp, Color.Black)).background(Color.Black)
-        if (viewModel.playerType == PLAYER.FILE) {
-            var res : Painter = painterResource(id = R.drawable.slow_cover)
-            if (viewModel.coverType == CoverType.DEFAULT) {
-                res = painterResource(id = R.drawable.vocalstar)
+        when (viewModel.playerType) {
+            PLAYER.SPOTIFY -> viewModel.artworkBitmap?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = viewModel.title,
+                    contentScale = ContentScale.Fit,
+                    modifier = imageModifier
+                )
             }
-            Image(painter = res, contentDescription = "SLOW", contentScale = ContentScale.Fit, modifier = imageModifier)
-        }else {
-            Image(painter = rememberAsyncImagePainter(viewModel.artworkUri), contentDescription = "SLOW", contentScale = ContentScale.Fit, modifier = imageModifier)
+
+            PLAYER.FILE -> {
+                var res: Painter = painterResource(id = R.drawable.slow_cover)
+                if (viewModel.coverType == CoverType.DEFAULT) {
+                    res = painterResource(id = R.drawable.vocalstar)
+                }
+                Image(
+                    painter = res,
+                    contentDescription = "SLOW",
+                    contentScale = ContentScale.Fit,
+                    modifier = imageModifier
+                )
+            }
+
+            PLAYER.EXTERNAL -> {
+                Image(
+                    painter = rememberAsyncImagePainter(viewModel.artworkUri),
+                    contentDescription = viewModel.title,
+                    contentScale = ContentScale.Fit,
+                    modifier = imageModifier
+                )
+            }
         }
 
         // Title

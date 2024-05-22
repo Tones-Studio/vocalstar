@@ -9,9 +9,9 @@ public enum LiveEffectEngine {
     static native boolean create();
     static native boolean isAAudioRecommended();
     static native boolean setAPI(int apiType);
-    static native boolean setEffectOn(boolean isEffectOn);
-    static native void setRecordingDeviceId(int deviceId);
-    static native void setPlaybackDeviceId(int deviceId);
+    public static native boolean setEffectOn(boolean isEffectOn);
+    public static native void setRecordingDeviceId(int deviceId);
+    public  static native void setPlaybackDeviceId(int deviceId);
 
     static native void setBlocksize(int blockSize);
     static native int getRecordingDeviceId();

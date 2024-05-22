@@ -2,16 +2,17 @@ package de.tech41.tones.vocalstar
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
@@ -22,10 +23,11 @@ import com.spotify.android.appremote.api.SpotifyAppRemote
 import de.tech41.tones.vocalstar.controls.ExternalPlayer
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.controls.MediaAppDetails
+import de.tech41.tones.vocalstar.player.FilePlayer
 import de.tech41.tones.vocalstar.spotify.SpotifyBroadcastReceiver
+import de.tech41.tones.vocalstar.spotify.SpotifyPlayer
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
-import java.net.URL
 import kotlin.math.exp
 import kotlin.math.ln
 enum class CoverType{
@@ -69,34 +71,45 @@ class Model: ViewModel(){
     var mediaAppBrowser : FindMediaBrowserAppsTask? = null
     var mediaPlayers : List<MediaAppDetails> = emptyList()
     var selectedPlayer : MediaAppDetails? = null
-    var selectedPlayerIcon by mutableIntStateOf( R.drawable.menu)
+   // var selectedPlayerIcon by mutableIntStateOf( R.drawable.menu)
     var mediaController : MediaController? = null
     var artworkUri by mutableStateOf(Uri.parse("https://tech41.de"))
-    var bitmap:Bitmap? = null
+    var artworkBitmap : Bitmap? by mutableStateOf(null)
     var spotifyBroadcastReceiver = SpotifyBroadcastReceiver()
 
     // Spotify
-   // var spotifyAppRemote  : SpotifyAppRemote? = null
+    var spotifyAppRemote  : SpotifyAppRemote? = null
     val clientId = "7ac580d73cb543de9fbe8eb777891bae"
     val redirectUri = "detech41tonesvocalstar://callback"
+    private var playerBitmap :Bitmap? = null
 
     @OptIn(UnstableApi::class)
-    fun setPlayer(player: MediaAppDetails){
-        val sessionToken = SessionToken(context, player.componentName)
+    fun setPlayer(p: MediaAppDetails){
+        if (p.appName ==  "Spotify"){
+            player = SpotifyPlayer(context, this)
+            selectedPlayer = p
+            player.setup()
+            playerType = PLAYER.SPOTIFY
+            return
+        }
+        selectedPlayer = p
+        val sessionToken = SessionToken(context, p.componentName)
         val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
         if(controllerFuture != null) {
             controllerFuture.addListener({
                 try {
                     mediaController = controllerFuture.get()
-                    when (player.appName) {
-                        "Apple Music" -> selectedPlayerIcon = R.drawable.apple_icon
-                        "Spotify" -> selectedPlayerIcon = R.drawable.spotify
-                        "Deezer" -> selectedPlayerIcon = R.drawable.apple_icon
-                        "Youtube" -> selectedPlayerIcon = R.drawable.apple_icon
-                        "Another" -> selectedPlayerIcon = R.drawable.apple_icon
+                    when (p.appName) {
+                        "Apple Music" -> {
+                            playerType = PLAYER.EXTERNAL
+                            player = ExternalPlayer(context)}//selectedPlayerIcon = R.drawable.apple_icon
+                        "Deezer" -> player = ExternalPlayer(context)//selectedPlayerIcon = R.drawable.apple_icon
+                        "Youtube" -> player = ExternalPlayer(context)//selectedPlayerIcon = R.drawable.apple_icon
+                        "Another" -> player = ExternalPlayer(context)//selectedPlayerIcon = R.drawable.apple_icon
                     }
                     setPlayerData()
-                    selectedPlayer = player
+                    selectedPlayer = p
+                    val imageModifier = Modifier.size(20.dp)
                 } catch (e: Exception) {
                     Log.e(tag, e.toString())
                 }
@@ -111,25 +124,6 @@ class Model: ViewModel(){
             position = mediaController!!.contentPosition.toFloat() / 1000.0f
             positionPercent = position * 100 / duration
             isPlaying = mediaController!!.isPlaying
-            var mediaItem = mediaController!!.currentMediaItem
-
-            if (mediaItem != null) {
-                title = mediaItem.mediaMetadata.title.toString()
-                artist = mediaItem.mediaMetadata.artist.toString()
-                val uri = mediaItem.mediaMetadata.artworkUri
-                try {
-                    if (uri != null) {
-                        if (artworkUri.path != uri.path) {
-                            artworkUri = uri
-                            val url = URL(uri.path)
-                            bitmap =
-                                BitmapFactory.decodeStream(url.openConnection().getInputStream())
-                        }
-                    }
-                }catch(e:Exception){
-
-                }
-            }
         }
     }
 
@@ -156,7 +150,6 @@ class Model: ViewModel(){
         framesBurst.add(Pair("448", "448"))
         framesBurst.add(Pair("512", "512"))
     }
-
 
     @OptIn(UnstableApi::class)
     fun setFileTitle(url:Uri){
@@ -211,7 +204,7 @@ class Model: ViewModel(){
 
     fun updatePosition(){
         if(!isSeeking) {
-            if(playerType == PLAYER.FILE && player != null && player.isPlaying()) {
+            if(playerType == PLAYER.FILE &&  player.isPlaying()) {
                 player.updatePosition()
             }
 
@@ -229,13 +222,11 @@ class Model: ViewModel(){
             }
             player = FilePlayer(context, this)
             playerType = PLAYER.FILE
-            selectedPlayerIcon = R.drawable.menu
         }
         if (type == PLAYER.EXTERNAL){
             if(playerType== PLAYER.EXTERNAL){
                 return
             }
-            player = ExternalPlayer()
             playerType = PLAYER.EXTERNAL
         }
         player.setup()
@@ -263,23 +254,15 @@ class Model: ViewModel(){
         }
     }
     fun toggle(){
-        isPlaying = !isPlaying
         if (player == null){
             setPlayer(playerType)
         }
-        if(isPlaying) {
-            if(playerType == PLAYER.FILE) {
-                player.play()
-            }else {
-                mediaController?.play()
-            }
+        if(!isPlaying) {
+            player.play()
         }else{
-            if(playerType == PLAYER.FILE) {
-                player.pause()
-            }else {
-                mediaController?.pause()
-            }
+            player.pause()
         }
+        isPlaying = !isPlaying
     }
     fun forward(){
         if(playerType == PLAYER.FILE) {

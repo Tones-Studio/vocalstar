@@ -1,4 +1,4 @@
-package de.tech41.tones.vocalstar
+package de.tech41.tones.vocalstar.player
 
 import android.content.Context
 import android.media.AudioDeviceInfo
@@ -17,10 +17,15 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.HttpDataSource.HttpDataSourceException
 import androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException
 import androidx.media3.exoplayer.ExoPlayer
+import de.tech41.tones.vocalstar.IPlayer
+import de.tech41.tones.vocalstar.LiveEffectEngine
+import de.tech41.tones.vocalstar.Model
+import de.tech41.tones.vocalstar.PLAYER
+import de.tech41.tones.vocalstar.getOutDevice
 
 
 class FilePlayer @OptIn(UnstableApi::class)
-constructor(context:Context, viewModel: Model) : IPlayer{
+constructor(context:Context, viewModel: Model) : IPlayer {
     val context : Context = context
     val mediaPlayer = ExoPlayer.Builder(context).build()
     var tag = "de.tech41.tones.vocalstar.FilePlayer2"
