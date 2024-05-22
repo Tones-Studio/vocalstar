@@ -1,13 +1,15 @@
-package de.tech41.tones.vocalstar.controls
+package de.tech41.tones.vocalstar.apple
 
 import android.content.Context
 import android.net.Uri
-import de.tech41.tones.vocalstar.IPlayer
-import de.tech41.tones.vocalstar.PLAYER
+import de.tech41.tones.vocalstar.Model
+import de.tech41.tones.vocalstar.player.IPlayer
+import de.tech41.tones.vocalstar.player.PLAYER
 
-class ExternalPlayer(context : Context) : IPlayer {
+class ApplePlayer(context : Context, viewModel: Model) : IPlayer {
 
     val context : Context = context
+    var viewModel : Model = viewModel
 
     override fun setup(){
 
@@ -41,11 +43,11 @@ class ExternalPlayer(context : Context) : IPlayer {
     }
 
     override fun back() {
-
+        viewModel.mediaController?.seekToPreviousMediaItem()
     }
 
     override fun forward() {
-
+        viewModel.mediaController?.seekToNextMediaItem()
     }
 
     override fun setUri(url: Uri){
@@ -65,7 +67,7 @@ class ExternalPlayer(context : Context) : IPlayer {
     }
 
     override fun getType(): PLAYER {
-       return PLAYER.EXTERNAL
+       return PLAYER.APPLE
     }
 
     override fun release(){

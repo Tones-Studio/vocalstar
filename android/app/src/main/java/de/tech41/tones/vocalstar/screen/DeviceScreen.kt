@@ -1,10 +1,9 @@
-package de.tech41.tones.vocalstar
+package de.tech41.tones.vocalstar.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,13 +25,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
-
-private val TAG: String = "DeviceScreen"
-
+import de.tech41.tones.vocalstar.LiveEffectEngine
+import de.tech41.tones.vocalstar.Model
+import de.tech41.tones.vocalstar.getBlockSize
+import de.tech41.tones.vocalstar.getVersions
+import de.tech41.tones.vocalstar.isAAudioSupported
 
 @Composable
 fun MySpinner(
@@ -91,7 +91,7 @@ fun MySpinner(
     }
 }
 
-fun getInDevice(viewModel : Model,  deviceId : String): Pair<String,String>{
+fun getInDevice(viewModel : Model, deviceId : String): Pair<String,String>{
     for (device in viewModel.devicesIn) {
         if (device.first == deviceId){
             return device
@@ -100,7 +100,7 @@ fun getInDevice(viewModel : Model,  deviceId : String): Pair<String,String>{
     return Pair("","")
 }
 
-fun getOutDevice(viewModel : Model,  deviceId : String): Pair<String,String>{
+fun getOutDevice(viewModel : Model, deviceId : String): Pair<String,String>{
     for (device in viewModel.devicesOut) {
         if (device.first == deviceId){
             return device
@@ -109,7 +109,7 @@ fun getOutDevice(viewModel : Model,  deviceId : String): Pair<String,String>{
     return Pair("","")
 }
 
-fun getFrameBurst(viewModel : Model,  frameId : String): Pair<String,String>{
+fun getFrameBurst(viewModel : Model, frameId : String): Pair<String,String>{
     for (fr in viewModel.framesBurst) {
         if (fr.first == frameId){
             return fr
@@ -120,7 +120,6 @@ fun getFrameBurst(viewModel : Model,  frameId : String): Pair<String,String>{
 
 @Composable
 fun DeviceScreen(viewModel : Model) {
-    Log.d(TAG,"DeviceScreen renders")
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text("In & Out",  fontSize = 30.sp)
         Spacer(modifier = Modifier.height(20.dp))

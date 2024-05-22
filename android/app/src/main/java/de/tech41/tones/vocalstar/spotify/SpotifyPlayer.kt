@@ -2,15 +2,12 @@ package de.tech41.tones.vocalstar.spotify
 
 import android.content.Context
 import android.net.Uri
-import android.os.AsyncTask
-import android.util.Log
 import com.spotify.protocol.client.Subscription
 import com.spotify.protocol.types.Image
 import com.spotify.protocol.types.PlayerState
-import de.tech41.tones.vocalstar.IPlayer
+import de.tech41.tones.vocalstar.player.IPlayer
 import de.tech41.tones.vocalstar.Model
-import de.tech41.tones.vocalstar.PLAYER
-import java.util.concurrent.TimeUnit
+import de.tech41.tones.vocalstar.player.PLAYER
 
 
 class SpotifyPlayer(context : Context, viewModel : Model ) : IPlayer {

@@ -1,4 +1,4 @@
-package de.tech41.tones.vocalstar
+package de.tech41.tones.vocalstar.screen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -46,6 +46,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import de.tech41.tones.vocalstar.MainActivity
+import de.tech41.tones.vocalstar.Model
+import de.tech41.tones.vocalstar.R
+import de.tech41.tones.vocalstar.player.PLAYER
 
 @RequiresApi(Build.VERSION_CODES.S)
 
@@ -68,10 +72,10 @@ fun TabScreen(viewModel : Model) {
                 .background(Color.Black)
                 .padding(5.dp)) {
                 IconButton(onClick = {
-                    if (viewModel.playerType == PLAYER.EXTERNAL || viewModel.selectedPlayer == null) {
+                    if (viewModel.playerType == PLAYER.APPLE || viewModel.selectedPlayer == null) {
                         showPlayerMenu = true
                     } else {
-                        viewModel.setPlayer(PLAYER.EXTERNAL)
+                        viewModel.setPlayer(PLAYER.APPLE)
                     }
                 }, modifier = Modifier.size(16.dp)) {
                     if (viewModel.selectedPlayer != null){
@@ -121,7 +125,7 @@ fun TabScreen(viewModel : Model) {
                         }
                     }
                 }
-                if(viewModel.playerType == PLAYER.EXTERNAL) {
+                if(viewModel.playerType == PLAYER.APPLE) {
                     Box(
                         modifier = Modifier
                             .size(5.dp)

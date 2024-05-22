@@ -1,5 +1,4 @@
-package de.tech41.tones.vocalstar
-import android.R.attr.x
+package de.tech41.tones.vocalstar.controls
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -10,6 +9,8 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import de.tech41.tones.vocalstar.Model
+import de.tech41.tones.vocalstar.R
 import kotlin.math.log10
 
 

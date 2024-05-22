@@ -17,11 +17,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.HttpDataSource.HttpDataSourceException
 import androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException
 import androidx.media3.exoplayer.ExoPlayer
-import de.tech41.tones.vocalstar.IPlayer
 import de.tech41.tones.vocalstar.LiveEffectEngine
 import de.tech41.tones.vocalstar.Model
-import de.tech41.tones.vocalstar.PLAYER
-import de.tech41.tones.vocalstar.getOutDevice
+import de.tech41.tones.vocalstar.screen.getOutDevice
 
 
 class FilePlayer @OptIn(UnstableApi::class)

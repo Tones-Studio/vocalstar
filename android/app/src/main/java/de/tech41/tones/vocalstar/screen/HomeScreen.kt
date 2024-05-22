@@ -1,7 +1,5 @@
-package de.tech41.tones.vocalstar
+package de.tech41.tones.vocalstar.screen
 
-import android.graphics.BitmapFactory
-import android.widget.ImageView
 import androidx.annotation.OptIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -32,8 +30,14 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import coil.compose.rememberAsyncImagePainter
+import de.tech41.tones.vocalstar.CoverType
+import de.tech41.tones.vocalstar.controls.MicVolumeSlider
+import de.tech41.tones.vocalstar.Model
+import de.tech41.tones.vocalstar.controls.PositionSlider
+import de.tech41.tones.vocalstar.R
+import de.tech41.tones.vocalstar.controls.VolumeSlider
+import de.tech41.tones.vocalstar.player.PLAYER
 import kotlinx.coroutines.delay
-import java.net.URL
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -107,7 +111,7 @@ fun HomeScreen(viewModel : Model) {
                 )
             }
 
-            PLAYER.EXTERNAL -> {
+            PLAYER.APPLE -> {
                 Image(
                     painter = rememberAsyncImagePainter(viewModel.artworkUri),
                     contentDescription = viewModel.title,

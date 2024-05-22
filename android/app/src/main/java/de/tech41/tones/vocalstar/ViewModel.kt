@@ -20,10 +20,12 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
 import com.spotify.android.appremote.api.SpotifyAppRemote
-import de.tech41.tones.vocalstar.controls.ExternalPlayer
+import de.tech41.tones.vocalstar.apple.ApplePlayer
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
 import de.tech41.tones.vocalstar.controls.MediaAppDetails
 import de.tech41.tones.vocalstar.player.FilePlayer
+import de.tech41.tones.vocalstar.player.IPlayer
+import de.tech41.tones.vocalstar.player.PLAYER
 import de.tech41.tones.vocalstar.spotify.SpotifyBroadcastReceiver
 import de.tech41.tones.vocalstar.spotify.SpotifyPlayer
 import org.jaudiotagger.audio.AudioFileIO
@@ -36,6 +38,7 @@ enum class CoverType{
     DYNAMIC
 }
 class Model: ViewModel(){
+    var context : Context = MainActivity.applicationContext()
     val tag = "de.tech41.tones.vocalstar.ViewModel"
     var coverType by mutableStateOf(CoverType.SLOW)
     val devicesIn: MutableList<Pair<String, String>> = ArrayList()
@@ -47,7 +50,6 @@ class Model: ViewModel(){
     var width = 0.0f
     var height = 0.0f
     var vService: VService? = null
-    var context : Context = MainActivity.applicationContext()
     var isPlaying by mutableStateOf(false)
     var isSpeaker by mutableStateOf(false)
     var isMuted by mutableStateOf(true)
@@ -63,17 +65,16 @@ class Model: ViewModel(){
     var cover by mutableStateOf("DEFAULT")
     var artist by mutableStateOf("NiniF")
     var album by mutableStateOf("")
-    var player :IPlayer = FilePlayer(context, this)
-    var playerType by mutableStateOf(PLAYER.EXTERNAL)
+    var player : IPlayer = FilePlayer(context, this)
+    var playerType by mutableStateOf(PLAYER.APPLE)
     var playerUri : Uri? = null
-    var isSeeking = false
+    private var isSeeking = false
     var isMonoInput by mutableStateOf(false)
     var mediaAppBrowser : FindMediaBrowserAppsTask? = null
     var mediaPlayers : List<MediaAppDetails> = emptyList()
     var selectedPlayer : MediaAppDetails? = null
-   // var selectedPlayerIcon by mutableIntStateOf( R.drawable.menu)
     var mediaController : MediaController? = null
-    var artworkUri by mutableStateOf(Uri.parse("https://tech41.de"))
+    var artworkUri : Uri? by mutableStateOf(Uri.parse("https://tech41.de"))
     var artworkBitmap : Bitmap? by mutableStateOf(null)
     var spotifyBroadcastReceiver = SpotifyBroadcastReceiver()
 
@@ -101,12 +102,14 @@ class Model: ViewModel(){
                     mediaController = controllerFuture.get()
                     when (p.appName) {
                         "Apple Music" -> {
-                            playerType = PLAYER.EXTERNAL
-                            player = ExternalPlayer(context)}//selectedPlayerIcon = R.drawable.apple_icon
-                        "Deezer" -> player = ExternalPlayer(context)//selectedPlayerIcon = R.drawable.apple_icon
-                        "Youtube" -> player = ExternalPlayer(context)//selectedPlayerIcon = R.drawable.apple_icon
-                        "Another" -> player = ExternalPlayer(context)//selectedPlayerIcon = R.drawable.apple_icon
+                            playerType = PLAYER.APPLE
+                            player = ApplePlayer(context, this)
+                        }
+                        "Deezer" -> player = ApplePlayer(context, this)
+                        "Youtube" -> player = ApplePlayer(context, this)
+                        "Another" -> player = ApplePlayer(context, this)
                     }
+
                     setPlayerData()
                     selectedPlayer = p
                     val imageModifier = Modifier.size(20.dp)
@@ -128,7 +131,7 @@ class Model: ViewModel(){
     }
 
     fun stopPlayer(){
-        //MediaController.releaseFuture(mediaController)
+
     }
 
     fun toggleIsMono(){
@@ -208,27 +211,23 @@ class Model: ViewModel(){
                 player.updatePosition()
             }
 
-            if(playerType == PLAYER.EXTERNAL && mediaController != null) {
+            if(playerType == PLAYER.APPLE && mediaController != null) {
                 setPlayerData()
             }
         }
     }
 
-    fun setPlayer(type:PLAYER){
+    fun setPlayer(type: PLAYER){
         if (type == PLAYER.FILE){
-            //player = FilePlayer(context, this)
-            if(playerType== PLAYER.FILE){
-                return
-            }
             player = FilePlayer(context, this)
-            playerType = PLAYER.FILE
         }
-        if (type == PLAYER.EXTERNAL){
-            if(playerType== PLAYER.EXTERNAL){
-                return
-            }
-            playerType = PLAYER.EXTERNAL
+        if (type == PLAYER.APPLE){
+            player = ApplePlayer(context, this)
         }
+        if (type == PLAYER.SPOTIFY) {
+            player = SpotifyPlayer(context, this)
+        }
+        playerType = type
         player.setup()
     }
     fun toggleIsSpeaker(){
@@ -246,12 +245,7 @@ class Model: ViewModel(){
         LiveEffectEngine.setEffectOn(!isMuted)
     }
     fun back(){
-        if(playerType == PLAYER.FILE) {
-            player.back()
-        }else {
-            mediaController?.seekToPreviousMediaItem()
-            setPlayerData()
-        }
+        player.back()
     }
     fun toggle(){
         if (player == null){
@@ -265,18 +259,12 @@ class Model: ViewModel(){
         isPlaying = !isPlaying
     }
     fun forward(){
-        if(playerType == PLAYER.FILE) {
-            player.forward()
-        }else {
-            mediaController?.seekToNextMediaItem()
-            setPlayerData()
-        }
+        player.forward()
     }
 
     fun putVolume(vol:Float){
         var maxVolume = 1.0f
         volume = vol
-       // val log1 = (ln(maxVolume - vol) / ln(maxVolume)).toFloat()
         player.setVolume((volume * volume))
     }
 
@@ -288,10 +276,8 @@ class Model: ViewModel(){
         // The result should be between 100 an 10000000
         var minv = ln(0F);
         var maxv = ln(1F);
-
         // calculate adjustment factor
         var scale = (maxv - minv) / (maxp - minp);
-
         return exp(minv + scale*(position-minp)).toFloat();
     }
 

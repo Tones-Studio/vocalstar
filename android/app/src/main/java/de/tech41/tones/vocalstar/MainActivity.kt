@@ -1,7 +1,6 @@
 package de.tech41.tones.vocalstar
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -49,6 +48,7 @@ import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import com.spotify.sdk.android.auth.LoginActivity
 import de.tech41.tones.vocalstar.controls.FindMediaBrowserAppsTask
+import de.tech41.tones.vocalstar.screen.TabScreen
 import de.tech41.tones.vocalstar.ui.theme.VocalstarTheme
 import kotlinx.coroutines.launch
 import kotlin.coroutines.Continuation

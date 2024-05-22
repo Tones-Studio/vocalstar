@@ -1,10 +1,9 @@
-package de.tech41.tones.vocalstar
+package de.tech41.tones.vocalstar.player
 
 import android.net.Uri
-import androidx.media3.common.Player
 
 enum class PLAYER {
-    EXTERNAL, FILE, SPOTIFY
+    APPLE, FILE, SPOTIFY
 }
     interface IPlayer {
 

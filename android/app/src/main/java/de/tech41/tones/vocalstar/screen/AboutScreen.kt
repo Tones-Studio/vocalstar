@@ -1,4 +1,4 @@
-package de.tech41.tones.vocalstar
+package de.tech41.tones.vocalstar.screen
 // https://developer.android.com/jetpack/androidx/releases/media3#kts
 import android.content.Intent
 import android.net.Uri
@@ -37,6 +37,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import de.tech41.tones.vocalstar.Model
+import de.tech41.tones.vocalstar.R
 
 @OptIn(UnstableApi::class)
 @Composable

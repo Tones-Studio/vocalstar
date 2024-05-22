@@ -1,7 +1,5 @@
-package de.tech41.tones.vocalstar
+package de.tech41.tones.vocalstar.controls
 
-import android.app.NotificationManager
-import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,6 +9,7 @@ import android.media.session.MediaSessionManager
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
+import de.tech41.tones.vocalstar.VService
 
 
 class PlayerController(context:Context) {
