@@ -42,7 +42,7 @@ import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.types.Track
-import com.spotify.sdk.android.auth.AccountsQueryParameters
+import com.spotify.sdk.android.auth.AccountsQueryParameters.CLIENT_ID
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
@@ -74,7 +74,113 @@ class MainActivity :ComponentActivity() {
     private val CONNECTOR: Connector? = null
     private val mConnectApi: ConnectApi? = null
     private var spotifyAppRemote: SpotifyAppRemote? = null
+    init {
+        instance = this
+    }
+    companion object {
+        public var instance: MainActivity? = null
+        fun applicationContext() : Context {
+            return instance!!.applicationContext
+        }
+    }
 
+    /*==============================================================================================
+    Life Cycle Methods
+    ==============================================================================================*/
+    @OptIn(UnstableApi::class)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // Model
+        viewModel = ViewModelProvider(this).get(Model::class.java)
+        viewModel.context =  applicationContext()
+        val displayMetrics: DisplayMetrics = applicationContext.resources.displayMetrics
+        viewModel.width = displayMetrics.widthPixels / displayMetrics.density
+        viewModel.height = displayMetrics.heightPixels / displayMetrics.density
+
+        // File root
+        FileHelper(this, viewModel).makeAppFolder(true)
+        discoverPlayer.start()
+
+        // notification
+        createNotificationChannel()
+
+        // MIC Permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+            Log.d("permission", "have permission to record audio")
+        }else{
+            Toast.makeText(this, "Please allow Mic access", Toast.LENGTH_SHORT).show()
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.RECORD_AUDIO), AUDIO_RECORD_REQUEST_CODE)
+            Log.d("permission", "Don't have permission to record audio")
+        }
+        // Start Audio Service
+        val intent = Intent(applicationContext(), VService::class.java)
+        applicationContext.startForegroundService(intent)
+
+        // the UI Root
+        enableEdgeToEdge()
+        setContent {
+            VocalstarTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    TabScreen(viewModel)
+                }
+            }
+        }
+        viewModel.player.setup()
+        if(!notificationAccessGranted(this)){
+            openPermissions()
+        }
+        SpotifyAppRemote.setDebugMode(true)
+        if(isSpotifyInstalled()) {
+            viewModel.spotifyBroadcastReceiver.register(this)
+            connect(true)
+            //  openSpotifySlow()
+        }
+    }
+
+    @OptIn(UnstableApi::class)
+    override  fun onStart(){
+        super.onStart()
+        Log.d(TAG,"Binding Service")
+        // Bind to LocalService.
+        Intent(this, VService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+        Log.d(TAG,"MainActivity onCreate complete")
+        val REQUEST_CODE = 1337
+        val builder = AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, viewModel.redirectUri)
+        builder.setScopes(arrayOf("app-remote-control")) // streaming
+        val request = builder.build()
+        AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
+    }
+    override fun onStop() {
+        super.onStop()
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
+        }
+        spotifyAppRemote?.let {
+            SpotifyAppRemote.disconnect(it)
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+    }
+    override fun onPause() {
+        super.onPause()
+    }
+    public override fun onDestroy() {
+        super.onDestroy()
+        val intent = Intent(this, VService::class.java)
+        applicationContext.stopService(intent)
+        applicationContext.unregisterReceiver(viewModel.spotifyBroadcastReceiver)
+    }
+    /* =============================================================================================
+    Private Methods
+    ==============================================================================================*/
     private suspend fun connectToAppRemote(showAuthView: Boolean): SpotifyAppRemote? = suspendCoroutine { cont: Continuation<SpotifyAppRemote> ->
         SpotifyAppRemote.connect(
             application,
@@ -146,18 +252,6 @@ class MainActivity :ComponentActivity() {
         }
     }
 
-    init {
-        instance = this
-    }
-
-    companion object {
-        public var instance: MainActivity? = null
-
-        fun applicationContext() : Context {
-            return instance!!.applicationContext
-        }
-    }
-
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Vocalstar"
@@ -184,102 +278,6 @@ class MainActivity :ComponentActivity() {
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
         }
-    }
-
-    @OptIn(UnstableApi::class)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        // Model
-        viewModel = ViewModelProvider(this).get(Model::class.java)
-        viewModel.context =  applicationContext()
-        val displayMetrics: DisplayMetrics = applicationContext.resources.displayMetrics
-        viewModel.width = displayMetrics.widthPixels / displayMetrics.density
-        viewModel.height = displayMetrics.heightPixels / displayMetrics.density
-
-        // File root
-        FileHelper(this, viewModel).makeAppFolder(true)
-        discoverPlayer.start()
-
-        // notification
-        createNotificationChannel()
-
-        // MIC Permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
-            Log.d("permission", "have permission to record audio")
-        }else{
-            Toast.makeText(this, "Please allow Mic access", Toast.LENGTH_SHORT).show()
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.RECORD_AUDIO), AUDIO_RECORD_REQUEST_CODE)
-            Log.d("permission", "Don't have permission to record audio")
-        }
-
-        // Start Audio Service
-        val intent = Intent(applicationContext(), VService::class.java)
-       applicationContext.startForegroundService(intent)
-
-        // the UI Root
-        enableEdgeToEdge()
-        setContent {
-            VocalstarTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TabScreen(viewModel)
-                }
-            }
-        }
-        viewModel.player.setup()
-        if(!notificationAccessGranted(this)){
-            openPermissions()
-        }
-        SpotifyAppRemote.setDebugMode(true)
-        if(isSpotifyInstalled()) {
-            viewModel.spotifyBroadcastReceiver.register(this)
-            //connectSpotify()
-
-            connect(true)
-            //  openSpotifySlow()
-        }
-    }
-
-    @OptIn(UnstableApi::class)
-    override  fun onStart(){
-        super.onStart()
-
-        Log.d(TAG,"Binding Service")
-        // Bind to LocalService.
-        Intent(this, VService::class.java).also { intent ->
-            bindService(intent, connection, Context.BIND_AUTO_CREATE)
-        }
-        Log.d(TAG,"MainActivity onCreate complete")
-
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (isBound) {
-            unbindService(connection)
-            isBound = false
-        }
-        viewModel.spotifyAppRemote?.let {
-            SpotifyAppRemote.disconnect(it)
-        }
-    }
-
-    public override fun onDestroy() {
-        super.onDestroy()
-        val intent = Intent(this, VService::class.java)
-        applicationContext.stopService(intent)
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     private val OPEN_DIRECTORY_REQUEST_CODE = 0xf11e
@@ -324,20 +322,15 @@ class MainActivity :ComponentActivity() {
         }
         startActivityForResult(intent, PICK_AUDIO_FILE)
     }
-    /*
-    ===================================================================================================================
-    Private
-    ===================================================================================================================
-     */
 
-    fun openSpotifySlow(){
+   private fun openSpotifySlow(){
         val spotifyContent = "https://open.spotify.com/album/4mtJHQbuhjHGmG2yaKemqw"
         val branchLink = ("https://spotify.link/content_linking?~campaign=" + getPackageName()).toString() + "&\$deeplink_path=" + spotifyContent + "&\$fallback_url=" + spotifyContent
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setData(Uri.parse(branchLink))
         startActivity(intent)
     }
-    fun isSpotifyInstalled():Boolean{
+    private fun isSpotifyInstalled():Boolean{
         val pm = packageManager
         var isSpotifyInstalled = false
         try {
@@ -348,15 +341,8 @@ class MainActivity :ComponentActivity() {
         }
         return isSpotifyInstalled
     }
-
-
-
     private fun onSpotifyConnect() {
-        viewModel.spotifyAppRemote?.let {
-            // Play a playlist
-
-           // https://open.spotify.com/album/4mtJHQbuhjHGmG2yaKemqw
-           // val playlistURI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL"
+        spotifyAppRemote?.let {
             val playlistURI = "spotify:album:4mtJHQbuhjHGmG2yaKemqw"
             it.playerApi.play(playlistURI)
             // Subscribe to PlayerState
@@ -365,16 +351,13 @@ class MainActivity :ComponentActivity() {
                 android.util.Log.d("MainActivity", track.name + " by " + track.artist.name)
             }
         }
-
     }
-}
 
-fun openFileBrowser(){
-    MainActivity.instance?.openDirectory()
+
+
 }
 
 private class BecomingNoisyReceiver : BroadcastReceiver() {
-
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
             // Pause the playback

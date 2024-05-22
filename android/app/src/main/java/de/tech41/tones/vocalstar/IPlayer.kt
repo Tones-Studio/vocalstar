@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.media3.common.Player
 
 enum class PLAYER {
-    EXTERNAL, FILE
+    EXTERNAL, FILE, SPOTIFY
 }
     interface IPlayer {
 

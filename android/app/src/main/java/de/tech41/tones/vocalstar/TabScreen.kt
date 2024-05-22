@@ -51,9 +51,12 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
 
-
 @RequiresApi(Build.VERSION_CODES.S)
-@OptIn(ExperimentalMaterial3Api::class)
+
+private fun openFileBrowser(){
+    MainActivity.instance?.openDirectory()
+}
+
 @Composable
 fun TabScreen(viewModel : Model) {
     var tabIndex by remember { mutableIntStateOf(0) }

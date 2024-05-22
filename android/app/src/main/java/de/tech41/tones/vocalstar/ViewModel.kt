@@ -76,7 +76,7 @@ class Model: ViewModel(){
     var spotifyBroadcastReceiver = SpotifyBroadcastReceiver()
 
     // Spotify
-    var spotifyAppRemote  : SpotifyAppRemote? = null
+   // var spotifyAppRemote  : SpotifyAppRemote? = null
     val clientId = "7ac580d73cb543de9fbe8eb777891bae"
     val redirectUri = "detech41tonesvocalstar://callback"
 
